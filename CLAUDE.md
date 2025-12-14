@@ -2,11 +2,29 @@
 
 ## Platform Support
 
-**⚠️ macOS Only** - This project currently only supports macOS. The auto-trigger system uses AppleScript to send keystrokes to FL Studio.
+**⚠️ macOS Primary, Windows Secondary** - This project primarily supports macOS with full auto-trigger functionality. Windows support is partially implemented but may require additional configuration.
 
 ## Overview
 
-This system allows Claude to interact with FL Studio's piano roll through direct file-based communication. It provides automatic, seamless integration between Claude's AI capabilities and FL Studio's music production environment.
+This system allows Claude to interact with FL Studio's piano roll through direct file-based communication. It provides seamless integration between Claude's AI capabilities and FL Studio's music production environment with built-in timing delays to ensure reliable operation.
+
+## Installation and Setup
+
+### 1. Install MCP Server for Claude
+```bash
+./install_mcp_for_claude.sh
+```
+This registers the MCP server with Claude Code. The server is named `fl-studio-mcp`.
+
+### 2. Usage Workflow
+
+**For each session:**
+1. **Open FL Studio** and open a piano roll
+2. **Run ComposeWithLLM** once (Tools → Scripting → ComposeWithLLM) to initialize
+3. **Start Claude** - the trigger mechanism is built into the MCP server
+4. **No need to run separate scripts** - everything is handled automatically!
+
+**Note:** Claude Code needs Accessibility permissions (System Settings → Privacy & Security → Accessibility) to send keystrokes to FL Studio.
 
 ## Getting Started (For AI Assistants)
 
@@ -18,26 +36,18 @@ First, verify you have access to these MCP tools (they'll have the `mcp__fl_stud
 - `mcp__fl_studio_mcp__get_piano_roll_state` - Read the piano roll
 - `mcp__fl_studio_mcp__send_notes` - Add or replace notes (including chords)
 - `mcp__fl_studio_mcp__delete_notes` - Remove specific notes
+- `mcp__fl_studio_mcp__clear_piano_roll` - Clear all notes
 - `mcp__fl_studio_mcp__clear_queue` - Clear pending requests
 
 If these aren't available, the MCP server needs to be started or reconnected. The server is registered as `fl-studio-mcp` in Claude Code.
 
-### 2. Understand the User Workflow
+### 2. Auto-Trigger System
 
-Installation (one-time):
-1. **Run `./install_prerequisites.sh`** to install uv and Python environment
-2. **Run `./install_mcp_for_claude.sh`** to register the MCP server
-3. **Run `./install_and_run.sh`** to setup FL Studio and start auto-trigger
-
-Then for each session:
-1. **Open FL Studio** and open a piano roll
-2. **Detach the piano roll window** (required for auto-trigger to work)
-3. **Run ComposeWithLLM** once (Tools → Scripting → ComposeWithLLM) to initialize
-4. **Auto-trigger is already running in background** (started by `install_and_run.sh`)
-5. **Tell you what they want** (add chords, modify notes, create progressions, etc.)
-6. **Notes appear automatically** - no buttons to click!
-
-**Note:** Terminal and Claude Code need Accessibility permissions (System Settings → Privacy & Security → Accessibility) to send keystrokes to FL Studio.
+The trigger mechanism is now **built into the MCP server**:
+- When you send notes/requests, the MCP server automatically triggers FL Studio
+- A 2-second delay ensures FL Studio has time to receive focus and process the request
+- No separate auto-trigger script needed
+- Works with both detached and docked piano roll windows
 
 ### 3. Always Start With State
 
@@ -54,12 +64,13 @@ This tells you:
 
 ### 4. Key Concepts for LLMs
 
-**Auto-Trigger System:**
-- Requests are written to `mcp_request.json`
-- Auto-trigger script watches for file changes
-- Automatically sends Cmd+Opt+Y (macOS) or Ctrl+Alt+Y (Windows/Linux)
+**Built-in Auto-Trigger System:**
+- MCP server writes requests to `mcp_request.json`
+- MCP server automatically sends Cmd+Opt+Y (macOS) or Ctrl+Alt+Y (Windows)
+- 2-second delay ensures proper focus handling
 - FL Studio re-runs the last script (ComposeWithLLM)
-- Notes appear instantly (~0.5 seconds)
+- Notes appear automatically after the delay
+- Cross-platform trigger support with focus management
 
 **Time is Always in Quarter Notes:**
 - `time=0` = beat 1
@@ -163,25 +174,25 @@ state = mcp__fl_studio_mcp__get_piano_roll_state()
 - ✅ Always get state first with `get_piano_roll_state()`
 - ✅ Always specify `time` for every note (don't rely on defaults)
 - ✅ Use quarter notes for time and duration
-- ✅ Tell user notes will appear automatically
+- ✅ Tell user notes will appear automatically after a brief delay
 - ✅ Use `mode="add"` by default (accumulate changes)
 - ✅ Use `mode="replace"` when user wants to start fresh
-- ✅ Remind user to press Cmd+Opt+Y after manual edits to refresh state
+- ✅ Remind user to press Cmd+Opt+Y or use menu after manual edits to refresh state
 
 **DON'T:**
-- ❌ Don't tell user to click buttons (there are none in auto mode!)
+- ❌ Don't tell user to click buttons (there are none - it's automatic!)
 - ❌ Don't use ticks/PPQ directly - always use quarter notes
 - ❌ Don't forget to get state before making changes
 - ❌ Don't assume you can see manual edits without state refresh
+- ❌ Don't worry about starting separate scripts - it's all built-in
 
 ### 7. Troubleshooting for LLMs
 
 **User says "Nothing happened"**
-- Ask: "Is the auto-trigger script running in the terminal?"
 - Ask: "Did you run ComposeWithLLM in FL Studio first?"
-- Ask: "Is the piano roll window detached?"
-- Ask: "Does Terminal/Claude have Accessibility permissions?" (System Settings → Privacy & Security → Accessibility)
-- Suggest: "Try pressing Cmd+Opt+Y manually to refresh"
+- Ask: "Does Claude have Accessibility permissions?" (System Settings → Privacy & Security → Accessibility)
+- Ask: "Is FL Studio running and is a piano roll open?"
+- Suggest: "Try pressing Cmd+Opt+Y manually or use Tools → Scripting → ComposeWithLLM"
 
 **User says "It replaced everything"**
 - Check if you used `mode="replace"` accidentally
@@ -247,17 +258,16 @@ User: "Perfect!"
 
 The system consists of three main components:
 
-1. **MCP Server** (`fl_studio_mcp_server.py`) - Provides tools for Claude to send musical requests
+1. **MCP Server** (`fl_studio_mcp_server.py`) - Provides tools for Claude to send musical requests and automatically triggers FL Studio
 2. **FL Studio Bridge Script** (`ComposeWithLLM.pyscript`) - Runs inside FL Studio to process requests automatically
-3. **Auto-Trigger Watcher** (`fl_studio_auto_trigger.py`) - Watches for changes and triggers FL Studio
-4. **JSON Communication Files** - Request queue and state files for communication
+3. **JSON Communication Files** - Request queue and state files for communication
 
 ### Communication Flow
 
 ```
-Claude → MCP Server → Request Queue (JSON) → Auto-Trigger Detects Change
+Claude → MCP Server → Request Queue (JSON) → MCP Server Sends Trigger
                                                       ↓
-                                           Sends Cmd+Opt+Y
+                                       Sends Cmd+Opt+Y (macOS) or Ctrl+Alt+Y (Windows)
                                                       ↓
                                            FL Studio Re-runs Script
                                                       ↓
@@ -273,17 +283,13 @@ Claude → MCP Server → Request Queue (JSON) → Auto-Trigger Detects Change
    - Clears request queue (sets to `[]`)
    - No dialog appears
 
-2. **Start auto-trigger** → python fl_studio_auto_trigger.py
-   - Watches for changes to request queue
-   - Automatically triggers FL Studio when Claude sends notes
+2. **Claude sends requests** → MCP Server writes to request queue
 
-3. **Claude sends requests** → Accumulate in queue as list of actions
+3. **MCP Server triggers FL Studio** → Automatically sends Cmd+Opt+Y with built-in delay
 
-4. **Auto-trigger detects change** → Sends Cmd+Opt+Y to FL Studio
+4. **FL Studio re-runs script** → Processes queue and updates state
 
-5. **FL Studio re-runs script** → Processes queue and updates state
-
-6. **Notes appear** → Instantly visible in piano roll
+5. **Notes appear** → Visible in piano roll after delay
 
 ## Available MCP Tools
 
@@ -327,24 +333,6 @@ send_notes([
 ])
 ```
 
-### `create_chord_from_name(chord_name, root_note=60, duration=1.0, time=None, mode="add")`
-Create a chord from a chord name.
-
-**Parameters:**
-- `chord_name`: "major", "minor", "dim", "aug", "maj7", "min7", "dom7", "sus2", "sus4", "maj9", "min9"
-- `root_note`: MIDI note number (default 60 = Middle C)
-- `duration`: Duration in quarter notes (default 1.0)
-- `time`: Start time in quarter notes (default None = place at beat 0)
-- `mode`: "add" or "replace"
-
-**Example:**
-```python
-# C major chord at beat 0
-create_chord_from_name("major", root_note=60, duration=2, time=0)
-
-# F minor chord at beat 4
-create_chord_from_name("minor", root_note=65, duration=2, time=4)
-```
 
 ### `delete_notes(notes)`
 Delete specific notes from the piano roll.
@@ -436,12 +424,11 @@ Requests accumulate as a list of actions in `mcp_request.json`:
 
 **Source repository:**
 ```
-/Users/calvinw/fl-studio-mcp/
+/Users/calvinw/develop/fl-studio-mcp/
 ├── ComposeWithLLM.pyscript      (source bridge script)
-├── fl_studio_mcp_server.py       (MCP server)
-├── fl_studio_auto_trigger.py     (auto-trigger watcher)
-├── setup_auto_trigger.sh         (installation script)
-├── stop_auto_trigger.sh          (stop auto-trigger)
+├── fl_studio_mcp_server.py       (MCP server with built-in trigger)
+├── install_prerequisites.sh     (install uv and Python)
+├── install_mcp_for_claude.sh    (register MCP server)
 └── CLAUDE.md                     (this file)
 ```
 
@@ -451,7 +438,7 @@ Requests accumulate as a list of actions in `mcp_request.json`:
 
 ```python
 # Initialize: Run ComposeWithLLM in FL Studio
-# Start: python fl_studio_auto_trigger.py
+# MCP server handles triggering automatically
 
 # Send chord progression
 send_notes([
@@ -503,28 +490,28 @@ send_notes([
 2. **Use quarter notes** - All time/duration values are in quarter note units
 3. **Get state first** - Call `get_piano_roll_state()` before making changes
 4. **Refresh after manual edits** - User should press Cmd+Opt+Y to update state
-5. **Auto-trigger must be running** - Remind user to start fl_studio_auto_trigger.py
+5. **Auto-trigger built into MCP server** - No separate scripts needed, everything is automatic
 
 ## Troubleshooting
 
 **Changes not appearing?**
-- Make sure auto-trigger script is running
 - Verify ComposeWithLLM was run once in FL Studio
 - Check FL Studio window is active
+- Ensure Claude Code has Accessibility permissions (System Settings → Privacy & Security → Accessibility)
 
 **Notes at wrong positions?**
 - Check PPQ value in state export
 - Ensure time values are in quarter notes, not ticks
 
-**Auto-trigger not working?**
-- Restart auto-trigger script
+**Trigger not working?**
+- Try pressing Cmd+Opt+Y manually or use Tools → Scripting → ComposeWithLLM
 - Run ComposeWithLLM in FL Studio again
-- Make sure pynput is installed: `pip install pynput`
+- Restart Claude Code to reconnect the MCP server
 
 **Script not responding?**
 - Check that ComposeWithLLM.pyscript is copied to Piano roll scripts directory
-- Verify MCP server is running
-- Restart MCP server after code changes
+- Verify MCP server is connected in Claude Code
+- Restart Claude Code after code changes
 
 ## Future Enhancements
 
@@ -534,3 +521,4 @@ Potential additions:
 - Pattern generation tools
 - Harmonic analysis tools
 - MIDI file import/export
+- Cross-platform UI for manual trigger

@@ -54,9 +54,31 @@ class FLStudioTrigger:
             return False
         try:
             if self.system == "Darwin":
+                # Handle different app name formats
                 app_name = window_id.split(':')[-1] if ':' in window_id else window_id
-                subprocess.run(['osascript', '-e', f'tell application "{app_name}" to activate'],
-                             timeout=3)
+
+                # Common app name mappings
+                app_mappings = {
+                    'Claude': 'Claude',
+                    'Terminal': 'Terminal',
+                    'iTerm': 'iTerm',
+                    'VSCode': 'Code',
+                    'Visual Studio Code': 'Code',
+                    'Chrome': 'Google Chrome',
+                    'Safari': 'Safari',
+                    'Firefox': 'Firefox'
+                }
+
+                # Map common names to actual application names
+                actual_app_name = app_mappings.get(app_name, app_name)
+
+                # Try to activate the app
+                subprocess.run(['osascript', '-e', f'tell application "{actual_app_name}" to activate'],
+                             timeout=3, capture_output=True)
+
+                # Additional wait to ensure focus is restored
+                time.sleep(0.2)
+
             elif self.system == "Windows":
                 try:
                     import win32gui
@@ -66,7 +88,7 @@ class FLStudioTrigger:
                 except ImportError:
                     pass
             return True
-        except Exception:
+        except Exception as e:
             return False
 
     def focus_fl_studio(self):
@@ -153,6 +175,10 @@ class FLStudioTrigger:
                     with keyboard.pressed(Key.alt):
                         keyboard.press('y')
                         keyboard.release('y')
+
+            # Add delay to allow FL Studio to receive focus and process the keystroke
+            time.sleep(2.0)
+
             return True
         except ImportError:
             # Fallback using platform-specific methods
@@ -160,11 +186,19 @@ class FLStudioTrigger:
                 subprocess.run(['osascript', '-e',
                     'tell application "System Events" to keystroke "y" using {command down, option down}'],
                     timeout=3)
+
+                # Add delay to allow FL Studio to receive focus and process the keystroke
+                time.sleep(2.0)
+
                 return True
             elif self.system == "Windows":
                 try:
                     import pyautogui
                     pyautogui.hotkey('ctrl', 'alt', 'y')
+
+                    # Add delay to allow FL Studio to receive focus and process the keystroke
+                    time.sleep(2.0)
+
                     return True
                 except ImportError:
                     pass
