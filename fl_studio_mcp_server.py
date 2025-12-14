@@ -7,14 +7,174 @@ Handles piano roll operations and music theory tools
 from fastmcp import FastMCP
 import json
 import os
+import platform
+import subprocess
+import time
 from pathlib import Path
 
 
 # Initialize FastMCP server
 mcp = FastMCP("FL Studio MCP Server")
 
-# Import cross-platform trigger
-from fl_studio_trigger_final import trigger_flstudio
+
+class FLStudioTrigger:
+    """Cross-platform FL Studio trigger - integrated into MCP server"""
+
+    def __init__(self):
+        self.system = platform.system()
+
+    def save_current_window(self):
+        """Save the current active window/app name"""
+        try:
+            if self.system == "Darwin":
+                script = '''
+                tell application "System Events"
+                    set frontApp to name of first application process whose frontmost is true
+                    return frontApp
+                end tell
+                '''
+                result = subprocess.run(['osascript', '-e', script],
+                                      capture_output=True, text=True)
+                if result.returncode == 0:
+                    return result.stdout.strip()
+            elif self.system == "Windows":
+                try:
+                    import win32gui
+                    hwnd = win32gui.GetForegroundWindow()
+                    return win32gui.GetWindowText(hwnd)
+                except ImportError:
+                    pass
+        except Exception:
+            pass
+        return None
+
+    def restore_focus(self, window_id):
+        """Restore focus to saved window"""
+        if not window_id:
+            return False
+        try:
+            if self.system == "Darwin":
+                app_name = window_id.split(':')[-1] if ':' in window_id else window_id
+                subprocess.run(['osascript', '-e', f'tell application "{app_name}" to activate'],
+                             timeout=3)
+            elif self.system == "Windows":
+                try:
+                    import win32gui
+                    hwnd = win32gui.FindWindow(None, window_id)
+                    if hwnd and win32gui.IsWindow(hwnd):
+                        win32gui.SetForegroundWindow(hwnd)
+                except ImportError:
+                    pass
+            return True
+        except Exception:
+            return False
+
+    def focus_fl_studio(self):
+        """Focus FL Studio window"""
+        try:
+            if self.system == "Darwin":
+                script = '''
+                tell application "System Events"
+                    if exists process "OsxFL" then
+                        tell process "OsxFL"
+                            set frontmost to true
+                        end tell
+                    end if
+                end tell
+                '''
+                subprocess.run(['osascript', '-e', script], timeout=3)
+                return True
+            elif self.system == "Windows":
+                try:
+                    import win32gui
+                    hwnd = win32gui.FindWindow("TFruityLooshMainForm", None)
+                    if hwnd:
+                        if win32gui.IsIconic(hwnd):
+                            win32gui.ShowWindow(hwnd, 9)
+                        win32gui.SetForegroundWindow(hwnd)
+                        return True
+                except ImportError:
+                    pass
+        except Exception:
+            pass
+        return False
+
+    def trigger_flstudio(self):
+        """Trigger FL Studio and restore focus"""
+        if not self._is_fl_studio_running():
+            return False
+
+        saved_window = self.save_current_window()
+
+        if not self.focus_fl_studio():
+            return False
+
+        time.sleep(0.3)
+
+        if not self._send_keystroke():
+            return False
+
+        time.sleep(0.2)
+
+        if saved_window:
+            self.restore_focus(saved_window)
+
+        return True
+
+    def _is_fl_studio_running(self):
+        """Check if FL Studio is running"""
+        try:
+            if self.system == "Windows":
+                result = subprocess.run(['tasklist', '/FI', 'IMAGENAME eq FL.exe'],
+                                      capture_output=True, text=True)
+                return 'FL.exe' in result.stdout
+            elif self.system == "Darwin":
+                result = subprocess.run(["pgrep", "OsxFL"], capture_output=True)
+                return result.returncode == 0
+        except:
+            pass
+        return False
+
+    def _send_keystroke(self):
+        """Send the trigger keystroke"""
+        try:
+            from pynput.keyboard import Key, Controller
+            keyboard = Controller()
+
+            if self.system == "Darwin":
+                # macOS: Cmd+Opt+Y
+                with keyboard.pressed(Key.cmd):
+                    with keyboard.pressed(Key.alt):
+                        keyboard.press('y')
+                        keyboard.release('y')
+            else:
+                # Windows: Ctrl+Alt+Y
+                with keyboard.pressed(Key.ctrl):
+                    with keyboard.pressed(Key.alt):
+                        keyboard.press('y')
+                        keyboard.release('y')
+            return True
+        except ImportError:
+            # Fallback using platform-specific methods
+            if self.system == "Darwin":
+                subprocess.run(['osascript', '-e',
+                    'tell application "System Events" to keystroke "y" using {command down, option down}'],
+                    timeout=3)
+                return True
+            elif self.system == "Windows":
+                try:
+                    import pyautogui
+                    pyautogui.hotkey('ctrl', 'alt', 'y')
+                    return True
+                except ImportError:
+                    pass
+        except:
+            pass
+        return False
+
+
+# Global trigger instance
+trigger = FLStudioTrigger()
 
 # Request/Response file paths for communication
 BRIDGE_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts"))
@@ -125,7 +285,7 @@ def send_notes(notes: list[dict], mode: str = "add") -> str:
             json.dump(requests, f, indent=2)
 
         # Trigger FL Studio to process the request
-        trigger_success = trigger_flstudio()
+        trigger_success = trigger.trigger_flstudio()
 
         if trigger_success:
             return f"Sent {len(prepared_notes)} notes to FL Studio (trigger successful). MIDI notes: {[n['midi'] for n in prepared_notes]}"
@@ -191,7 +351,7 @@ def delete_notes(notes: list[dict]) -> str:
             json.dump(requests, f, indent=2)
 
         # Trigger FL Studio to process the request
-        trigger_success = trigger_flstudio()
+        trigger_success = trigger.trigger_flstudio()
 
         if trigger_success:
             return f"Delete request for {len(notes)} notes sent to FL Studio (trigger successful). MIDI notes: {[n['midi'] for n in notes]}"
@@ -246,7 +406,7 @@ def clear_piano_roll() -> str:
             json.dump([request], f, indent=2)
 
         # Trigger FL Studio to process the clear
-        trigger_success = trigger_flstudio()
+        trigger_success = trigger.trigger_flstudio()
 
         if trigger_success:
             return "Clear request sent to FL Studio (trigger successful). All notes will be removed."

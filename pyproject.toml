@@ -19,7 +19,7 @@ dev = [
 ]
 
 [tool.setuptools]
-py-modules = ["fl_studio_mcp_server", "fl_studio_auto_trigger"]
+py-modules = ["fl_studio_mcp_server"]
 
 [tool.uv]
 # Python version managed by uv venv
