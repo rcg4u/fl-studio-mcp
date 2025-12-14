@@ -13,6 +13,9 @@ from pathlib import Path
 # Initialize FastMCP server
 mcp = FastMCP("FL Studio MCP Server")
 
+# Import cross-platform trigger
+from fl_studio_trigger_final import trigger_flstudio
+
 # Request/Response file paths for communication
 BRIDGE_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts"))
 REQUEST_FILE = BRIDGE_DIR / "mcp_request.json"
@@ -121,7 +124,13 @@ def send_notes(notes: list[dict], mode: str = "add") -> str:
         with open(REQUEST_FILE, 'w') as f:
             json.dump(requests, f, indent=2)
 
-        return f"Sent {len(prepared_notes)} notes to FL Studio. MIDI notes: {[n['midi'] for n in prepared_notes]}"
+        # Trigger FL Studio to process the request
+        trigger_success = trigger_flstudio()
+
+        if trigger_success:
+            return f"Sent {len(prepared_notes)} notes to FL Studio (trigger successful). MIDI notes: {[n['midi'] for n in prepared_notes]}"
+        else:
+            return f"Sent {len(prepared_notes)} notes to FL Studio (trigger failed). Please ensure FL Studio is running and has run ComposeWithLLM once."
 
     except Exception as e:
         return f"Error sending notes: {str(e)}"
@@ -181,7 +190,13 @@ def delete_notes(notes: list[dict]) -> str:
         with open(REQUEST_FILE, 'w') as f:
             json.dump(requests, f, indent=2)
 
-        return f"Delete request for {len(notes)} notes added to queue. MIDI notes: {[n['midi'] for n in notes]}"
+        # Trigger FL Studio to process the request
+        trigger_success = trigger_flstudio()
+
+        if trigger_success:
+            return f"Delete request for {len(notes)} notes sent to FL Studio (trigger successful). MIDI notes: {[n['midi'] for n in notes]}"
+        else:
+            return f"Delete request for {len(notes)} notes added to queue (trigger failed). Please ensure FL Studio is running and has run ComposeWithLLM once."
 
     except Exception as e:
         return f"Error creating delete request: {str(e)}"
@@ -207,6 +222,39 @@ def clear_queue() -> str:
 
     except Exception as e:
         return f"Error clearing queue: {str(e)}"
+
+
+@mcp.tool
+def clear_piano_roll() -> str:
+    """
+    Clear all notes from the FL Studio piano roll.
+
+    This creates a clear request that will remove all notes when processed.
+    The clear action is executed immediately when FL Studio runs the last script.
+
+    Returns:
+        Status of the clear request
+    """
+    try:
+        # Create clear request
+        request = {
+            "action": "clear"
+        }
+
+        # Write clear request
+        with open(REQUEST_FILE, 'w') as f:
+            json.dump([request], f, indent=2)
+
+        # Trigger FL Studio to process the clear
+        trigger_success = trigger_flstudio()
+
+        if trigger_success:
+            return "Clear request sent to FL Studio (trigger successful). All notes will be removed."
+        else:
+            return "Clear request added to queue (trigger failed). Please ensure FL Studio is running and has run ComposeWithLLM once."
+
+    except Exception as e:
+        return f"Error creating clear request: {str(e)}"
 
 
 if __name__ == "__main__":

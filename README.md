@@ -59,6 +59,7 @@ See [INSTALL.md](INSTALL.md) for comprehensive setup instructions including:
 - Step-by-step installation for prerequisites
 - Claude Code registration
 - Gemini CLI registration (optional)
+- Codex registration (optional)
 - FL Studio setup
 - Auto-trigger management
 
@@ -293,6 +294,7 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
 ├── install_prerequisites.sh           (install uv & Python environment)
 ├── install_mcp_for_claude.sh          (register with Claude Code)
 ├── install_mcp_for_gemini.sh          (register with Gemini CLI)
+├── install_mcp_for_codex.sh           (register with Codex)
 ├── install_and_run.sh                 (setup FL Studio & start auto-trigger)
 ├── run_auto_trigger.sh                (start/restart auto-trigger)
 ├── stop_auto_trigger.sh               (stop auto-trigger)
