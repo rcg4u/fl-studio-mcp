@@ -1,0 +1,10 @@
+auto_compact_threshold = 200000
+active_model = "local"
+
+[[mcp_servers]]
+name = "fl_studio_mcp"
+transport = "stdio"
+command = "/Users/calvinw/develop/fl-studio-mcp/.venv/bin/python"
+args = [
+    "/Users/calvinw/develop/fl-studio-mcp/fl_studio_mcp_server.py",
+]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 FastMCP server for FL Studio
-Handles piano roll operations and music theory tools
+Handles piano roll operations, project file reading, and music theory tools
 """
 
 from fastmcp import FastMCP
@@ -9,12 +9,17 @@ import json
 import os
 import platform
 import subprocess
+import sys
 import time
 from pathlib import Path
+from typing import Optional, List
+import pyflp
 
 
 # Initialize FastMCP server
 mcp = FastMCP("FL Studio MCP Server")
+
+
 
 
 class FLStudioTrigger:
@@ -219,6 +224,45 @@ RESPONSE_FILE = BRIDGE_DIR / "mcp_response.json"
 SCRIPT_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts"))
 STATE_FILE = SCRIPT_DIR / "piano_roll_state.json"
 
+# FL Studio project directories (cross-platform)
+def get_fl_studio_projects_dirs() -> List[Path]:
+    """Get list of FL Studio project directories to search for FLP files"""
+    dirs = []
+
+    # Primary: User's Documents/Image-Line/FL Studio/Projects
+    primary_dir = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Projects"))
+    if primary_dir.exists():
+        dirs.append(primary_dir)
+
+    # Secondary: Common locations based on OS
+    if platform.system() == "Windows":
+        # Windows: C:\Users\[Username]\Documents\Image-Line\FL Studio\Projects
+        user_profile = os.environ.get("USERPROFILE", "")
+        if user_profile:
+            win_docs = Path(user_profile) / "Documents" / "Image-Line" / "FL Studio" / "Projects"
+            if win_docs.exists() and win_docs not in dirs:
+                dirs.append(win_docs)
+    elif platform.system() == "Darwin":
+        # macOS: ~/Documents/Image-Line/FL Studio/Projects (already covered by primary)
+        pass
+    else:
+        # Linux: ~/.local/share/FL Studio/Projects or ~/FL-Studio-Projects
+        linux_local = Path(os.path.expanduser("~/.local/share/FL Studio/Projects"))
+        if linux_local.exists():
+            dirs.append(linux_local)
+        linux_home = Path(os.path.expanduser("~/FL-Studio-Projects"))
+        if linux_home.exists():
+            dirs.append(linux_home)
+
+    # Fallback: Current working directory
+    cwd = Path.cwd()
+    if cwd not in dirs:
+        dirs.append(cwd)
+
+    return dirs
+
+
+
 
 @mcp.tool
 def get_piano_roll_state() -> str:
@@ -243,6 +287,144 @@ def get_piano_roll_state() -> str:
     except Exception as e:
         return json.dumps({
             "error": f"Failed to read piano roll state: {str(e)}"
+        })
+
+
+@mcp.tool
+def get_project_piano_rolls(flp_filename: str) -> str:
+    """
+    Read all patterns and notes from an FL Studio project file.
+
+    This tool searches for the FLP file in standard FL Studio project directories
+    and extracts all MIDI notes from all patterns in the project.
+
+    Args:
+        flp_filename: Name of the .flp file (e.g., "MyProject.flp")
+                      If the extension is omitted, it will be added automatically.
+
+    Returns:
+        JSON string containing all patterns with detailed note information,
+        or an error message if the file cannot be found or read.
+    """
+    # Ensure .flp extension
+    if not flp_filename.lower().endswith('.flp'):
+        flp_filename += '.flp'
+
+    # Search for the FLP file in standard directories
+    search_dirs = get_fl_studio_projects_dirs()
+    found_path = None
+
+    for search_dir in search_dirs:
+        potential_path = search_dir / flp_filename
+        if potential_path.exists() and potential_path.is_file():
+            found_path = potential_path
+            break
+
+    # Also check absolute paths
+    if not found_path:
+        abs_path = Path(flp_filename)
+        if abs_path.is_absolute() and abs_path.exists():
+            found_path = abs_path
+
+    # Check current directory as fallback
+    if not found_path:
+        current_dir_path = Path.cwd() / flp_filename
+        if current_dir_path.exists() and current_dir_path.is_file():
+            found_path = current_dir_path
+
+    if not found_path:
+        return json.dumps({
+            "error": f"FLP file '{flp_filename}' not found.",
+            "searched_directories": [str(d) for d in search_dirs],
+            "current_directory": str(Path.cwd()),
+            "note": "Make sure the file is in your FL Studio Projects folder or provide an absolute path."
+        })
+    try:
+        # Parse the FLP file
+        project = pyflp.parse(found_path)
+
+        # Build comprehensive data structure
+        result = {
+            "project_info": {
+                "title": project.title or "Untitled",
+                "ppq": project.ppq,
+                "tempo": project.tempo,
+                "file_path": str(found_path)
+            },
+            "channels": [],
+            "patterns": []
+        }
+
+        # Extract channel information
+        for i, channel in enumerate(project.channels):
+            channel_data = {
+                "index": i,
+                "name": channel.name,
+                "iid": channel.iid
+            }
+            result["channels"].append(channel_data)
+
+        # Extract all patterns with detailed note information
+        total_notes = 0
+        for pattern in project.patterns:
+            notes_list = list(pattern.notes)
+            total_notes += len(notes_list)
+
+            pattern_data = {
+                "name": pattern.name or f"Pattern {pattern.iid}",
+                "iid": pattern.iid,
+                "note_count": len(notes_list),
+                "notes": []
+            }
+
+            for note in notes_list:
+                # Calculate position and length in beats (like the working script)
+                pos_beats = note.position / project.ppq if project.ppq else 0
+                length_beats = note.length / project.ppq if project.ppq else 0
+
+                note_data = {
+                    "key": str(note.key),  # note.key is already a note name string (e.g., "E4")
+                    "position_ticks": note.position,
+                    "position_beats": round(pos_beats, 2),
+                    "length_ticks": note.length,
+                    "length_beats": round(length_beats, 2),
+                    "velocity": note.velocity,
+                    "channel": note.rack_channel,
+                    # Additional formatted fields matching the working script
+                    "key_formatted": f"{str(note.key):4s}",
+                    "position_formatted": f"{note.position:6d} ticks ({pos_beats:6.2f} beats)",
+                    "length_formatted": f"{note.length:5d} ticks ({length_beats:.2f} beats)"
+                }
+                pattern_data["notes"].append(note_data)
+
+            result["patterns"].append(pattern_data)
+
+        # Add summary
+        result["summary"] = {
+            "total_channels": len(result["channels"]),
+            "total_patterns": len(result["patterns"]),
+            "total_notes": total_notes
+        }
+
+        return json.dumps(result, indent=2)
+
+    except TypeError as e:
+        if "EventEnum" in str(e):
+            return json.dumps({
+                "error": "This FLP file appears to be incompatible with the current PyFLP version. "
+                        "This might be due to: 1) FLP file created with a newer version of FL Studio, "
+                        "2) Corrupted or protected project file, or 3) PyFLP library incompatibility. "
+                        "Consider saving the project in an older FL Studio format or creating a new simple project for testing.",
+                "file_path": str(found_path),
+                "error_type": "EventEnum"
+            })
+        else:
+            raise
+
+    except Exception as e:
+        return json.dumps({
+            "error": f"Failed to read FLP file: {str(e)}",
+            "file_path": str(found_path)
         })
 
 
