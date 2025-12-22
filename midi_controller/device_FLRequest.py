@@ -33,6 +33,36 @@ def setChannelSequence(channel_id, sequence):
     active_steps = sum(sequence)
     return f"Set {active_steps} steps for channel {channel_id}"
 
+def setMultipleChannelSequences(channel_sequences):
+    """
+    Set sequences for multiple channels at once.
+    This batches multiple channel updates into one command.
+
+    Args:
+        channel_sequences: List of dicts, each containing:
+            - channel_id: Channel index (0-based)
+            - sequence: List of 0s and 1s for each step
+
+    Returns:
+        Summary message with all channels updated
+
+    Example:
+        setMultipleChannelSequences([
+            {"channel_id": 0, "sequence": [1,0,1,0,1,0,1,0]},
+            {"channel_id": 1, "sequence": [0,0,0,0,1,0,0,0]}
+        ])
+    """
+    results = []
+    for item in channel_sequences:
+        channel_id = item["channel_id"]
+        sequence = item["sequence"]
+        for step, value in enumerate(sequence):
+            channels.setGridBit(channel_id, step, value)
+        active_steps = sum(sequence)
+        results.append(f"Channel {channel_id}: {active_steps}/{len(sequence)} active")
+
+    return f"Updated {len(channel_sequences)} channels - " + ", ".join(results)
+
 def OnInit():
     print('FL Request initialized')
     print(f'Listening for commands on: {device.getName()}')

@@ -563,6 +563,56 @@ def set_channel_sequence(channel_id: int, sequence: list[int]) -> str:
 
 
 @mcp.tool
+def set_multiple_channel_sequences(channel_sequences: list[dict]) -> str:
+    """
+    Set sequences for multiple channels at once in a single batched call.
+    This is more efficient than calling set_channel_sequence multiple times.
+
+    Args:
+        channel_sequences: List of channel/sequence pairs, each dict containing:
+            - channel_id: The channel index (0-based)
+            - sequence: List of values (0 or 1) representing grid bits for each step
+
+    Returns:
+        Status message with summary of all channels updated
+
+    Example:
+        set_multiple_channel_sequences([
+            {"channel_id": 0, "sequence": [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]},
+            {"channel_id": 1, "sequence": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]},
+            {"channel_id": 2, "sequence": [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]},
+            {"channel_id": 3, "sequence": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]},
+            {"channel_id": 4, "sequence": [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0]}
+        ])
+    """
+    try:
+        from midi_controller.fl_dual_port import send_command
+
+        # Validate input
+        if not channel_sequences:
+            return "Error: channel_sequences list cannot be empty"
+
+        # Validate each item
+        for i, item in enumerate(channel_sequences):
+            if "channel_id" not in item:
+                return f"Error: item {i} missing required 'channel_id' field"
+            if "sequence" not in item:
+                return f"Error: item {i} missing required 'sequence' field"
+            if len(item["sequence"]) == 0:
+                return f"Error: item {i} sequence must have at least one step"
+            if not all(v in (0, 1) for v in item["sequence"]):
+                return f"Error: item {i} sequence values must be 0 or 1"
+
+        # Send the batched command
+        result = send_command(f"setMultipleChannelSequences({channel_sequences})", expect_response=True)
+
+        return result
+
+    except Exception as e:
+        return f"Error setting multiple channel sequences: {str(e)}"
+
+
+@mcp.tool
 def show_piano_roll(channel_id: int) -> str:
     """
     Show the piano roll for a specific channel.
