@@ -71,7 +71,12 @@ echo "✅ FL Studio scripts directory found"
 
 # Copy ComposeWithLLM.pyscript
 echo "📋 Copying ComposeWithLLM.pyscript to FL Studio..."
-if cp "$SCRIPT_DIR/ComposeWithLLM.pyscript" "$FL_SCRIPTS_DIR/"; then
+COMPOSE_SCRIPT="$SCRIPT_DIR/piano_roll/ComposeWithLLM.pyscript"
+if [ ! -f "$COMPOSE_SCRIPT" ]; then
+    echo "❌ ComposeWithLLM.pyscript not found at $COMPOSE_SCRIPT"
+    exit 1
+fi
+if cp "$COMPOSE_SCRIPT" "$FL_SCRIPTS_DIR/"; then
     echo "✅ ComposeWithLLM.pyscript installed"
 else
     echo "❌ Failed to copy ComposeWithLLM.pyscript"
@@ -102,7 +107,7 @@ echo "  Next Steps:"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 echo "1️⃣  Register with Claude Code:"
-echo "   ./install_mcp_for_claude.sh"
+echo "   ./mcp/install_mcp_for_claude.sh"
 echo
 echo "2️⃣  Start using FL Studio with Claude:"
 echo "   - Open FL Studio"
@@ -110,8 +115,8 @@ echo "   - Run ComposeWithLLM once (Tools → Scripting → ComposeWithLLM)"
 echo "   - Start Claude and begin composing!"
 echo
 echo "3️⃣  (Optional) Generate configs for other AI assistants:"
-echo "   ./install_mcp_for_gemini.sh"
-echo "   ./install_mcp_for_codex.sh"
+echo "   ./mcp/install_mcp_for_gemini.sh"
+echo "   ./mcp/install_mcp_for_codex.sh"
 echo
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Important Notes:"

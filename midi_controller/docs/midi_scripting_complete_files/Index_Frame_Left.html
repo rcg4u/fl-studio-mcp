@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<!-- saved from url=(0091)https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/Index_Frame_Left.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>FL Studio Reference Manual</title>
+  <link rel="stylesheet" type="text/css" href="./flstudio.css">
+  <link rel="stylesheet" type="text/css" href="./saved_resource">
+  <link rel="stylesheet" type="text/css" href="./flhelp.css">
+  
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="EZGenerator">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=980, maximum-scale=1.0">
+  <meta name="last-modified" content="di, 07 03 2017 10:26:20GMT">
+  <link href="https://www.image-line.com/favicon.ico" type="image/x-icon" rel="shortcut icon">
+  <link href="https://www.image-line.com/favicon.png" type="image/png" rel="icon">
+  <script src="./jquery.min.js"></script>
+  <script type="text/javascript" src="./jquery_utils.js"></script>
+  <script src="./api.js" type="text/javascript"></script>
+  <script type="text/javascript">    
+    $(document).ready(function(){
+      if (typeof mmenu_animation === "function") {
+        $("#mmenu").mmenu_animation({});
+      }
+      if (window.parent.location.href.indexOf("insideFL") !== -1) {
+        $('body').addClass("insideFl");
+      }
+    });
+    $(document).ready(function(){
+      var resp_menu= $("#mmenu").clone().prop('id', 'resp_menu');
+      var overlay = $('<div class="resp_overlay" style="display:none"></div>');
+      resp_menu.insertAfter($("#mmenu"));
+      $("body").prepend(overlay);
+      $(".resp_menu_icon").on('click', function(){
+        if(!resp_menu.is(':visible')){
+          resp_menu.show().animate({'opacity':'1'}, 'fast');
+         $("#inner_container, #wrap, #mid_inner").animate({'left':'-70%'}, 'slow');
+          overlay.show();
+          $("#search_forum_container, .navbar").animate({'left':'-74%'}, 'slow');
+
+          resp_menu.animate({'left':'30%'}, 'slow');
+        }else{
+         $("#inner_container, #wrap, #mid_inner, #search_forum_container, .navbar").animate({'left':'0'}, 'slow');
+          resp_menu.animate({'left':'100%'}, 'slow');
+          overlay.hide();
+
+          resp_menu.animate({'opacity':'0'}, 100).hide(100);
+        }
+      });
+      $("#resp_menu .ddr").on('click', function(e){
+        e.preventDefault();
+        var sub_menu = $(this).next('ul');
+        if(!sub_menu.length){
+          return;
+        } 
+        if(!sub_menu.is(':visible')){
+          sub_menu.show(200).animate({'left':'0'}, 'slow');
+          $(this).addClass('opened');
+        }else{
+          sub_menu.animate({'left':'-100%'}, 'slow').hide(200);
+          $(this).removeClass('opened');
+        }
+      });
+      var responsive_off = false;
+      $(window).on('resize',function(){
+        var is_reps = $(".resp_menu_icon").is(':visible');
+        if(!is_reps && !responsive_off){
+          $("#search_forum_container, #mid_inner, .navbar, #inner_container, #wrap").css('left','0');
+          resp_menu.css('left','100%').hide();
+          overlay.hide();
+          responsive_off = true;
+        }
+        else if(is_reps)
+          responsive_off = false;
+      });
+      var currentYear = (new Date).getFullYear();
+      var legalYears = '1998-'+currentYear;
+      $('#years').text(legalYears);
+    });
+	
+	function updateTheme(bg, txt, hglt, h1, h2, h3) {
+	
+		var sheet = window.document.styleSheets[0];
+		sheet.insertRule('.insideFl, .insideFl #frame_left, .insideFl td{ background: ' + bg + '; color: ' + txt + '}', sheet.cssRules.length);
+		sheet.insertRule('.insideFl .SubTopicOf{ background: ' + bg + '}', sheet.cssRules.length);	
+		sheet.insertRule('.insideFl h1{ background: ' + h1 + '}', sheet.cssRules.length);		
+		sheet.insertRule('.insideFl h2{ background: ' + h2 + '}', sheet.cssRules.length);		
+		sheet.insertRule('.insideFl h3{ background: ' + h3 + '}', sheet.cssRules.length);			
+		sheet.insertRule('a:link, a:visited{ color: ' + hglt + '}', sheet.cssRules.length);
+		sheet.insertRule('a {border-bottom-color: ' + hglt + '}', sheet.cssRules.length);
+	}	
+  </script>
+ <!--<base target="main">--><base href="." target="main">
+</head>
+<body id="frame_left"><div class="resp_overlay" style="display:none"></div>
+<div>
+  <div class="hamburger_container"><div class="hamburger"></div></div>
+  <div class="profileWrap sw">
+    <script>
+      $(document).ready(function(){
+        $(".search_inp").livesearch();
+      });
+    </script>
+    <div id="wiz_area">
+      <form method="POST" action="https://support.image-line.com/action/supportwizard/" class="search_page" id="search_form">
+        <input type="hidden" name="filters[]" value="3">
+        <input type="hidden" name="platforms[]" value="0">
+        <input type="hidden" name="api" value="1">
+        <input type="text" name="q" placeholder="Search" autocomplete="off" class="search_inp" value="">
+        <div class="buttons">  
+          <input class="btn search_btn" type="submit" name="search" value="Search">
+          <a target="_blank" class="btn ticket_btn" style="display:none" href="http://support.image-line.com/action/ticketing" title="Submit a support request">Ticket</a>
+        </div>
+        <div id="live_results" style="display:block !important;"><div id="sid348682" class="pre-search-content" style="display: none;"></div></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<p><b id="subtitle">FL Studio Reference Manual</b>
+</p><ul id="menu_list">
+	<li><a href="https://gopher-fls.image-line.com/">Gopher - FL Studio AI Assistant</a>
+	</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/title.htm">Title Page</a>
+	</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/title_splash.htm">What is FL Studio?</a>
+	</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_new.htm">What's New in FL Studio?</a>
+	</li><li class="extLink"><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/FD/web/documents/productinfo.html">Product Information</a>
+	</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_registration.htm">Purchasing &amp; Registration</a>
+
+        </li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_new_0.htm">Introduction to FL Studio</a></b>
+
+	<ul>
+
+	  <li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_new.htm">What's New?</a>
+ 	  </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_interface.htm">The user interface</a>
+	  </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_videos.htm">Video tutorials</a>
+          </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_workflow.htm">Making music (Tutorial)</a>
+	  </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_controllers.htm">Hardware controllers</a>	  
+	  </li><li><b>Software controllers</b>
+
+            <ul>
+	      <li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/touchcontrollers.htm">Touch Controllers</a>
+	      </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fl_studio_remote.htm">FL Studio Remote App</a>
+            </li></ul>
+ 	  </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_shortcuts.htm">Keyboard &amp; Mouse shortcuts</a>
+ 	  </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_web.htm">Useful web-links</a>
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_wiz.htm">Setting Up FL Studio</a></b>
+	<ul>   
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_wiz1.htm">Setup Wizard</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_wiz2.htm">Audio Setup</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_wiz3.htm">ASIO Driver Setup</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_wiz4.htm">Primary Sound Driver Setup</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_wiz5.htm">MIDI Setup</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_wiz6.htm">File Settings Setup</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_wiz7.htm">Next Steps</a>
+	</li></ul>
+        
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/envsettings.htm">Options &amp; Settings</a></b>
+	<ul>
+		<li><b>System Settings</b>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/envsettings_midi.htm">MIDI Settings</a>
+                        </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/envsettings_audio.htm">Audio Settings</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/envsettings_asio4all.htm">Audio ASIO4ALL Settings</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/envsettings_general.htm">General Settings</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/envsettings_files.htm">File Settings</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/envsettings_themes.htm">Theme</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/envsettings_debug.htm">Debugging Information</a>
+		</li></ul>
+		</li><li><b>Project Settings</b>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/songsettings_songinfo.htm">Project Information</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/songsettings_settings.htm">Project General Settings</a>
+		</li></ul>
+	</li></ul>
+       	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu_panel.htm">Main Menu, Panels &amp; Tool Bars</a></b>
+	<ul>
+	<li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu.htm">Main Menu Bar</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu_file.htm">File Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu_edit.htm">Edit Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu_add.htm">Add Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu_patterns.htm">Patterns Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu_view.htm">View Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu_options.htm">Options Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu_tools.htm">Tools Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu_help.htm">Help Menu</a>
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm">Toolbar</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_edit.htm">Editing the Toolbar</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/menu.htm">Main Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_title">Title &amp; Hint Panel</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_transport">Transport Panel</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_cpu">CPU &amp; Memory Panel</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_globalsnap">Global Snap Panel</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_monitor">Output Panel</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_online">Online Panel</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_pattern">Pattern Panel</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_shortcuticons">Shortcut Icons</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_time">Time Panel</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_multilinks">Multilink Controllers Icon</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_volume">Main Volume &amp; Pitch Panel</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/toolbar_panels.htm#panel_window">Window Controls</a>
+
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/browser.htm">File Browser</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/browser.htm#Browser_PluginDatabase">Plugin Database</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/browser.htm#Browser_CurrentProject">Project Browser</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/browser.htm#Browser_Library">Library Tab</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/browser.htm#Browser_Sounds">Sounds Tab (FL Cloud)</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_environmentalvariables.htm">Advanced folder stuff</a>
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/channelrack.htm">Channel Rack &amp; Step Sequencer</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/stepsequencer_menu.htm">Channel Button Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/channelrack.htm#channelrack_loopstarter">Loop Starter</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/channelrack.htm#channelrack_globalswing">Swing Controls</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/html/channelrack.htm#channelrack_view">Graph Editor</a>
+
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/chansettings.htm">Channel Settings</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/chansettings_main.htm">Main Control</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/chansettings_sampler.htm">Sampler Setting</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/chansettings_ins.htm">Instrument Setting</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/chansettings_misc.htm">Miscellaneous Setting</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/playlist_automationclip.htm#AutomationClip_ChannelSettings">Automation Clip Setting</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/chansettings_layer.htm">Layer Setting</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm">Plugin Window Setting</a>
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll.htm">Piano Roll</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_arpeggiate.htm">Arpeggiator Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_articulate.htm">Articulator Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_chp.htm">Chopper Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_chordprogression.htm">Chord Progression Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_claw.htm">Claw Machine Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_flam.htm">Flam Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_flip.htm">Flip Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_limit.htm">Key Limiter Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_lfo.htm">LFO Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_midi.htm">MIDI Import Dialog</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_menu.htm">Piano roll Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_scripting_api.htm">Piano Roll Scripting</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_qnt.htm">Quantizer Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_random.htm">Randomizer Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_riff.htm">Riff Machine</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_scale.htm">Scale Level Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll_strum.htm">Strum Tool</a>
+
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/playlist.htm">Playlist</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/playlist_patterns.htm">Patterns</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/playlist_audioclip.htm">Audio Clips</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/playlist_automationclip.htm">Automation Clips</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/playlist_performance.htm">Performance Mode</a>
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/generator_plugins.htm">Instrument / Generator Plugins</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm">Plugin Wrapper</a>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm#wrapper_pluginmenu">Wrapper: Menu</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm#wrapper_pluginsettings">Wrapper: Additional Settings</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm#wrapper_processing">Wrapper: Plugin Processing</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm#wrapper_troubleshooting">Wrapper: Troubleshooting</a>
+		</li></ul>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/3x%20Osc.htm">3x Osc</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/playlist_audioclip.htm">Audio Clips</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Autogun.htm">Autogun</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/playlist_automationclip.htm">Automation Clips</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/BassDrum.htm">BassDrum</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/BeepMap.htm">BeepMap</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/BooBass.htm">BooBass</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/chansettings_sampler.htm">Channel Sampler</a>
+ 		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Control%20Surface.htm">Control Surface</a> 
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Dashboard.htm">Dashboard</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/DirectWave.htm">DirectWave Sampler</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/FLEX.htm">FLEX</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/FL%20Keys.htm">FL Keys</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/FL%20Slayer.htm">FL Slayer</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-mobile-online-manual/" target="_blank">FL Studio Mobile</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/FL%20Studio%20Mobile%20Rack.htm">FL Studio Mobile Rack</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/FPC.htm">FPC</a>                   
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruit%20Kick.htm">Fruit Kick</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Dance.htm">Fruity Dance</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Drumaxx.htm">Drumaxx</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Drumpad.htm">Drumpad</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20DrumSynth%20Live.htm">Fruity DrumSynth Live</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20DX10.htm">Fruity DX10</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Envelope%20Controller.htm">Fruity Envelope Controller</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Granulizer.htm">Fruity Granulizer</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Keyboard%20Controller.htm">Fruity Keyboard Controller</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/chansettings_layer.htm">Fruity Layer</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Slicer.htm">Fruity Slicer</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Slicer%202.htm">Fruity Slicer 2</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Vibrator.htm">Fruity Vibrator</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Video%20Player.htm">Fruity Video Player</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Voltage%20Controller.htm">Fruity Voltage Controller</a>
+	        </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/GMS.htm">Groove Machine Synth</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Harmless.htm">Harmless</a>
+                        <ul>
+                           <li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Harmless_tutorials.htm">Harmless Tutorials</a>
+                           </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Harmless_credits.htm">Harmless Credits</a>
+                        </li></ul>             
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Harmor.htm">Harmor</a>
+	        </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Kepler.htm">Kepler</a>
+	        </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Kepler%20Exo.htm">Kepler Exo</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/MIDI%20Out.htm">MIDI Out</a>	
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/MiniSynth.htm">MiniSynth</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Morphine.htm">Morphine</a>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Morphine_General.htm">Morphine: General Settings &amp; Controls</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Morphine_Effects.htm">Morphine: Morphine Envelopes &amp; Effects</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Morphine_Generator.htm">Morphine: Generator Page</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Morphine_Resynthesis.htm">Morphine: Resynthesis</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Morphine_MorphMix.htm">Morphine: Morph-Mix Page</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Morphine_Modulation.htm">Morphine: Modulation Page</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Morphine_Info.htm">Morphine: Credits</a>
+		</li></ul>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Ogun.htm">Ogun</a>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Ogun_master.htm">Ogun Master</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Ogun_synthesis.htm">Ogun Synthesis</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Ogun_effects.htm">Ogun Effects</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Ogun_PadHarmonics.htm">Ogun Pad Harmonics Editor</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Ogun_tutorial.htm">Ogun Tutorial</a>
+
+		</li></ul>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Patcher.htm">Patcher</a>
+                <ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Color%20Mapper.htm">VFX Color Mapper</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Envelope.htm">VFX Envelope</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Key%20Mapper.htm">VFX Key Mapper</a>    
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Keyboard%20Splitter.htm">VFX Keyboard Splitter</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Level%20Scaler.htm">VFX Level Scaler</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Sequencer.htm">VFX Sequencer</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Script.htm">VFX Script</a>
+                </li></ul>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Plucked!.htm">Plucked!</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/PoiZone.htm">Poizone</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ReWired.htm">ReWire</a>
+  		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Sakura.htm">Sakura</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Sawer.htm">Sawer</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/SimSynth.htm">SimSynth Live</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Slicex.htm">Slicex</a>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Slicex%20Master.htm">Slicex: Master Panel</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Slicex%20Articulator.htm">Slicex: Articulation Panel</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Slicex%20Editor.htm">Slicex: Wave Editor</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Slicex%20Keyboard.htm">Slicex: Keyboard &amp; Piano roll</a>
+		</li></ul>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/SoundFont%20Player.htm">SoundFont Player</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Speech%20Synth.htm">Speech Synthesizer</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Synthmaker.htm">FL SynthMaker</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Sytrus.htm">Sytrus</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Toxic%20Biohazard.htm">Toxic Biohazard</a>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_master.htm">Toxic Bio: Master</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_oscillators.htm">Toxic Bio: Oscillators</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_filter.htm">Toxic Bio: Filter</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_lfo.htm">Toxic Bio: LFO</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_matrix.htm">Toxic Bio: FM Matrix</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_midi.htm">Toxic Bio: MIDI CC</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_seq.htm">Toxic Bio: Sequencer</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_effects.htm">Toxic Bio: Effects</a>
+		</li></ul>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Transistor%20Bass.htm">Transistor Bass</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Wasp.htm">Wasp</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Wasp%20XT.htm">Wasp XT</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Wave%20Traveller.htm">Wave Traveller</a>
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/mixer_index.htm">Mixer &amp; Mixing</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/mixer.htm">Mixer Functions</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/mixer_mixermenu.htm">Mixer Menu</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/mixer_plugin.htm">Plugin Effects</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/mixer_trackprops.htm">Mixer Track Properties</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/mixer_iorouting.htm">Audio Input/Output Routing</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/recording_audio.htm">Audio Recording</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/mixer_levelsandmixing.htm">Levels, Mixing and Clipping</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/mixer_dB.htm">The dB Scale</a>
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/effects_plugins.htm">Effect Plugins</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm">Plugin Wrapper</a>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm#wrapper_pluginmenu">Wrapper: Menu</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm#wrapper_pluginsettings">Wrapper: Additional Settings</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm#wrapper_processing">Wrapper: Plugin Processing</a>
+		</li></ul>
+ 		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Control%20Surface.htm">Control Surface</a>
+ 		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Distructor.htm">Distructor</a>
+ 
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Edison.htm">Edison Wave Editor &amp; Recorder</a>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Edison_14.htm#Edison_14">Edison: Sample Properties</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_amp.htm">Edison: Amp Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_blur.htm">Edison: Blur Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_reverb.htm">Edison: Convolution / Reverb Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_claw.htm">Edison: Claw Machine Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_drum.htm">Edison: Drum Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_equalize.htm">Edison: Equalize Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_clean.htm">Edison: Noise Removal Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_run.htm">Edison: Script Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_stretch.htm">Edison: Time Stretch / Pitch Shift Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_looptuner.htm">Edison: Tune Loop Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_vocaldenoiser.htm">Edison: Vocal Denoiser Tool</a>
+		</li></ul>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Effector.htm">Effector</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Emphasis.htm">Emphasis</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Emphasizer.htm">Emphasizer</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/EQUO.htm">EQUO</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/FL%20Studio%20Mobile%20Rack.htm">FL Studio Mobile Rack</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Frequency%20Shifter.htm">Frequency Shifter</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Frequency%20Splitter.htm">Frequency Splitter</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%207%20Band%20EQ.htm">Fruity 7 Band EQ</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Balance.htm">Fruity Balance</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Bass%20Boost.htm">Fruity Bass Boost</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Big%20Clock.htm">Fruity Big Clock</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Blood%20Overdrive.htm">Fruity Blood Overdrive</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Center.htm">Fruity Center</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Chorus.htm">Fruity Chorus</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Compressor.htm">Fruity Compressor</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Convolver.htm">Fruity Convolver (Reverb)</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20dB%20Meter.htm">Fruity dB Meter</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Delay.htm">Fruity Delay</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Delay%202.htm">Fruity Delay 2</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Delay%203.htm">Fruity Delay 3</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Delay%20Bank.htm">Fruity Delay Bank</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Fast%20Dist.htm">Fruity Fast Dist</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Fast%20LP.htm">Fruity Fast LP</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Filter.htm">Fruity Filter</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Flanger.htm">Fruity Flanger</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Flangus.htm">Fruity Flangus</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Formula%20Controller.htm">Fruity Formula Controller</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Free%20Filter.htm">Fruity Free Filter</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Low%20Lifter.htm">Low Lifter</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20HTML%20NoteBook.htm">Fruity HTML Notebook</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Love%20Philter.htm">Fruity Love Philter</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Limiter.htm">Fruity Limiter</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20LSD.htm">Fruity LSD</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Gross%20Beat.htm">Gross Beat</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Hardcore.htm">Hardcore Guitar Effects</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Hyper%20Chorus.htm">Hyper Chorus</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/LuxeVerb.htm">LuxeVerb</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Maximus.htm">Maximus Multiband Maximizer</a>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Maximus_Controls.htm">Maximus: Controls &amp; Options</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Maximus_Tutorials.htm">Maximus: Tutorials &amp; Tips</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Maximus_Credits.htm">Maximus: Credits</a>
+		</li></ul>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Multiband%20Delay.htm">Multiband Delay</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Mute%202.htm">Fruity Mute 2</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Multiband%20Compressor.htm">Fruity Multiband Compressor</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Newtime.htm">Newtime</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Newtone.htm">Newtone</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20NoteBook.htm">Fruity NoteBook</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20NoteBook%202.htm">Fruity NoteBook 2</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20PanOMatic.htm">Fruity PanOMatic</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Patcher.htm">Patcher</a>
+                <ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Color%20Mapper.htm">VFX Color Mapper</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Envelope.htm">VFX Envelope</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Key%20Mapper.htm">VFX Key Mapper</a>    
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Keyboard%20Splitter.htm">VFX Keyboard Splitter</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Level%20Scaler.htm">VFX Level Scaler</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Sequencer.htm">VFX Sequencer</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/VFX%20Script.htm">VFX Script</a>
+                </li></ul>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Parametric%20EQ.htm">Fruity Parametric EQ</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Parametric%20EQ%202.htm">Fruity Parametric EQ 2</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Peak%20Controller.htm">Fruity Peak Controller</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Phase%20Inverter.htm">Fruity Phase Inverter</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Phaser.htm">Fruity Phaser</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Pitcher.htm">Pitcher</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Pitch%20Shifter.htm">Pitch Shifter</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Razer%20Chroma.htm">Razer Chroma</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Reeverb.htm">Fruity Reeverb</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Reeverb%202.htm">Fruity Reeverb 2</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Scratcher.htm">Fruity Scratcher</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Send.htm">Fruity Send</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Soft%20Clipper.htm">Fruity Soft Clipper</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Spectroman.htm">Fruity Spectroman</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Spreader.htm">Spreader</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Squeeze.htm">Fruity Squeeze</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Stereo%20Enhancer.htm">Fruity Stereo Enhancer</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Stereo%20Shaper.htm">Fruity Stereo Shaper</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Vocoder.htm">Fruity Vocoder</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Wave%20Candy.htm">Wave Candy</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20WaveShaper.htm">Fruity WaveShaper</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20X-Y%20Controller.htm">Fruity X-Y Controller</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20X-Y-Z%20Controller.htm">Fruity X-Y-Z Controller</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Soundgoodizer.htm">Soundgoodizer</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Synthmaker.htm">SynthMaker</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Transient%20Processor.htm">Transient Processor</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Transporter.htm">Transporter</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Tuner.htm">Tuner</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Vintage%20Chorus.htm">Vintage Chorus</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Vintage%20Phaser.htm">Vintage Phaser</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Vocodex.htm">Vocodex</a>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Vocodex_inputs.htm#Vocodex_Setup">Vocodex: Setup Inputs</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Vocodex_parameters.htm">Vocodex: Parameters</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Vocodex_carrier.htm">Vocodex: Carrier Synthesizer</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Vocodex_tutorial.htm">Vocodex: Tutorials</a>
+		</li></ul>
+                        </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ZGameEditor%20Visualizer.htm">ZGameEditor Visualizer</a>
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_externalplugins.htm">Installing &amp; Using VST / AU Plugins</a></b>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/recording.htm">Recording: Audio, Notes &amp; Automation</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/recording_audio.htm">Audio Recording</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/recording_audio_USBmic.htm">Audio Interfaces (USB Microphones)</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/recording_scores.htm">Note Recording</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/recording_step.htm">Note Step Entry</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/recording_automation.htm">Automation Recording</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/automation_linking.htm">Linking USB/MIDI Controllers</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm">MIDI Scripting</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/automation_devices.htm">Preconfigured Controllers (USB/MIDI)</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/automation_internal.htm">Linking Internal Controller Plugins</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/automation_form.htm">Mapping Formula</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/playlist_automationclip.htm">Automation Clips</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/automation_eventeditor.htm">Automation Event Editor</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/automation_eventeditor_lfo.htm">LFO Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/automation_eventeditor_levelscale.htm">Scale Levels Tool</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/automation_midiimport.htm">Import MIDI Data Tool</a>
+	</li></ul>
+
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Edison.htm">Edison Wave Editor &amp; Recorder</a></b>
+	<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Edison_14.htm#Edison_14">Edison: Sample Properties</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_amp.htm">Edison: Amp Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_blur.htm">Edison: Blur Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_reverb.htm">Edison: Convolution / Reverb Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_claw.htm">Edison: Claw Machine Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_drum.htm">Edison: Drum Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_equalize.htm">Edison: Equalize Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_clean.htm">Edison: Noise Removal Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_run.htm">Edison: Script Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_stretch.htm">Edison: Time Stretch / Pitch Shift Tool</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/editortool_looptuner.htm">Edison: Tune Loop Tool</a>
+	</li></ul>
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/rewire.htm">ReWire Support</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/rewire_client.htm">Client Mode</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/rewire_host.htm">Host Mode</a>
+	</li></ul>
+	</li><li><b>FL Studio as a Plugin (VST / AU)</b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/flstudio_vst_plugin.htm">FL Studio as a Plugin (VST or AU)</a>
+	</li></ul>
+	</li><li><b>Load &amp; Save File Formats</b>
+		
+	<ul>
+		<li><b>Open &amp; Import File Formats</b>	
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_open.htm">Open/Import File Formats</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_project.htm">FL Studio Project File (.flp)</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_project.htm">FL Studio Project Zipped (.zip)</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_open_zgr.htm">BeatCreator/BeatSlicer Grid File</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/automation_midiimport.htm">MIDI File</a>
+		</li></ul>
+		</li><li><b>Save &amp; Export File Formats</b>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_save_export.htm">Audio &amp; MIDI</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_project.htm">FL Studio Project File (.flp)</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_project.htm">FL Studio Project Zipped (.zip)</a>
+		</li></ul>
+		</li><li><b>Sample File Formats</b>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_sample_ds.htm">DrumSynth Preset</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_sample_wav.htm">MS Waveform File</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_sample_rex.htm">ReCycle Loops</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_sample_ss.htm">SimSynth Preset</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_sample_speech.htm">Speech Preset</a>
+		</li></ul>
+		</li><li><b>Other File Formats</b>
+		<ul>
+			<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_other.htm">Other File Formats</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_other_fst.htm">FL Studio State File</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/fformats_other_fsc.htm">FL Studio Score File</a>
+			</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/automation_midiimport.htm">MIDI File</a>
+		</li></ul>
+	</li></ul>
+
+	</li><li><b><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_splash.htm">Trouble Shooting &amp; FAQ's</a></b>
+	<ul>
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_opt.htm">Optimizing CPU Performance</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_plugin.htm">Plugins Behaving Badly</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_update.htm">Updating &amp; Upgrading Procedure</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_files.htm">Missing Plugins or Files</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_free.htm">Lifetime Free Updates</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_feature.htm">FL Studio Editions &amp; Features</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_flstudioinstallationfiles.htm">Perform Clean Installation</a>
+                </li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/help_offline.htm">Offline help installation</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_copyright.htm">Copyright Cleared Content</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_lostcodes.htm">Lost Registration Codes/Login</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_pitchtempo.htm">Pitch or Tempo Problems</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_reset.htm">Reset Settings</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_trouble.htm">Troubleshooting FAQ</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_audio.htm">Audio Myths &amp; DAW Wars</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/app_monitors.htm">Monitor Speakers</a>
+	</li></ul>
+	</li><li><b>Glossary</b>
+	<ul>
+		<!--<li><a href="html/glossary_acm.htm">ACM Waveform</a>-->
+		<li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/glossary_cutres.htm">Cutoff and Resonance Filter</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/glossary_envelope.htm">Envelope</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/glossary_gate.htm">Gate</a>
+		</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/glossary_lfo.htm">LFO</a>
+	</li></ul>
+	</li><li><a href="https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/info.htm">Acknowledgements</a>
+</li></ul>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a55738f7a92de6d',t:'MTc2NDI4NjYyNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></li></ul><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;" src="./saved_resource.html"></iframe></body></html>

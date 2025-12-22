@@ -452,8 +452,171 @@ def clear_piano_roll() -> str:
         return f"Error creating clear request: {str(e)}"
 
 
+def _strip_response(response_str):
+    """Strip 'Result: ' prefix from response if present"""
+    if isinstance(response_str, str) and response_str.startswith("Result: "):
+        return response_str[8:]  # Remove "Result: " prefix
+    return response_str
+
+
+def _fetch_channels():
+    """
+    Helper function to fetch all channels from FL Studio.
+
+    Returns:
+        List of dicts with 'index' and 'name' for each channel
+
+    Raises:
+        Exception if unable to fetch channels
+    """
+    from midi_controller.fl_dual_port import send_command
+
+    # Get channel count
+    count_str = send_command("channels.channelCount()", expect_response=True)
+    count_str = _strip_response(count_str)
+    channel_count = int(count_str)
+
+    # Get each channel name
+    channels = []
+    for i in range(channel_count):
+        channel_name = send_command(f"channels.getChannelName({i})", expect_response=True)
+        channel_name = _strip_response(channel_name)
+        channels.append({
+            "index": i,
+            "name": channel_name
+        })
+
+    return channels
+
+
 @mcp.tool
-def call_fl_midi_controller_api(method: str, args: list = None) -> str:
+def get_channels() -> str:
+    """
+    Get all channels in the current FL Studio project.
+
+    Returns a JSON array with channel information including:
+    - index: Channel index (0-based)
+    - name: Channel name
+
+    Returns:
+        JSON string containing array of channels
+
+    Example:
+        get_channels()  # Returns: [{"index": 0, "name": "808 Kick"}, {"index": 1, "name": "808 Clap"}, ...]
+    """
+    try:
+        channels = _fetch_channels()
+        return json.dumps(channels, indent=2)
+
+    except TimeoutError:
+        return json.dumps({
+            "error": "No response from FL Studio. Ensure FL Studio is running and MIDI controllers are set up correctly."
+        })
+    except ValueError as e:
+        return json.dumps({
+            "error": f"Error parsing response from FL Studio: {str(e)}"
+        })
+    except Exception as e:
+        return json.dumps({
+            "error": f"Error getting channels: {str(e)}"
+        })
+
+
+@mcp.tool
+def set_channel_sequence(channel_id: int, sequence: list[int]) -> str:
+    """
+    Set the step sequencer grid bits for a channel.
+
+    Args:
+        channel_id: The channel index (0-based)
+        sequence: List of values (0 or 1) representing the grid bits for each step (any length)
+                 FL Studio will use as many bits as it supports (up to 64) and ignore the rest
+
+    Returns:
+        Status message indicating success
+
+    Example:
+        set_channel_sequence(0, [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0])  # 16 steps
+        set_channel_sequence(1, [1, 0] * 16)  # 32 steps with alternating pattern
+        set_channel_sequence(2, [1, 0] * 24)  # 48 steps - FL Studio uses up to 64
+    """
+    try:
+        from midi_controller.fl_dual_port import send_command
+
+        # Validate sequence length (must have at least one step)
+        if len(sequence) == 0:
+            return "Error: sequence must have at least one step"
+
+        # Validate sequence values
+        if not all(v in (0, 1) for v in sequence):
+            return "Error: sequence values must be 0 or 1"
+
+        # Use the helper function to set all bits in one MIDI command
+        result = send_command(f"setChannelSequence({channel_id}, {sequence})", expect_response=True)
+
+        # Count how many steps are active
+        active_steps = sum(sequence)
+        return f"Set sequence for channel {channel_id}: {active_steps} steps active out of {len(sequence)}"
+
+    except Exception as e:
+        return f"Error setting channel sequence: {str(e)}"
+
+
+@mcp.tool
+def show_piano_roll(channel_id: int) -> str:
+    """
+    Show the piano roll for a specific channel.
+
+    Intelligently handles window creation:
+    - If piano roll is already visible, reuses the existing window (newWindow=0)
+    - If piano roll is hidden, creates a new window (newWindow=1)
+
+    Args:
+        channel_id: The channel index (0-based)
+
+    Returns:
+        Status message indicating success or failure
+
+    Example:
+        show_piano_roll(0)  # Show piano roll for channel 0 (Kick)
+        show_piano_roll(4)  # Show piano roll for channel 4 (FLEX Bass)
+    """
+    try:
+        from midi_controller.fl_dual_port import send_command
+
+        # Step 1: Select the channel
+        send_command(f"channels.selectOneChannel({channel_id})", expect_response=False)
+
+        # Step 2: Get the event ID for this channel
+        event_id_str = send_command(f"channels.getRecEventId({channel_id})", expect_response=True)
+        if event_id_str is None or event_id_str == "None":
+            return f"Error: Could not get event ID for channel {channel_id}. FL Studio may not be ready."
+        event_id = int(event_id_str)
+
+        # Step 3: Check if piano roll is already visible
+        visible_str = send_command("ui.getVisible(3)", expect_response=True)
+        is_visible = visible_str is not None and visible_str != "None" and int(visible_str) == 1
+
+        # Step 4: Open the piano roll with appropriate newWindow flag
+        new_window_flag = 0 if is_visible else 1
+        send_command(f"ui.openEventEditor({event_id}, 1, {new_window_flag})", expect_response=False)
+
+        # Step 5: Get channel name for confirmation
+        channel_name = send_command(f"channels.getChannelName({channel_id})", expect_response=True)
+        window_type = "existing window" if is_visible else "new window"
+
+        return f"Piano roll opened for channel {channel_id} ({channel_name}) in {window_type}"
+
+    except TimeoutError:
+        return f"Error: No response from FL Studio. Ensure FL Studio is running and MIDI controllers are set up correctly."
+    except ValueError as e:
+        return f"Error parsing response from FL Studio: {str(e)}"
+    except Exception as e:
+        return f"Error showing piano roll: {str(e)}"
+
+
+@mcp.tool
+def call_fl_midi_controller_api(method: str, args: list = None, kwargs: dict = None, expect_response: bool = True) -> str:
     """
     Call any FL Studio MIDI controller method directly via SysEx.
 
@@ -463,6 +626,9 @@ def call_fl_midi_controller_api(method: str, args: list = None) -> str:
     Args:
         method: Full method path like "patterns.jumpToPattern" or "mixer.getTrackVolume"
         args: List of positional arguments for the method (int, float, str, bool)
+        kwargs: Dict of keyword arguments for the method (optional)
+        expect_response: Whether to wait for a response from FL Studio (default True).
+                        Set to False for fire-and-forget commands (like setGridBit) for faster bulk operations.
 
     Returns:
         Result from FL Studio (as string) or error message
@@ -472,25 +638,44 @@ def call_fl_midi_controller_api(method: str, args: list = None) -> str:
         call_fl_midi_controller_api("patterns.getPatternName", [1])
         call_fl_midi_controller_api("mixer.getTrackVolume", [0])
         call_fl_midi_controller_api("channels.getChannelName", [2])
+        call_fl_midi_controller_api("channels.setGridBit", [0, 0, 1], expect_response=False)  # Fast bulk operation
+        call_fl_midi_controller_api("ui.openEventEditor", [262464, 0], {"newWindow": 1})  # With keyword args
     """
     try:
         from midi_controller.fl_dual_port import send_command
 
         # Build the command string
+        formatted_parts = []
+
         if args:
-            # Convert args to proper format (handle different types)
-            formatted_args = []
+            # Convert positional args to proper format (handle different types)
             for arg in args:
                 if isinstance(arg, str):
-                    formatted_args.append(f'"{arg}"')
+                    formatted_parts.append(f'"{arg}"')
                 else:
-                    formatted_args.append(str(arg))
-            command = f"{method}({', '.join(formatted_args)})"
+                    formatted_parts.append(str(arg))
+
+        if kwargs:
+            # Format keyword arguments
+            for key, value in kwargs.items():
+                if isinstance(value, str):
+                    formatted_parts.append(f'{key}="{value}"')
+                elif isinstance(value, bool):
+                    formatted_parts.append(f'{key}={str(value)}')
+                else:
+                    formatted_parts.append(f'{key}={str(value)}')
+
+        if formatted_parts:
+            command = f"{method}({', '.join(formatted_parts)})"
         else:
             command = f"{method}()"
 
-        result = send_command(command, expect_response=True)
-        return f"Result: {result}"
+        result = send_command(command, expect_response=expect_response)
+
+        if expect_response:
+            return f"Result: {result}"
+        else:
+            return f"Command sent: {method}"
 
     except TimeoutError:
         return "Error: No response from FL Studio. Ensure FL Studio is running and MIDI controllers are set up correctly."
