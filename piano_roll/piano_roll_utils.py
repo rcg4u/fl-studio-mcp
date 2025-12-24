@@ -111,6 +111,8 @@ def trigger_with_f3_plus_9():
             keyboard.press('9')
             keyboard.release('9')
 
+        keyboard.release(Key.f3)
+
         # Wait for script to execute and write state file
         time.sleep(0.5)
 

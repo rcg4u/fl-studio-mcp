@@ -13,6 +13,10 @@ import sys
 import time
 from pathlib import Path
 
+# Import the F3+9 trigger from piano_roll_utils
+sys.path.insert(0, str(Path(__file__).parent.parent / "piano_roll"))
+from piano_roll_utils import trigger_with_f3_plus_9
+
 
 # Initialize FastMCP server
 mcp = FastMCP("FL Studio MCP Server")
@@ -161,53 +165,14 @@ class FLStudioTrigger:
         return False
 
     def _send_keystroke(self):
-        """Send the trigger keystroke"""
-        try:
-            from pynput.keyboard import Key, Controller
-            keyboard = Controller()
+        """Send the trigger keystroke (F3+9 for Last Script menu)"""
+        # Use the existing F3+9 trigger from piano_roll_utils
+        trigger_with_f3_plus_9()
 
-            if self.system == "Darwin":
-                # macOS: Cmd+Opt+Y
-                with keyboard.pressed(Key.cmd):
-                    with keyboard.pressed(Key.alt):
-                        keyboard.press('y')
-                        keyboard.release('y')
-            else:
-                # Windows: Ctrl+Alt+Y
-                with keyboard.pressed(Key.ctrl):
-                    with keyboard.pressed(Key.alt):
-                        keyboard.press('y')
-                        keyboard.release('y')
+        # Add delay to allow FL Studio to process the script
+        time.sleep(2.0)
 
-            # Add delay to allow FL Studio to receive focus and process the keystroke
-            time.sleep(2.0)
-
-            return True
-        except ImportError:
-            # Fallback using platform-specific methods
-            if self.system == "Darwin":
-                subprocess.run(['osascript', '-e',
-                    'tell application "System Events" to keystroke "y" using {command down, option down}'],
-                    timeout=3)
-
-                # Add delay to allow FL Studio to receive focus and process the keystroke
-                time.sleep(2.0)
-
-                return True
-            elif self.system == "Windows":
-                try:
-                    import pyautogui
-                    pyautogui.hotkey('ctrl', 'alt', 'y')
-
-                    # Add delay to allow FL Studio to receive focus and process the keystroke
-                    time.sleep(2.0)
-
-                    return True
-                except ImportError:
-                    pass
-        except:
-            pass
-        return False
+        return True
 
 
 # Global trigger instance
@@ -520,96 +485,6 @@ def get_channels() -> str:
         return json.dumps({
             "error": f"Error getting channels: {str(e)}"
         })
-
-
-@mcp.tool
-def set_channel_sequence(channel_id: int, sequence: list[int]) -> str:
-    """
-    Set the step sequencer grid bits for a channel.
-
-    Args:
-        channel_id: The channel index (0-based)
-        sequence: List of values (0 or 1) representing the grid bits for each step (any length)
-                 FL Studio will use as many bits as it supports (up to 64) and ignore the rest
-
-    Returns:
-        Status message indicating success
-
-    Example:
-        set_channel_sequence(0, [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0])  # 16 steps
-        set_channel_sequence(1, [1, 0] * 16)  # 32 steps with alternating pattern
-        set_channel_sequence(2, [1, 0] * 24)  # 48 steps - FL Studio uses up to 64
-    """
-    try:
-        from midi_controller.fl_dual_port import send_command
-
-        # Validate sequence length (must have at least one step)
-        if len(sequence) == 0:
-            return "Error: sequence must have at least one step"
-
-        # Validate sequence values
-        if not all(v in (0, 1) for v in sequence):
-            return "Error: sequence values must be 0 or 1"
-
-        # Use the helper function to set all bits in one MIDI command
-        result = send_command(f"setChannelSequence({channel_id}, {sequence})", expect_response=True)
-
-        # Count how many steps are active
-        active_steps = sum(sequence)
-        return f"Set sequence for channel {channel_id}: {active_steps} steps active out of {len(sequence)}"
-
-    except Exception as e:
-        return f"Error setting channel sequence: {str(e)}"
-
-
-@mcp.tool
-def set_multiple_channel_sequences(channel_sequences: list[dict]) -> str:
-    """
-    Set sequences for multiple channels at once in a single batched call.
-    This is more efficient than calling set_channel_sequence multiple times.
-
-    Args:
-        channel_sequences: List of channel/sequence pairs, each dict containing:
-            - channel_id: The channel index (0-based)
-            - sequence: List of values (0 or 1) representing grid bits for each step
-
-    Returns:
-        Status message with summary of all channels updated
-
-    Example:
-        set_multiple_channel_sequences([
-            {"channel_id": 0, "sequence": [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]},
-            {"channel_id": 1, "sequence": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]},
-            {"channel_id": 2, "sequence": [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]},
-            {"channel_id": 3, "sequence": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]},
-            {"channel_id": 4, "sequence": [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0]}
-        ])
-    """
-    try:
-        from midi_controller.fl_dual_port import send_command
-
-        # Validate input
-        if not channel_sequences:
-            return "Error: channel_sequences list cannot be empty"
-
-        # Validate each item
-        for i, item in enumerate(channel_sequences):
-            if "channel_id" not in item:
-                return f"Error: item {i} missing required 'channel_id' field"
-            if "sequence" not in item:
-                return f"Error: item {i} missing required 'sequence' field"
-            if len(item["sequence"]) == 0:
-                return f"Error: item {i} sequence must have at least one step"
-            if not all(v in (0, 1) for v in item["sequence"]):
-                return f"Error: item {i} sequence values must be 0 or 1"
-
-        # Send the batched command
-        result = send_command(f"setMultipleChannelSequences({channel_sequences})", expect_response=True)
-
-        return result
-
-    except Exception as e:
-        return f"Error setting multiple channel sequences: {str(e)}"
 
 
 @mcp.tool
