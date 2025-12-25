@@ -61,15 +61,15 @@ cd fl-studio-mcp
 1. Open FL Studio
 2. Open or create a piano roll
 
-**Step 2: Initialize the Script**
+**Step 2: Start LLM Interaction Session**
 
-Run this script **once** to update and get ready to work with LLM:
+Run this script **once** to start working with the LLM:
 
 ```
-Tools → Scripting → ComposeWithLLM
+Tools → Scripting → _BeginLLMInteraction
 ```
 
-This sets up the piano roll state and clears the request queue (no dialog appears).
+This starts the session, initializes the request queue, and exports the piano roll state (no dialog appears).
 
 **Step 3: Talk to Claude or your LLM**
 
@@ -82,18 +82,29 @@ Now just talk to your AI assistant:
 
 Notes will appear automatically in FL Studio!
 
+**Step 4: End the Session (When Done)**
+
+When you're finished, run this script to close the session:
+
+```
+Tools → Scripting → _EndLLMInteraction
+```
+
+This ends the session and prevents further note sending until you start a new session.
+
 ### Important Tips
 
 #### Refreshing State After Manual Edits
 
-If you manually add/edit notes in FL Studio **between** talking to Claude 
-you must send Claude the new edits via the ComposeWithLLM script. If you 
-just ran this you can do it by keystroke to run the last script:
+If you manually add/edit notes in FL Studio **between** talking to Claude,
+you must refresh the state so Claude can see your changes:
 
 1. Press `Cmd+Opt+Y` (macOS) or `Ctrl+Alt+Y` (Windows) to refresh the state
 2. Then talk to Claude
 
 This ensures Claude sees your manual changes!
+
+**Note:** The session must be active (_BeginLLMInteraction must have been run) for this to work.
 
 
 **Example:**
@@ -156,13 +167,15 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
                               └─────────────┘
 ```
 
-1. AI assistant sends musical requests via MCP tools
-2. MCP server writes requests to JSON queue
-3. MCP server sends trigger with 2-second delay
-4. FL Studio re-runs ComposeWithLLM script
-5. Script processes queue and applies changes
-6. Notes appear in piano roll after delay
-7. State is exported for Claude to see
+1. User runs _BeginLLMInteraction to start session
+2. AI assistant sends musical requests via MCP tools
+3. MCP server writes requests to JSON queue
+4. MCP server sends trigger with 2-second delay
+5. FL Studio re-runs _BeginLLMInteraction script
+6. Script processes queue and applies changes
+7. Notes appear in piano roll after delay
+8. State is exported for Claude to see
+9. User runs _EndLLMInteraction when done
 
 ## Troubleshooting
 
@@ -181,10 +194,11 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
 **Problem:** Sent requests but nothing happens
 
 **Solutions:**
-- Verify you ran `ComposeWithLLM` once in FL Studio
+- Verify you ran `_BeginLLMInteraction` in FL Studio to start the session
 - Make sure FL Studio window is active
 - Try pressing Cmd+Opt+Y (macOS) or Ctrl+Alt+Y (Windows) manually to trigger
 - Check that Claude has **Accessibility permissions** (System Settings → Privacy & Security → Accessibility)
+- Check if the session is active (flag file should contain "active")
 
 ### Trigger Not Working
 
@@ -192,9 +206,18 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
 
 **Solutions:**
 - Restart Claude Code to reconnect MCP server
-- Run `ComposeWithLLM` in FL Studio again
+- Run `_BeginLLMInteraction` in FL Studio again to restart the session
 - Make sure dependencies are installed: `uv sync`
 - Check that Terminal/Claude has **Accessibility permissions** (System Settings → Privacy & Security → Accessibility)
+
+### LLM Interaction Mode Inactive
+
+**Problem:** Error message "LLM interaction mode is inactive"
+
+**Solutions:**
+- Run `_BeginLLMInteraction` in FL Studio to start a new session
+- The session was either never started or was ended with `_EndLLMInteraction`
+- Check that the flag file exists and contains "active"
 
 ### MCP Server Not Connecting
 
@@ -229,17 +252,22 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
 **FL Studio scripts directory:**
 ```
 ~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts/
-├── ComposeWithLLM.pyscript  (bridge script - auto mode)
-├── mcp_request.json          (request queue)
-├── mcp_response.json         (execution results)
-└── piano_roll_state.json     (exported piano roll state)
+├── _BeginLLMInteraction.pyscript  (start LLM interaction session)
+├── _EndLLMInteraction.pyscript    (end LLM interaction session)
+├── llm_interaction_active.flag    (session state flag)
+├── mcp_request.json               (request queue)
+├── mcp_response.json              (execution results)
+└── piano_roll_state.json          (exported piano roll state)
 ```
 
 **Source repository:**
 ```
 /path/to/fl-studio-mcp/
-├── ComposeWithLLM.pyscript           (source bridge script)
-├── fl_studio_mcp_server.py            (MCP server with built-in trigger)
+├── piano_roll/
+│   ├── _BeginLLMInteraction.pyscript  (source: start LLM interaction)
+│   └── _EndLLMInteraction.pyscript    (source: end LLM interaction)
+├── mcp/
+│   └── fl_studio_mcp_server.py        (MCP server with built-in trigger)
 ├── install_prerequisites.sh           (install uv & Python environment and piano roll script)
 ├── install_mcp_for_claude.sh          (MCP for Claude Code)
 ├── install_mcp_for_gemini.sh          (MCP for Gemini CLI)
