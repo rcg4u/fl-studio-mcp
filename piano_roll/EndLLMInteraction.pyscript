@@ -1,0 +1,37 @@
+import flpianoroll as flp
+import os
+
+
+def get_script_dir():
+    """Get the directory where this script is located"""
+    return os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts")
+
+
+FLAG_FILE = os.path.join(get_script_dir(), "llm_interaction_active.flag")
+REQUEST_FILE = os.path.join(get_script_dir(), "mcp_request.json")
+
+
+def apply(form=None):
+    """
+    Stop LLM Interaction Mode
+
+    Overwrites the flag file with "inactive" and clears the request queue.
+    The MCP server will check if the content is "active".
+    """
+
+    # Overwrite flag file with "inactive" instead of deleting
+    # (os.remove() may not be available in FL Studio's Python environment)
+    try:
+        with open(FLAG_FILE, 'w') as f:
+            f.write("inactive")
+    except Exception as e:
+        # Silently handle errors
+        pass
+
+    # Clear the request queue since we're stopping interaction
+    try:
+        with open(REQUEST_FILE, 'w') as f:
+            f.write("[]")
+    except Exception as e:
+        # Silently handle errors
+        pass

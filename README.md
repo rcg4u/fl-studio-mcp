@@ -66,7 +66,7 @@ cd fl-studio-mcp
 Run this script **once** to start working with the LLM:
 
 ```
-Tools → Scripting → _BeginLLMInteraction
+Tools → Scripting → BeginLLMInteraction
 ```
 
 This starts the session, initializes the request queue, and exports the piano roll state (no dialog appears).
@@ -87,7 +87,7 @@ Notes will appear automatically in FL Studio!
 When you're finished, run this script to close the session:
 
 ```
-Tools → Scripting → _EndLLMInteraction
+Tools → Scripting → EndLLMInteraction
 ```
 
 This ends the session and prevents further note sending until you start a new session.
@@ -104,7 +104,7 @@ you must refresh the state so Claude can see your changes:
 
 This ensures Claude sees your manual changes!
 
-**Note:** The session must be active (_BeginLLMInteraction must have been run) for this to work.
+**Note:** The session must be active (BeginLLMInteraction must have been run) for this to work.
 
 
 **Example:**
@@ -167,15 +167,15 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
                               └─────────────┘
 ```
 
-1. User runs _BeginLLMInteraction to start session
+1. User runs BeginLLMInteraction to start session
 2. AI assistant sends musical requests via MCP tools
 3. MCP server writes requests to JSON queue
 4. MCP server sends trigger with 2-second delay
-5. FL Studio re-runs _BeginLLMInteraction script
+5. FL Studio re-runs BeginLLMInteraction script
 6. Script processes queue and applies changes
 7. Notes appear in piano roll after delay
 8. State is exported for Claude to see
-9. User runs _EndLLMInteraction when done
+9. User runs EndLLMInteraction when done
 
 ## Troubleshooting
 
@@ -194,7 +194,7 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
 **Problem:** Sent requests but nothing happens
 
 **Solutions:**
-- Verify you ran `_BeginLLMInteraction` in FL Studio to start the session
+- Verify you ran `BeginLLMInteraction` in FL Studio to start the session
 - Make sure FL Studio window is active
 - Try pressing Cmd+Opt+Y (macOS) or Ctrl+Alt+Y (Windows) manually to trigger
 - Check that Claude has **Accessibility permissions** (System Settings → Privacy & Security → Accessibility)
@@ -206,7 +206,7 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
 
 **Solutions:**
 - Restart Claude Code to reconnect MCP server
-- Run `_BeginLLMInteraction` in FL Studio again to restart the session
+- Run `BeginLLMInteraction` in FL Studio again to restart the session
 - Make sure dependencies are installed: `uv sync`
 - Check that Terminal/Claude has **Accessibility permissions** (System Settings → Privacy & Security → Accessibility)
 
@@ -215,8 +215,8 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
 **Problem:** Error message "LLM interaction mode is inactive"
 
 **Solutions:**
-- Run `_BeginLLMInteraction` in FL Studio to start a new session
-- The session was either never started or was ended with `_EndLLMInteraction`
+- Run `BeginLLMInteraction` in FL Studio to start a new session
+- The session was either never started or was ended with `EndLLMInteraction`
 - Check that the flag file exists and contains "active"
 
 ### MCP Server Not Connecting
@@ -252,28 +252,28 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
 **FL Studio scripts directory:**
 ```
 ~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts/
-├── _BeginLLMInteraction.pyscript  (start LLM interaction session)
-├── _EndLLMInteraction.pyscript    (end LLM interaction session)
-├── llm_interaction_active.flag    (session state flag)
-├── mcp_request.json               (request queue)
-├── mcp_response.json              (execution results)
-└── piano_roll_state.json          (exported piano roll state)
+├── BeginLLMInteraction.pyscript  (start LLM interaction session)
+├── EndLLMInteraction.pyscript    (end LLM interaction session)
+├── llm_interaction_active.flag   (session state flag)
+├── mcp_request.json              (request queue)
+├── mcp_response.json             (execution results)
+└── piano_roll_state.json         (exported piano roll state)
 ```
 
 **Source repository:**
 ```
 /path/to/fl-studio-mcp/
 ├── piano_roll/
-│   ├── _BeginLLMInteraction.pyscript  (source: start LLM interaction)
-│   └── _EndLLMInteraction.pyscript    (source: end LLM interaction)
+│   ├── BeginLLMInteraction.pyscript  (source: start LLM interaction)
+│   └── EndLLMInteraction.pyscript    (source: end LLM interaction)
 ├── mcp/
-│   └── fl_studio_mcp_server.py        (MCP server with built-in trigger)
-├── install_prerequisites.sh           (install uv & Python environment and piano roll script)
-├── install_mcp_for_claude.sh          (MCP for Claude Code)
-├── install_mcp_for_gemini.sh          (MCP for Gemini CLI)
-├── install_mcp_for_codex.sh           (MCP for Codex)
-├── CLAUDE.md                          (AI assistant documentation)
-└── README.md                          (this file)
+│   └── fl_studio_mcp_server.py       (MCP server with built-in trigger)
+├── install_prerequisites.sh          (install uv & Python environment and piano roll script)
+├── install_mcp_for_claude.sh         (MCP for Claude Code)
+├── install_mcp_for_gemini.sh         (MCP for Gemini CLI)
+├── install_mcp_for_codex.sh          (MCP for Codex)
+├── CLAUDE.md                         (AI assistant documentation)
+└── README.md                         (this file)
 ```
 
 ## Development

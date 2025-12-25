@@ -20,10 +20,10 @@ This registers the MCP server with Claude Code. The server is named `fl-studio-m
 
 **For each session:**
 1. **Open FL Studio** and open a piano roll
-2. **Run _BeginLLMInteraction** once (Tools → Scripting → _BeginLLMInteraction) to start the session
+2. **Run BeginLLMInteraction** once (Tools → Scripting → BeginLLMInteraction) to start the session
 3. **Start Claude** - the trigger mechanism is built into the MCP server
 4. **Send notes and work with Claude** - notes appear automatically!
-5. **Run _EndLLMInteraction** (Tools → Scripting → _EndLLMInteraction) when done to close the session
+5. **Run EndLLMInteraction** (Tools → Scripting → EndLLMInteraction) when done to close the session
 
 **Note:** Claude Code needs Accessibility permissions (System Settings → Privacy & Security → Accessibility) to send keystrokes to FL Studio.
 
@@ -69,10 +69,10 @@ This tells you:
 - MCP server writes requests to `mcp_request.json`
 - MCP server automatically sends Cmd+Opt+Y (macOS) or Ctrl+Alt+Y (Windows)
 - 2-second delay ensures proper focus handling
-- FL Studio re-runs the last script (_BeginLLMInteraction)
+- FL Studio re-runs the last script (BeginLLMInteraction)
 - Notes appear automatically after the delay
 - Cross-platform trigger support with focus management
-- Session must be started with _BeginLLMInteraction and ended with _EndLLMInteraction
+- Session must be started with BeginLLMInteraction and ended with EndLLMInteraction
 
 **Time is Always in Quarter Notes:**
 - `time=0` = beat 1
@@ -191,10 +191,10 @@ state = mcp__fl_studio_mcp__get_piano_roll_state()
 ### 7. Troubleshooting for LLMs
 
 **User says "Nothing happened"**
-- Ask: "Did you run _BeginLLMInteraction in FL Studio first?"
+- Ask: "Did you run BeginLLMInteraction in FL Studio first?"
 - Ask: "Does Claude have Accessibility permissions?" (System Settings → Privacy & Security → Accessibility)
 - Ask: "Is FL Studio running and is a piano roll open?"
-- Suggest: "Try pressing Cmd+Opt+Y manually or use Tools → Scripting → _BeginLLMInteraction"
+- Suggest: "Try pressing Cmd+Opt+Y manually or use Tools → Scripting → BeginLLMInteraction"
 
 **User says "It replaced everything"**
 - Check if you used `mode="replace"` accidentally
@@ -224,7 +224,7 @@ When helping with music:
 
 ```
 User: "Initialize FL Studio"
-[User runs _BeginLLMInteraction script in FL Studio]
+[User runs BeginLLMInteraction script in FL Studio]
 
 User: "Add a sad chord progression"
 
@@ -252,7 +252,7 @@ You: "Added bass notes!"
 
 User: "Perfect! I'm done"
 
-[User runs _EndLLMInteraction script to close the session]
+[User runs EndLLMInteraction script to close the session]
 ```
 
 ## Architecture
@@ -261,8 +261,8 @@ The system consists of three main components:
 
 1. **MCP Server** (`fl_studio_mcp_server.py`) - Provides tools for Claude to send musical requests and automatically triggers FL Studio
 2. **FL Studio Bridge Scripts**:
-   - `_BeginLLMInteraction.pyscript` - Starts LLM interaction session and processes requests
-   - `_EndLLMInteraction.pyscript` - Ends LLM interaction session
+   - `BeginLLMInteraction.pyscript` - Starts LLM interaction session and processes requests
+   - `EndLLMInteraction.pyscript` - Ends LLM interaction session
 3. **JSON Communication Files** - Request queue and state files for communication
 
 ### Communication Flow
@@ -281,7 +281,7 @@ Claude → MCP Server → Request Queue (JSON) → MCP Server Sends Trigger
 
 ## Workflow
 
-1. **Run _BeginLLMInteraction** (Tools → Scripting → _BeginLLMInteraction) → Start session
+1. **Run BeginLLMInteraction** (Tools → Scripting → BeginLLMInteraction) → Start session
    - Sets flag file to "active"
    - Initializes empty request queue (sets to `[]`)
    - Exports current piano roll state to `piano_roll_state.json`
@@ -291,14 +291,14 @@ Claude → MCP Server → Request Queue (JSON) → MCP Server Sends Trigger
 
 3. **MCP Server triggers FL Studio** → Automatically sends Cmd+Opt+Y with built-in delay
 
-4. **FL Studio re-runs script** → _BeginLLMInteraction processes queue and updates state
+4. **FL Studio re-runs script** → BeginLLMInteraction processes queue and updates state
 
 5. **Notes appear** → Visible in piano roll after delay
 
-6. **Run _EndLLMInteraction** (Tools → Scripting → _EndLLMInteraction) → End session
+6. **Run EndLLMInteraction** (Tools → Scripting → EndLLMInteraction) → End session
    - Sets flag file to "inactive"
    - Clears request queue
-   - Prevents further note sending until _BeginLLMInteraction is run again
+   - Prevents further note sending until BeginLLMInteraction is run again
 
 ## Available MCP Tools
 
@@ -425,26 +425,26 @@ Requests accumulate as a list of actions in `mcp_request.json`:
 **FL Studio scripts directory:**
 ```
 ~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts/
-├── _BeginLLMInteraction.pyscript  (start LLM interaction session)
-├── _EndLLMInteraction.pyscript    (end LLM interaction session)
-├── llm_interaction_active.flag    (session state flag)
-├── mcp_request.json               (request queue)
-├── mcp_response.json              (execution results)
-└── piano_roll_state.json          (exported piano roll state)
+├── BeginLLMInteraction.pyscript  (start LLM interaction session)
+├── EndLLMInteraction.pyscript    (end LLM interaction session)
+├── llm_interaction_active.flag   (session state flag)
+├── mcp_request.json              (request queue)
+├── mcp_response.json             (execution results)
+└── piano_roll_state.json         (exported piano roll state)
 ```
 
 **Source repository:**
 ```
 /Users/calvinw/develop/fl-studio-mcp/
 ├── piano_roll/
-│   ├── _BeginLLMInteraction.pyscript  (source: start LLM interaction)
-│   └── _EndLLMInteraction.pyscript    (source: end LLM interaction)
+│   ├── BeginLLMInteraction.pyscript  (source: start LLM interaction)
+│   └── EndLLMInteraction.pyscript    (source: end LLM interaction)
 ├── mcp/
-│   └── fl_studio_mcp_server.py        (MCP server with built-in trigger)
-├── install_prerequisites.sh           (install uv and Python)
-├── install_mcp_for_claude.sh          (register MCP server)
-├── CLAUDE.md                          (this file)
-└── README.md                          (user documentation)
+│   └── fl_studio_mcp_server.py       (MCP server with built-in trigger)
+├── install_prerequisites.sh          (install uv and Python)
+├── install_mcp_for_claude.sh         (register MCP server)
+├── CLAUDE.md                         (this file)
+└── README.md                         (user documentation)
 ```
 
 ## Typical Workflows
@@ -452,7 +452,7 @@ Requests accumulate as a list of actions in `mcp_request.json`:
 ### Building a Chord Progression
 
 ```python
-# Initialize: Run _BeginLLMInteraction in FL Studio
+# Initialize: Run BeginLLMInteraction in FL Studio
 # MCP server handles triggering automatically
 
 # Send chord progression
@@ -470,7 +470,7 @@ send_notes([
 
 # Notes appear automatically!
 
-# When done: Run _EndLLMInteraction in FL Studio
+# When done: Run EndLLMInteraction in FL Studio
 ```
 
 ### Modifying Existing Notes
@@ -512,7 +512,7 @@ send_notes([
 ## Troubleshooting
 
 **Changes not appearing?**
-- Verify _BeginLLMInteraction was run in FL Studio to start the session
+- Verify BeginLLMInteraction was run in FL Studio to start the session
 - Check that the session is active (flag file should contain "active")
 - Check FL Studio window is active
 - Ensure Claude Code has Accessibility permissions (System Settings → Privacy & Security → Accessibility)
@@ -522,18 +522,18 @@ send_notes([
 - Ensure time values are in quarter notes, not ticks
 
 **Trigger not working?**
-- Try pressing Cmd+Opt+Y manually or use Tools → Scripting → _BeginLLMInteraction
-- Run _BeginLLMInteraction in FL Studio again to restart the session
+- Try pressing Cmd+Opt+Y manually or use Tools → Scripting → BeginLLMInteraction
+- Run BeginLLMInteraction in FL Studio again to restart the session
 - Restart Claude Code to reconnect the MCP server
 
 **Script not responding?**
-- Check that _BeginLLMInteraction.pyscript and _EndLLMInteraction.pyscript are in Piano roll scripts directory
+- Check that BeginLLMInteraction.pyscript and EndLLMInteraction.pyscript are in Piano roll scripts directory
 - Verify MCP server is connected in Claude Code
 - Restart Claude Code after code changes
 
 **"LLM interaction mode is inactive" error?**
-- Run _BeginLLMInteraction in FL Studio to start a new session
-- The session was either never started or was ended with _EndLLMInteraction
+- Run BeginLLMInteraction in FL Studio to start a new session
+- The session was either never started or was ended with EndLLMInteraction
 
 ## Future Enhancements
 
