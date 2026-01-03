@@ -11,11 +11,8 @@ import platform
 import subprocess
 import sys
 import time
+import threading
 from pathlib import Path
-
-# Import the F3+9 trigger from piano_roll_utils
-sys.path.insert(0, str(Path(__file__).parent.parent / "piano_roll"))
-from piano_roll_utils import trigger_with_f3_plus_9
 
 
 # Initialize FastMCP server
@@ -129,7 +126,7 @@ class FLStudioTrigger:
         return False
 
     def trigger_flstudio(self):
-        """Trigger FL Studio and restore focus"""
+        """Focus FL Studio, focus piano roll window, send Cmd+Opt+Y keystroke, and restore focus"""
         if not self._is_fl_studio_running():
             return False
 
@@ -138,17 +135,65 @@ class FLStudioTrigger:
         if not self.focus_fl_studio():
             return False
 
-        time.sleep(0.3)
+        # Wait for FL Studio to receive focus before sending keystroke
+        time.sleep(0.2)
 
+        # Focus the piano roll window using FL Studio's API
+        try:
+            from midi_controller.fl_dual_port import send_command
+            send_command("ui.setFocused(3)", expect_response=False)  # widPianoRoll = 3
+            time.sleep(0.1)  # Brief wait for window focus
+        except:
+            pass  # If focus fails, continue anyway
+
+        # Send the keystroke to trigger "Run Last Script"
         if not self._send_keystroke():
             return False
 
-        time.sleep(0.2)
+        # Brief wait after keystroke
+        time.sleep(0.1)
 
+        # Try to restore previous window focus (best effort)
         if saved_window:
-            self.restore_focus(saved_window)
+            try:
+                self.restore_focus(saved_window)
+            except:
+                # If restore fails, no big deal - user can refocus manually
+                pass
 
         return True
+
+    def _send_keystroke(self):
+        """Send F3+B keystroke (global FL Studio shortcut for BeginLLMInteraction script)"""
+        try:
+            from pynput.keyboard import Key, Controller
+            keyboard = Controller()
+
+            # Press F3 and B together (F3 held while B is pressed)
+            with keyboard.pressed(Key.f3):
+                keyboard.press('b')
+                keyboard.release('b')
+            keyboard.release(Key.f3)
+
+            # Wait for FL Studio to process the keystroke
+            time.sleep(1.0)
+            return True
+
+        except ImportError:
+            # Fallback to osascript on macOS if pynput not available
+            if self.system == "Darwin":
+                try:
+                    # Send F3+B using AppleScript (F3=160, B=11 with control down)
+                    subprocess.run(['osascript', '-e',
+                        'tell application "System Events" to keystroke "b" using {control down} & key code 160'],
+                        timeout=3, capture_output=True)
+                    time.sleep(1.0)
+                    return True
+                except:
+                    pass
+        except Exception:
+            pass
+        return False
 
     def _is_fl_studio_running(self):
         """Check if FL Studio is running"""
@@ -164,16 +209,6 @@ class FLStudioTrigger:
             pass
         return False
 
-    def _send_keystroke(self):
-        """Send the trigger keystroke (F3+9 for Last Script menu)"""
-        # Use the existing F3+9 trigger from piano_roll_utils
-        trigger_with_f3_plus_9()
-
-        # Add delay to allow FL Studio to process the script
-        time.sleep(2.0)
-
-        return True
-
 
 # Global trigger instance
 trigger = FLStudioTrigger()
@@ -182,10 +217,256 @@ trigger = FLStudioTrigger()
 BRIDGE_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts"))
 REQUEST_FILE = BRIDGE_DIR / "mcp_request.json"
 RESPONSE_FILE = BRIDGE_DIR / "mcp_response.json"
+FLAG_FILE = BRIDGE_DIR / "llm_interaction_active.flag"
 
 # Path to the piano roll scripts directory
 SCRIPT_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts"))
 STATE_FILE = SCRIPT_DIR / "piano_roll_state.json"
+
+# Path to MIDI controller Hardware directory for piano roll visibility flag
+HARDWARE_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Hardware/FLController"))
+PIANO_ROLL_VISIBLE_FLAG = HARDWARE_DIR / "piano_roll_visible.flag"
+PIANO_ROLL_CHANNEL_STATE_FILE = HARDWARE_DIR / "piano_roll_state.json"
+
+
+class PianoRollChannelWatcher:
+    """
+    Watches for piano roll channel and pattern changes and triggers state refresh.
+
+    When the user opens a different channel's piano roll or changes patterns
+    while LLM interaction mode is active, this triggers Cmd+Opt+Y to refresh the notes state.
+    """
+
+    def __init__(self, trigger_instance):
+        self.trigger = trigger_instance
+        self.running = False
+        self.thread = None
+        self.last_channel = None
+        self.last_visible = None
+        self.last_pattern = None
+        self.last_channel_mtime = 0
+        self.last_pattern_mtime = 0
+        self.log_file = HARDWARE_DIR / "watcher.log"
+
+    def _log(self, message):
+        """Write a timestamped message to the log file"""
+        try:
+            from datetime import datetime
+            timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+            with open(self.log_file, 'a') as f:
+                f.write(f"[{timestamp}] {message}\n")
+        except:
+            pass
+
+    def start(self):
+        """Start the watcher in a background thread"""
+        if self.running:
+            return
+        self.running = True
+        self.thread = threading.Thread(target=self._watch_loop, daemon=True)
+        self.thread.start()
+        self._log("Started watching for channel changes")
+
+    def stop(self):
+        """Stop the watcher"""
+        self.running = False
+        if self.thread:
+            self.thread.join(timeout=1)
+
+    def _watch_loop(self):
+        """Main watch loop - polls the piano_roll_state.json file"""
+        while self.running:
+            try:
+                self._check_for_changes()
+            except Exception as e:
+                self._log(f"Error: {e}")
+            time.sleep(0.2)  # Poll every 200ms
+
+    def _check_for_changes(self):
+        """Check if piano roll channel or pattern has changed"""
+        should_trigger = False
+
+        # Check channel state file
+        if PIANO_ROLL_CHANNEL_STATE_FILE.exists():
+            try:
+                current_mtime = os.path.getmtime(PIANO_ROLL_CHANNEL_STATE_FILE)
+                if current_mtime != self.last_channel_mtime:
+                    self.last_channel_mtime = current_mtime
+
+                    with open(PIANO_ROLL_CHANNEL_STATE_FILE, 'r') as f:
+                        state = json.load(f)
+
+                    visible = state.get('visible', False)
+                    channel = state.get('channel')
+                    channel_name = state.get('channelName', 'Unknown')
+
+                    # Case 1: Piano roll just opened
+                    if visible and not self.last_visible:
+                        self._log(f"Piano roll opened with channel {channel}: {channel_name}")
+                        should_trigger = True
+
+                    # Case 2: Channel changed while piano roll is open
+                    elif visible and self.last_visible and channel != self.last_channel:
+                        self._log(f"Channel changed to {channel}: {channel_name}")
+                        should_trigger = True
+
+                    # Update tracked state
+                    self.last_visible = visible
+                    self.last_channel = channel
+            except (json.JSONDecodeError, IOError):
+                pass
+
+        # Check pattern state file
+        PATTERN_STATE_FILE = HARDWARE_DIR / "fl_pattern_state.json"
+        if PATTERN_STATE_FILE.exists():
+            try:
+                current_mtime = os.path.getmtime(PATTERN_STATE_FILE)
+                if current_mtime != self.last_pattern_mtime:
+                    self.last_pattern_mtime = current_mtime
+
+                    with open(PATTERN_STATE_FILE, 'r') as f:
+                        state = json.load(f)
+
+                    pattern = state.get('pattern')
+
+                    # Case 3: Pattern changed
+                    if self.last_pattern is not None and pattern != self.last_pattern:
+                        pattern_name = state.get('patternName', 'Unknown')
+                        self._log(f"Pattern changed to {pattern}: {pattern_name}")
+                        should_trigger = True
+
+                    # Update tracked pattern
+                    self.last_pattern = pattern
+            except (json.JSONDecodeError, IOError):
+                pass
+
+        # Trigger refresh if needed and LLM mode is active
+        if should_trigger and self._is_llm_mode_active():
+            self._log("Triggering piano roll state refresh...")
+            self._trigger_refresh()
+
+    def _is_llm_mode_active(self):
+        """Check if LLM interaction mode is active"""
+        if not FLAG_FILE.exists():
+            return False
+        try:
+            with open(FLAG_FILE, 'r') as f:
+                return f.read().strip() == "active"
+        except:
+            return False
+
+    def _trigger_refresh(self):
+        """Focus piano roll, send F3+B keystroke, and restore focus (for pattern changes in FL Studio)"""
+        try:
+            from midi_controller.fl_dual_port import send_command
+
+            # Save current focused window ID (likely playlist: widPlaylist = 5)
+            saved_window_id = None
+            try:
+                result = send_command("ui.getFocusedFormID()", expect_response=True)
+                self._log(f"ui.getFocusedFormID() returned: {repr(result)}")
+
+                # Strip "Result: " prefix if present
+                if result and isinstance(result, str):
+                    if result.startswith("Result: "):
+                        result = result[8:]  # Remove "Result: " prefix
+
+                    if result and result != "None":
+                        saved_window_id = int(result.strip())
+                        self._log(f"Saved current focus: window ID {saved_window_id}")
+                    else:
+                        self._log("ui.getFocusedFormID() returned None or empty")
+            except Exception as e:
+                self._log(f"Failed to get current focus: {e}")
+
+            # Focus the piano roll window
+            try:
+                send_command("ui.setFocused(3)", expect_response=False)  # widPianoRoll = 3
+                time.sleep(0.15)  # Brief wait for window focus
+                self._log("Piano roll focused (widPianoRoll = 3)")
+            except Exception as e:
+                self._log(f"Failed to focus piano roll: {e}")
+
+            # Send F3+B keystroke
+            from pynput.keyboard import Key, Controller
+            keyboard = Controller()
+
+            # Press F3 and B together (F3 held while B is pressed)
+            with keyboard.pressed(Key.f3):
+                keyboard.press('b')
+                keyboard.release('b')
+
+            self._log("F3+B keystroke sent")
+
+            # Wait for FL Studio to process the keystroke
+            time.sleep(0.3)
+
+            # Restore focus to previous window (e.g., playlist)
+            if saved_window_id is not None:
+                try:
+                    send_command(f"ui.setFocused({saved_window_id})", expect_response=False)
+                    self._log(f"Restored focus to window ID {saved_window_id}")
+                    time.sleep(0.1)  # Brief wait for focus to take effect
+                except Exception as e:
+                    self._log(f"Failed to restore focus: {e}")
+            else:
+                self._log("Warning: No saved window ID to restore focus to")
+
+        except Exception as e:
+            self._log(f"Failed in _trigger_refresh: {e}")
+
+
+# Global watcher instance (started later)
+channel_watcher = None
+
+
+def should_auto_trigger():
+    """
+    Check if auto-triggering is enabled via flag file content.
+
+    Checks two conditions:
+    1. LLM interaction mode is active (flag file contains "active")
+    2. Piano roll window is visible (visibility flag contains "open")
+
+    If piano roll is closed while session is active, deactivate the session.
+
+    Returns:
+        bool: True if both conditions are met, False otherwise
+    """
+    # Check if LLM interaction mode is active
+    if not FLAG_FILE.exists():
+        return False
+
+    try:
+        with open(FLAG_FILE, 'r') as f:
+            interaction_active = f.read().strip() == "active"
+
+        if not interaction_active:
+            return False
+
+        # Check if piano roll window is visible
+        if not PIANO_ROLL_VISIBLE_FLAG.exists():
+            # If visibility flag doesn't exist yet, assume visible (backward compatibility)
+            return True
+
+        try:
+            with open(PIANO_ROLL_VISIBLE_FLAG, 'r') as f:
+                piano_roll_visible = f.read().strip() == "open"
+
+            # If session is active but piano roll is closed, deactivate the session
+            if not piano_roll_visible:
+                with open(FLAG_FILE, 'w') as f:
+                    f.write("inactive")
+                return False
+
+            return True
+
+        except:
+            # If can't read visibility flag, assume visible
+            return True
+
+    except:
+        return False
 
 @mcp.tool
 def get_piano_roll_state() -> str:
@@ -277,6 +558,10 @@ def send_notes(notes: list[dict], mode: str = "add") -> str:
         if mode == "replace":
             requests = [{"action": "clear"}]
 
+        # Only proceed if LLM interaction mode is active
+        if not should_auto_trigger():
+            return f"LLM interaction mode is inactive. Run _BeginLLMInteraction from piano roll menu to start. Notes not queued: {[n['midi'] for n in prepared_notes]}"
+
         # Append this notes request
         requests.append(request)
 
@@ -286,11 +571,10 @@ def send_notes(notes: list[dict], mode: str = "add") -> str:
 
         # Trigger FL Studio to process the request
         trigger_success = trigger.trigger_flstudio()
-
         if trigger_success:
-            return f"Sent {len(prepared_notes)} notes to FL Studio (trigger successful). MIDI notes: {[n['midi'] for n in prepared_notes]}"
+            return f"Sent {len(prepared_notes)} notes to FL Studio (auto-triggered). MIDI notes: {[n['midi'] for n in prepared_notes]}"
         else:
-            return f"Sent {len(prepared_notes)} notes to FL Studio (trigger failed). Please ensure FL Studio is running and has run ComposeWithLLM once."
+            return f"Sent {len(prepared_notes)} notes to queue (trigger failed - FL Studio may not be running). MIDI notes: {[n['midi'] for n in prepared_notes]}"
 
     except Exception as e:
         return f"Error sending notes: {str(e)}"
@@ -343,6 +627,10 @@ def delete_notes(notes: list[dict]) -> str:
             except:
                 pass
 
+        # Only proceed if LLM interaction mode is active
+        if not should_auto_trigger():
+            return f"LLM interaction mode is inactive. Run _BeginLLMInteraction from piano roll menu to start. Delete not queued: {[n['midi'] for n in notes]}"
+
         # Append this delete request
         requests.append(request)
 
@@ -352,11 +640,10 @@ def delete_notes(notes: list[dict]) -> str:
 
         # Trigger FL Studio to process the request
         trigger_success = trigger.trigger_flstudio()
-
         if trigger_success:
-            return f"Delete request for {len(notes)} notes sent to FL Studio (trigger successful). MIDI notes: {[n['midi'] for n in notes]}"
+            return f"Delete request for {len(notes)} notes sent to FL Studio (auto-triggered). MIDI notes: {[n['midi'] for n in notes]}"
         else:
-            return f"Delete request for {len(notes)} notes added to queue (trigger failed). Please ensure FL Studio is running and has run ComposeWithLLM once."
+            return f"Delete request for {len(notes)} notes added to queue (trigger failed - FL Studio may not be running). MIDI notes: {[n['midi'] for n in notes]}"
 
     except Exception as e:
         return f"Error creating delete request: {str(e)}"
@@ -396,6 +683,10 @@ def clear_piano_roll() -> str:
         Status of the clear request
     """
     try:
+        # Only proceed if LLM interaction mode is active
+        if not should_auto_trigger():
+            return "LLM interaction mode is inactive. Run _BeginLLMInteraction from piano roll menu (or F3+B) to start. Clear not queued."
+
         # Create clear request
         request = {
             "action": "clear"
@@ -407,11 +698,10 @@ def clear_piano_roll() -> str:
 
         # Trigger FL Studio to process the clear
         trigger_success = trigger.trigger_flstudio()
-
         if trigger_success:
-            return "Clear request sent to FL Studio (trigger successful). All notes will be removed."
+            return "Clear request sent to FL Studio (auto-triggered). All notes will be removed."
         else:
-            return "Clear request added to queue (trigger failed). Please ensure FL Studio is running and has run ComposeWithLLM once."
+            return "Clear request added to queue (trigger failed - FL Studio may not be running)."
 
     except Exception as e:
         return f"Error creating clear request: {str(e)}"
@@ -484,6 +774,57 @@ def get_channels() -> str:
     except Exception as e:
         return json.dumps({
             "error": f"Error getting channels: {str(e)}"
+        })
+
+
+@mcp.tool
+def get_piano_roll_channel() -> str:
+    """
+    Get the channel currently shown in the piano roll.
+
+    Returns both the channel index and name for easy identification.
+
+    Returns:
+        JSON string containing:
+        - index: Channel index (0-based)
+        - name: Channel name
+
+    Example:
+        get_piano_roll_channel()  # Returns: {"index": 1, "name": "FLEX Bass"}
+    """
+    try:
+        # Read from the piano roll state file written by the MIDI controller
+        # This gives us the actual piano roll channel, not just the selected channel
+        if not PIANO_ROLL_CHANNEL_STATE_FILE.exists():
+            return json.dumps({
+                "error": "Piano roll state file not found. Ensure FL Studio MIDI controller is running."
+            })
+
+        with open(PIANO_ROLL_CHANNEL_STATE_FILE, 'r') as f:
+            state = json.load(f)
+
+        channel_index = state.get('channel')
+        channel_name = state.get('channelName', 'Unknown')
+        visible = state.get('visible', False)
+
+        if channel_index is None:
+            return json.dumps({
+                "error": "No channel information in piano roll state file."
+            })
+
+        return json.dumps({
+            "index": channel_index,
+            "name": channel_name,
+            "visible": visible
+        })
+
+    except json.JSONDecodeError as e:
+        return json.dumps({
+            "error": f"Error parsing piano roll state file: {str(e)}"
+        })
+    except Exception as e:
+        return json.dumps({
+            "error": f"Error getting piano roll channel: {str(e)}"
         })
 
 
@@ -609,4 +950,9 @@ def call_fl_midi_controller_api(method: str, args: list = None, kwargs: dict = N
 
 
 if __name__ == "__main__":
+    # Start the piano roll channel watcher
+    channel_watcher = PianoRollChannelWatcher(trigger)
+    channel_watcher.start()
+
+    # Run the MCP server
     mcp.run()

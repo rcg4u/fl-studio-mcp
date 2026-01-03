@@ -299,6 +299,7 @@ Claude → MCP Server → Request Queue (JSON) → MCP Server Sends Trigger
    - Sets flag file to "inactive"
    - Clears request queue
    - Prevents further note sending until BeginLLMInteraction is run again
+   - **Note:** Session also automatically ends if piano roll window is closed (detected via MIDI controller polling)
 
 ## Available MCP Tools
 
@@ -533,7 +534,7 @@ send_notes([
 
 **"LLM interaction mode is inactive" error?**
 - Run BeginLLMInteraction in FL Studio to start a new session
-- The session was either never started or was ended with EndLLMInteraction
+- The session was either never started, ended with EndLLMInteraction, or piano roll was closed
 
 ## Future Enhancements
 

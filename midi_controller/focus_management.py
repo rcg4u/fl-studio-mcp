@@ -50,8 +50,6 @@ def activate_fl_studio():
         end tell
         '''
         subprocess.run(['osascript', '-e', script], timeout=3, capture_output=True)
-        print("✓ FL Studio activated")
         return True
     except Exception as e:
-        print(f"⚠️  Could not activate FL Studio: {e}")
         return False

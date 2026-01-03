@@ -47,7 +47,6 @@ def send_command(command, expect_response=True):
     sysex_data = b'\x7d\x11\x00' + command.encode('utf-8')
     msg = mido.Message('sysex', data=sysex_data)
 
-    print(f"Sending: {command}")
     _outport.send(msg)
 
     # Always wait for response to keep queue clean
