@@ -211,6 +211,9 @@ def apply(form=None):
     The script is idempotent and can be re-run safely.
     """
 
+    # Debug: print to script output window
+    print("=== BeginLLMInteraction.apply() called ===")
+
     # Check flag file content to determine if this is initial run or auto-trigger
     is_initial_run = True
     if os.path.exists(FLAG_FILE):
@@ -221,14 +224,18 @@ def apply(form=None):
         except:
             pass
 
+    print(f"Is initial run: {is_initial_run}")
+
     if is_initial_run:
         # First run or restarting: Set flag to active and initialize
+        print("Setting flag to 'active'")
         with open(FLAG_FILE, 'w') as f:
             f.write("active")
 
         # Initialize empty request queue
         with open(REQUEST_FILE, 'w') as f:
             f.write("[]")
+        print("Initialized empty request queue")
     else:
         # Subsequent runs (auto-triggered): Process any pending requests
         result = process_mcp_request()
@@ -242,4 +249,7 @@ def apply(form=None):
                 pass
 
     # Always export state after processing (or initialization)
+    print("Exporting piano roll state...")
     export_piano_roll_state()
+    print(f"Exported {flp.score.noteCount} notes")
+    print("=== BeginLLMInteraction finished ===")

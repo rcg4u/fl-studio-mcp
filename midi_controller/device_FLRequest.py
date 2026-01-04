@@ -69,8 +69,12 @@ def OnInit():
 
 def OnSysEx(fl_event):
     """Receive command from Python"""
-    # Check for our command header
-    if len(fl_event.sysex) >= 4 and bytes(fl_event.sysex[1:4]) == b'\x7d\x11\x00':
+    # Check if sysex data exists and has our command header
+    if fl_event.sysex is None or len(fl_event.sysex) < 4:
+        fl_event.handled = False
+        return
+
+    if bytes(fl_event.sysex[1:4]) == b'\x7d\x11\x00':
         try:
             # Get command data
             data = fl_event.sysex[4:]
