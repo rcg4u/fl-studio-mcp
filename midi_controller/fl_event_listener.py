@@ -184,14 +184,15 @@ def display_event(event):
         "piano_roll_focus": "Piano Roll Focused",
         "piano_roll_channel_changed": "Piano Roll Channel Changed",
         "pattern_changed": "Pattern Changed",
-        "channel_selected": "Channel (Channel Rack)",
-        "target_channel_changed": "Channel (Piano Roll)",
+        "channel_selected": "Channel Selected (Channel Rack)",
+        "target_channel_changed": "Target Channel Changed (Piano Roll)",
     }
 
     title = titles.get(event_type, event_type)
 
     print(f"\n[{title}]")
 
+    # Only show pattern/channel info when present (not all events have it)
     if "pattern" in data:
         pat = data["pattern"]
         pat_name = data.get("pattern_name", "Unknown")

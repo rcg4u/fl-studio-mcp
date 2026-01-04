@@ -59,6 +59,13 @@ _last_pattern = None
 _channel_event_fired = False
 _channel_event_time = 0
 
+# Track if target channel just changed (to skip duplicate piano roll focus)
+_target_channel_changed = False
+_target_channel_change_time = 0
+
+# Track last piano_roll_focus from OnRefresh (to avoid duplicates from OnIdle)
+_last_piano_roll_focus_time = 0
+
 # Track last browser node to detect navigation changes
 _last_browser_caption = None
 _last_browser_file_type = None
@@ -159,6 +166,8 @@ def OnSysEx(fl_event):
 def OnRefresh(flags):
     """Called when FL Studio state changes"""
     global _last_pattern, _channel_event_fired, _channel_event_time
+    global _target_channel_changed, _target_channel_change_time
+    global _last_piano_roll_focus_time
 
     # DEBUG: Log ALL flags to discover new ones
     if flags != 0:
@@ -191,12 +200,13 @@ def OnRefresh(flags):
             _channel_event_fired = True
             _channel_event_time = time.time()
         elif focused_window == 3:  # widPianoRoll = 3
-            # Piano roll got focus - send event immediately
+            # Piano roll got focus
             try:
-                pat_num = patterns.patternNumber()
-                pat_name = patterns.getPatternName(pat_num)
-                target_ch = channels.channelNumber()
-                target_ch_name = channels.getChannelName(target_ch)
+                # Check if target channel just changed (to avoid duplicate event)
+                if _target_channel_changed and (time.time() - _target_channel_change_time) < 0.5:
+                    print("DEBUG: Skipping piano_roll_focus (target channel just changed)")
+                    _target_channel_changed = False
+                    return  # Skip this entire piano_roll_focus event
 
                 # Check if this should skip trigger (channel selector was clicked recently)
                 skip_trigger = False
@@ -205,13 +215,27 @@ def OnRefresh(flags):
                     print("DEBUG: Skipping trigger (channel selector clicked)")
                     _channel_event_fired = False  # Clear the flag
 
-                send_event("piano_roll_focus", {
-                    "pattern": pat_num,
-                    "pattern_name": pat_name,
-                    "channel": target_ch,
-                    "channel_name": target_ch_name,
-                    "skip_trigger": skip_trigger
-                })
+                # If mini piano roll was clicked (not channel selector), channel info is reliable
+                if not skip_trigger:
+                    pat_num = patterns.patternNumber()
+                    pat_name = patterns.getPatternName(pat_num)
+                    target_ch = channels.channelNumber()
+                    target_ch_name = channels.getChannelName(target_ch)
+
+                    send_event("piano_roll_focus", {
+                        "pattern": pat_num,
+                        "pattern_name": pat_name,
+                        "channel": target_ch,
+                        "channel_name": target_ch_name,
+                        "skip_trigger": False
+                    })
+                    _last_piano_roll_focus_time = time.time()
+                else:
+                    # Channel selector was clicked - don't send unreliable channel info
+                    send_event("piano_roll_focus", {
+                        "skip_trigger": True
+                    })
+                    _last_piano_roll_focus_time = time.time()
             except Exception as e:
                 print("Error sending piano_roll_focus: " + str(e))
 
@@ -251,6 +275,8 @@ def OnRefresh(flags):
 
 def OnDirtyChannel(index, flag):
     """Called when a specific channel changes"""
+    global _target_channel_changed, _target_channel_change_time
+
     # CE_Select (4) = channel selection changed
     if flag == 4:
         try:
@@ -269,6 +295,10 @@ def OnDirtyChannel(index, flag):
                     "channel": index,
                     "channel_name": channel_name
                 })
+
+                # Set flag to prevent duplicate piano_roll_focus event
+                _target_channel_changed = True
+                _target_channel_change_time = time.time()
             elif focused_window == 1:  # widChannelRack = 1
                 # Channel rack is focused (step sequencer, mini piano roll, etc.)
                 print("Channel Rack Selection: " + str(index) + " (" + channel_name + ")")
@@ -286,6 +316,8 @@ def OnIdle():
     """Called periodically - track focus changes and send events"""
     global _last_focused_window, _last_browser_caption, _last_browser_file_type
     global _channel_event_fired, _channel_event_time
+    global _target_channel_changed, _target_channel_change_time
+    global _last_piano_roll_focus_time
 
     try:
         # Track window focus changes (lightweight polling)
@@ -296,35 +328,48 @@ def OnIdle():
 
             msg = "Focus: " + prev_name + " -> " + curr_name
 
-            # Add pattern/channel context if focusing Piano Roll
-            if current_window == 3:
+            # Send piano_roll_focus event when piano roll gets focus
+            # (OnRefresh handles this when HW_Dirty_FocusedWindow fires, but that doesn't
+            # always happen - e.g., when double-clicking a pattern)
+            if current_window == 3:  # widPianoRoll = 3
                 try:
-                    pat_num = patterns.patternNumber()
-                    pat_name = patterns.getPatternName(pat_num)
+                    # Check if OnRefresh just sent piano_roll_focus (avoid duplicate)
+                    if time.time() - _last_piano_roll_focus_time < 0.5:
+                        print("DEBUG: OnIdle skipping piano_roll_focus (OnRefresh just sent it)")
+                    # Check if target channel just changed (avoid duplicate)
+                    elif _target_channel_changed and (time.time() - _target_channel_change_time) < 0.5:
+                        print("DEBUG: OnIdle skipping piano_roll_focus (target channel just changed)")
+                        _target_channel_changed = False
+                    else:
+                        # Check if channel selector was clicked (set skip_trigger flag)
+                        skip_trigger = False
+                        if _channel_event_fired and (time.time() - _channel_event_time) < 0.5:
+                            skip_trigger = True
+                            print("DEBUG: OnIdle skipping trigger (channel selector clicked)")
+                            _channel_event_fired = False
 
-                    # Read the selected channel (this is the target channel when piano roll is focused)
-                    target_ch = channels.channelNumber()
-                    target_ch_name = channels.getChannelName(target_ch)
+                        # Send event with or without channel info
+                        if not skip_trigger:
+                            pat_num = patterns.patternNumber()
+                            pat_name = patterns.getPatternName(pat_num)
+                            target_ch = channels.channelNumber()
+                            target_ch_name = channels.getChannelName(target_ch)
 
-                    msg += " (Pattern " + str(pat_num) + ": " + pat_name + ", Target Channel " + str(target_ch) + ": " + target_ch_name + ")"
-
-                    # Check if this focus was caused by channel selector click (within 0.5 seconds)
-                    skip_trigger = False
-                    if _channel_event_fired and (time.time() - _channel_event_time) < 0.5:
-                        skip_trigger = True
-                        print("DEBUG: Skipping trigger (channel selector clicked)")
-                        _channel_event_fired = False  # Clear the flag
-
-                    # Send event via stream with the selected channel as target channel
-                    send_event("piano_roll_focus", {
-                        "pattern": pat_num,
-                        "pattern_name": pat_name,
-                        "channel": target_ch,
-                        "channel_name": target_ch_name,
-                        "skip_trigger": skip_trigger
-                    })
-                except:
-                    pass
+                            send_event("piano_roll_focus", {
+                                "pattern": pat_num,
+                                "pattern_name": pat_name,
+                                "channel": target_ch,
+                                "channel_name": target_ch_name,
+                                "skip_trigger": False
+                            })
+                            _last_piano_roll_focus_time = time.time()
+                        else:
+                            send_event("piano_roll_focus", {
+                                "skip_trigger": True
+                            })
+                            _last_piano_roll_focus_time = time.time()
+                except Exception as e:
+                    print("Error in OnIdle piano_roll_focus: " + str(e))
 
             print(msg)
             _last_focused_window = current_window
