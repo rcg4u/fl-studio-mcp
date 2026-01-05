@@ -6,6 +6,7 @@
 FL Studio controller - Target Channel Tracking
 
 Tracks the piano roll's target channel and sends events when it changes.
+Uses OnSendTempMsg to reliably detect target channel menu interactions.
 """
 
 import device
@@ -35,6 +36,10 @@ _channel_rack_selection_name = None
 # Track last focused state for OnIdle
 _last_was_focused = False
 
+# Track menu interaction state
+_target_channel_menu_in_progress = False
+_target_channel_menu_choice = None
+
 
 def send_event(event_type, data):
     """Send event to listener via event file (JSONL format)."""
@@ -49,6 +54,18 @@ def send_event(event_type, data):
         print("=" * 50)
     except Exception as e:
         print("Event failed: " + event_type + " - " + str(e))
+
+
+def find_channel_index_by_name(name):
+    """Find channel index by name. Returns -1 if not found."""
+    try:
+        for i in range(channels.channelCount()):
+            if channels.getChannelName(i) == name:
+                return i
+        return -1
+    except Exception as e:
+        print(f"Error finding channel index for '{name}': {e}")
+        return -1
 
 
 def OnInit():
@@ -89,10 +106,10 @@ def OnDirtyChannel(index, flag):
                 print(f"[OnDirtyChannel] PR focused - target channel updated: {index} - {channel_name}")
 
                 # Send event with new target channel
-                send_event("target_channel_changed", {
-                    "target_channel_index": _target_channel_index,
-                    "target_channel_name": _target_channel_name
-                })
+                # send_event("target_channel_changed", {
+                #    "target_channel_index": _target_channel_index,
+                #    "target_channel_name": _target_channel_name
+                #})
             else:
                 # Piano roll is NOT focused - this is just channel rack selection
                 # Do NOT update target channel (PR will use its own target when it opens)
@@ -102,9 +119,33 @@ def OnDirtyChannel(index, flag):
             print(f"Error in OnDirtyChannel: {e}")
 
 
+def OnSendTempMsg(msg, duration):
+    """Called when FL Studio sends a temporary message (e.g., menu selections).
+
+    This is the RELIABLE way to detect target channel menu interactions.
+    """
+    global _target_channel_menu_in_progress, _target_channel_menu_choice
+
+    try:
+        if msg.startswith("Menu - Target channel"):
+            # Target channel menu opened - start tracking menu interaction
+            _target_channel_menu_in_progress = True
+            _target_channel_menu_choice = None
+
+        elif msg.startswith("Target channel - "):
+            # User selected a channel from the menu
+            channel_name = msg.replace("Target channel - ", "").strip()
+            # Store the choice - we'll apply it when menu closes
+            _target_channel_menu_choice = channel_name
+
+    except Exception as e:
+        print(f"Error in OnSendTempMsg: {e}")
+
+
 def OnRefresh(flags):
     """Called when FL Studio state changes."""
     global _target_channel_index, _target_channel_name
+    global _target_channel_menu_in_progress, _target_channel_menu_choice
 
     # Check if piano roll got focus
     has_focus = flags & 32  # HW_Dirty_FocusedWindow
@@ -112,15 +153,39 @@ def OnRefresh(flags):
     if has_focus:
         focused_window = ui.getFocusedFormID()
         if focused_window == 3:  # widPianoRoll
-            # PR just got focus - update target channel from channel rack selection
-            # This is what channel the PR will show
-            channel_index = channels.channelNumber()
-            channel_name = channels.getChannelName(channel_index)
-            _target_channel_index = channel_index
-            _target_channel_name = channel_name
-            print(f"[OnRefresh] PR focused - target channel set from channel rack: {channel_index} - {channel_name}")
+            # Check if target channel menu just closed (focus returns to PR)
+            if _target_channel_menu_in_progress:
+                # Menu closed, PR got focus - apply the menu choice
+                if _target_channel_menu_choice:
+                    channel_name = _target_channel_menu_choice
+                    channel_index = find_channel_index_by_name(channel_name)
 
-            # Don't send event here - OnIdle will handle it
+                    if channel_index >= 0:
+                        _target_channel_index = channel_index
+                        _target_channel_name = channel_name
+                        print(f"[OnRefresh] Menu CLOSED - applying target channel: {channel_index} - {channel_name}")
+
+                        # Send event with new target channel
+                        send_event("target_channel_changed", {
+                            "target_channel_index": _target_channel_index,
+                            "target_channel_name": _target_channel_name
+                        })
+                    else:
+                        print(f"[OnRefresh] Could not find channel index for: {channel_name}")
+
+                # Reset menu tracking
+                _target_channel_menu_in_progress = False
+                _target_channel_menu_choice = None
+
+            else:
+                # Normal PR focus - update target channel from channel rack selection
+                channel_index = channels.channelNumber()
+                channel_name = channels.getChannelName(channel_index)
+                _target_channel_index = channel_index
+                _target_channel_name = channel_name
+                print(f"[OnRefresh] PR focused - target channel set from channel rack: {channel_index} - {channel_name}")
+
+                # Don't send event here - OnIdle will handle it
 
 
 def OnIdle():
