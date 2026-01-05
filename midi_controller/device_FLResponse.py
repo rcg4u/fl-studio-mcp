@@ -41,6 +41,7 @@ _target_channel_menu_in_progress = False
 _target_channel_menu_choice = None
 
 
+
 def send_event(event_type, data):
     """Send event to listener via event file (JSONL format)."""
     try:
@@ -146,6 +147,7 @@ def OnRefresh(flags):
     """Called when FL Studio state changes."""
     global _target_channel_index, _target_channel_name
     global _target_channel_menu_in_progress, _target_channel_menu_choice
+    global _last_was_focused
 
     # Check if piano roll got focus
     has_focus = flags & 32  # HW_Dirty_FocusedWindow
@@ -170,6 +172,8 @@ def OnRefresh(flags):
                             "target_channel_index": _target_channel_index,
                             "target_channel_name": _target_channel_name
                         })
+                        # Mark as focused so OnIdle doesn't also send
+                        _last_was_focused = True
                     else:
                         print(f"[OnRefresh] Could not find channel index for: {channel_name}")
 
@@ -186,6 +190,12 @@ def OnRefresh(flags):
                 print(f"[OnRefresh] PR focused - target channel set from channel rack: {channel_index} - {channel_name}")
 
                 # Don't send event here - OnIdle will handle it
+                send_event("target_channel_changed", {
+                    "target_channel_index": _target_channel_index,
+                    "target_channel_name": _target_channel_name
+                })
+                # Mark as focused so OnIdle doesn't also send
+                _last_was_focused = True
 
 
 def OnIdle():
