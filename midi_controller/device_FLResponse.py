@@ -51,6 +51,9 @@ def send_event(event_type, data):
     global _target_channel_name, _current_pattern_name
     try:
         event = {"type": event_type, "data": data}
+        # Debug output for project_loaded events
+        if event_type == "project_loaded":
+            print(f"     Debug: Sending project_loaded with project_name='{data.get('project_name', 'MISSING')}'")
         with open(EVENT_FILE, 'a') as f:
             f.write(json.dumps(event) + "\n")
         print()
@@ -110,6 +113,7 @@ def OnProjectLoad(status):
         project_name = "Unknown"
         try:
             project_name = general.getProjectTitle()
+            print(f"     Debug: getProjectTitle() returned: '{project_name}' (type: {type(project_name)})")
         except Exception as e:
             print(f"Error getting project name: {e}")
 
