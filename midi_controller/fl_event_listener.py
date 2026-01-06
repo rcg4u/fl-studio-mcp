@@ -27,17 +27,11 @@ class ProjectState:
     """In-memory data structure for project, channels, patterns, and notes."""
 
     def __init__(self):
-        self.project_name = "Unknown"
         self.channels = {}  # {index: {"index": idx, "name": str}}
         self.patterns = {}  # {index: {"index": idx, "name": str}}
         self.current_channel_index = -1
         self.current_pattern_index = -1
         self.notes_by_channel_pattern = {}  # {"ch_pat": [notes...]}
-
-    def set_project_name(self, name: str):
-        """Set the project name when loaded."""
-        self.project_name = name
-        self._save()
 
     def set_channels(self, channels_list: list):
         """Set all channels from project load event."""
@@ -75,7 +69,6 @@ class ProjectState:
     def to_dict(self) -> dict:
         """Convert state to dictionary for JSON export."""
         return {
-            "project_name": self.project_name,
             "channels": self.channels,
             "patterns": self.patterns,
             "current_channel_index": self.current_channel_index,
@@ -276,10 +269,6 @@ class SimpleEventPrinter:
         """Get the full project state as a dictionary."""
         return self.project_state.to_dict()
 
-    def get_project_name(self) -> str:
-        """Get the current project name."""
-        return self.project_state.project_name
-
     # -------------------------------------------------------------------------
     # Internal - Event Processing
     # -------------------------------------------------------------------------
@@ -341,11 +330,9 @@ class SimpleEventPrinter:
 
         # Handle project_loaded events
         if event_type == "project_loaded":
-            project_name = data.get('project_name', 'Unknown')
             channels = data.get('channels', [])
             patterns = data.get('patterns', [])
 
-            print(f"  Project: {project_name}")
             print(f"  Channels ({len(channels)}):")
             for ch in channels:
                 print(f"    {ch['index']}: {ch['name']}")
@@ -355,7 +342,6 @@ class SimpleEventPrinter:
                 print(f"    {pat['index']}: {pat['name']}")
 
             # Update project state
-            self.project_state.set_project_name(project_name)
             self.project_state.set_channels(channels)
             self.project_state.set_patterns(patterns)
 
