@@ -13,9 +13,44 @@ import time
 import threading
 from pathlib import Path
 from typing import Dict, Any
+from pynput.keyboard import Key, Controller
+
+from focus_management import activate_fl_studio
 
 # File paths
 EVENT_FILE = Path.home() / "Documents/Image-Line/FL Studio/Settings/Hardware/FLController/fl_events.json"
+
+
+def trigger_fl_studio_script():
+    """Send CMD+OPT+Y keystroke to trigger FL Studio piano roll script."""
+    try:
+        # First activate FL Studio window
+        activate_fl_studio()
+
+        # Small delay to ensure focus is established
+        time.sleep(0.1)
+
+        keyboard = Controller()
+
+        # Press CMD and OPT together, then Y
+        keyboard.press(Key.cmd)
+        keyboard.press(Key.alt)
+        time.sleep(0.05)
+
+        keyboard.press('y')
+        keyboard.release('y')
+        time.sleep(0.05)
+
+        keyboard.release(Key.alt)
+        keyboard.release(Key.cmd)
+
+        # Wait for script to execute
+        time.sleep(0.5)
+
+        return True
+    except Exception as e:
+        print(f"  Error triggering script: {e}")
+        return False
 
 
 class SimpleEventPrinter:
@@ -28,6 +63,10 @@ class SimpleEventPrinter:
         self._running = False
         self._thread: threading.Thread = None
         self._last_file_size = 0
+
+        # Track current state
+        self._current_channel = "Unknown"
+        self._current_pattern = "Unknown"
 
     def start(self):
         """Start watching events in a background thread."""
@@ -54,6 +93,13 @@ class SimpleEventPrinter:
     def is_running(self) -> bool:
         """Check if the listener is running."""
         return self._running
+
+    def get_current_state(self) -> Dict[str, str]:
+        """Get the current tracked channel and pattern."""
+        return {
+            "channel": self._current_channel,
+            "pattern": self._current_pattern
+        }
 
     # -------------------------------------------------------------------------
     # Internal - Event Processing
@@ -106,15 +152,31 @@ class SimpleEventPrinter:
             pass
 
     def _process_event(self, event: Dict[str, Any]):
-        """Process a single event - just print it."""
+        """Process a single event - unpack and display it."""
         event_type = event.get('type', 'unknown')
         data = event.get('data', {})
 
+        # Extract event data
+        target_channel_name = data.get('target_channel_name', 'Unknown')
+        target_channel_index = data.get('target_channel_index', -1)
+        pattern_name = data.get('pattern_name', 'Unknown')
+        pattern_index = data.get('pattern_index', -1)
+
+        # Update current state
+        self._current_channel = target_channel_name
+        self._current_pattern = pattern_name
+
         # Print the event
-        print("\n" + "=" * 50)
-        print(f"Event received: {event_type}")
-        print(json.dumps(data, indent=2))
-        print("=" * 50)
+        print()
+        print(f"Event: {event_type}")
+        print(f"  Channel: {target_channel_index} - {target_channel_name}")
+        print(f"  Pattern: {pattern_index} - {pattern_name}")
+
+        # Trigger FL Studio script
+        print(f"  Triggering CMD+OPT+Y...")
+        success = trigger_fl_studio_script()
+        if success:
+            print(f"  ✓ Script triggered")
 
 
 # -----------------------------------------------------------------------------
@@ -123,7 +185,7 @@ class SimpleEventPrinter:
 
 def run_standalone():
     """Run the event listener in standalone mode (for testing)."""
-    print("FL Studio Event Listener - Simple Printer")
+    print("FL Studio Event Listener - Tracking Channel & Pattern")
     print(f"Watching: {EVENT_FILE}")
     print("Press Ctrl+C to stop\n")
 
@@ -134,8 +196,9 @@ def run_standalone():
         # Keep main thread alive
         while True:
             time.sleep(1)
+
     except KeyboardInterrupt:
-        print("\nStopping...")
+        print("\n\nStopping...")
         listener.stop()
 
 
