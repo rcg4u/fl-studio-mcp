@@ -68,29 +68,36 @@ def display_piano_roll_state():
         note_count = state.get('noteCount', 0)
         notes = state.get('notes', [])
 
-        print(f"  Piano Roll State:")
-        print(f"    PPQ: {ppq}, Notes: {note_count}")
+        print(f"  Piano Roll: {note_count} notes")
 
         if notes:
-            print(f"    Notes:")
+            # Group notes by time (bar)
+            notes_by_bar = {}
+            note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
             for note in notes:
                 midi_num = note.get('number', 0)
                 time_val = note.get('time', 0)
-                length = note.get('length', 0)
-                velocity = note.get('velocity', 0.8)
+
+                # Convert to quarter notes and determine bar (4qn per bar)
+                time_qn = time_val / ppq
+                bar = int(time_qn // 4)
 
                 # Convert MIDI number to note name
-                note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
                 octave = (midi_num // 12) - 1
                 note_name = note_names[midi_num % 12]
+                full_note = f"{note_name}{octave}"
 
-                # Convert to quarter notes
-                time_qn = time_val / ppq
-                length_qn = length / ppq
+                if bar not in notes_by_bar:
+                    notes_by_bar[bar] = []
+                notes_by_bar[bar].append(full_note)
 
-                print(f"      {note_name}{octave} at {time_qn:.2f}qn, length {length_qn:.2f}qn, vel {velocity:.2f}")
+            # Display notes grouped by bar
+            for bar in sorted(notes_by_bar.keys()):
+                notes_str = ", ".join(notes_by_bar[bar])
+                print(f"    Bar {bar + 1}: {notes_str}")
         else:
-            print(f"    (empty piano roll)")
+            print(f"    (empty)")
 
     except Exception as e:
         print(f"  Error reading piano roll state: {e}")
