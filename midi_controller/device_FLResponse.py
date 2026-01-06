@@ -109,7 +109,7 @@ def OnProjectLoad(status):
         # Get project name
         project_name = "Unknown"
         try:
-            project_name = general.getProjectName()
+            project_name = general.getProjectTitle()
         except Exception as e:
             print(f"Error getting project name: {e}")
 
