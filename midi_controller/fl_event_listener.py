@@ -19,6 +19,7 @@ from focus_management import activate_fl_studio
 
 # File paths
 EVENT_FILE = Path.home() / "Documents/Image-Line/FL Studio/Settings/Hardware/FLController/fl_events.json"
+PIANO_ROLL_STATE_FILE = Path.home() / "Documents/Image-Line/FL Studio/Settings/Piano roll scripts/piano_roll_state.json"
 
 
 def trigger_fl_studio_script():
@@ -51,6 +52,48 @@ def trigger_fl_studio_script():
     except Exception as e:
         print(f"  Error triggering script: {e}")
         return False
+
+
+def display_piano_roll_state():
+    """Read and display the current piano roll state."""
+    try:
+        if not PIANO_ROLL_STATE_FILE.exists():
+            print(f"  Piano roll state file not found")
+            return
+
+        with open(PIANO_ROLL_STATE_FILE, 'r') as f:
+            state = json.load(f)
+
+        ppq = state.get('ppq', 96)
+        note_count = state.get('noteCount', 0)
+        notes = state.get('notes', [])
+
+        print(f"  Piano Roll State:")
+        print(f"    PPQ: {ppq}, Notes: {note_count}")
+
+        if notes:
+            print(f"    Notes:")
+            for note in notes:
+                midi_num = note.get('number', 0)
+                time_val = note.get('time', 0)
+                length = note.get('length', 0)
+                velocity = note.get('velocity', 0.8)
+
+                # Convert MIDI number to note name
+                note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+                octave = (midi_num // 12) - 1
+                note_name = note_names[midi_num % 12]
+
+                # Convert to quarter notes
+                time_qn = time_val / ppq
+                length_qn = length / ppq
+
+                print(f"      {note_name}{octave} at {time_qn:.2f}qn, length {length_qn:.2f}qn, vel {velocity:.2f}")
+        else:
+            print(f"    (empty piano roll)")
+
+    except Exception as e:
+        print(f"  Error reading piano roll state: {e}")
 
 
 class SimpleEventPrinter:
@@ -177,6 +220,8 @@ class SimpleEventPrinter:
         success = trigger_fl_studio_script()
         if success:
             print(f"  ✓ Script triggered")
+            # Display the piano roll state after triggering
+            display_piano_roll_state()
 
 
 # -----------------------------------------------------------------------------
