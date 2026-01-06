@@ -127,11 +127,12 @@ def OnProjectLoad(status):
         except Exception as e:
             print(f"Error collecting channels: {e}")
 
-        # Collect all patterns
+        # Collect all patterns (1-based in FL Studio)
         patterns_list = []
         try:
             pattern_count = patterns.patternCount()
-            for i in range(pattern_count):
+            # Patterns in FL Studio are 1-based, start from index 1
+            for i in range(1, pattern_count + 1):
                 pat_name = patterns.getPatternName(i)
                 patterns_list.append({
                     "index": i,

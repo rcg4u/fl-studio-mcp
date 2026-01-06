@@ -221,7 +221,7 @@ class SimpleEventPrinter:
 
             print(f"  Patterns ({len(patterns)}):")
             for pat in patterns:
-                print(f"    {pat['index'] + 1}: {pat['name']}")
+                print(f"    {pat['index']}: {pat['name']}")
 
         # Handle target_channel_changed events
         elif event_type == "target_channel_changed":
