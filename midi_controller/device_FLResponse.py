@@ -16,6 +16,7 @@ import os
 import patterns
 import channels
 import ui
+import general
 
 # Event file for communicating with listener
 SCRIPT_DIR = os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Hardware/FLController")
@@ -105,6 +106,13 @@ def OnProjectLoad(status):
         return
 
     try:
+        # Get project name
+        project_name = "Unknown"
+        try:
+            project_name = general.getProjectName()
+        except Exception as e:
+            print(f"Error getting project name: {e}")
+
         # Get current channel
         channel_index = channels.channelNumber()
         channel_name = channels.getChannelName(channel_index)
@@ -141,8 +149,9 @@ def OnProjectLoad(status):
         except Exception as e:
             print(f"Error collecting patterns: {e}")
 
-        # Send project loaded event with all channels and patterns
+        # Send project loaded event with all channels, patterns, and project name
         send_event("project_loaded", {
+            "project_name": project_name,
             "channels": channels_list,
             "patterns": patterns_list
         })

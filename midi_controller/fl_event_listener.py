@@ -20,6 +20,76 @@ from focus_management import activate_fl_studio
 # File paths
 EVENT_FILE = Path.home() / "Documents/Image-Line/FL Studio/Settings/Hardware/FLController/fl_events.json"
 PIANO_ROLL_STATE_FILE = Path.home() / "Documents/Image-Line/FL Studio/Settings/Piano roll scripts/piano_roll_state.json"
+PROJECT_STATE_FILE = Path.home() / "Documents/Image-Line/FL Studio/Settings/Hardware/FLController/project_state.json"
+
+
+class ProjectState:
+    """In-memory data structure for project, channels, patterns, and notes."""
+
+    def __init__(self):
+        self.project_name = "Unknown"
+        self.channels = {}  # {index: {"index": idx, "name": str}}
+        self.patterns = {}  # {index: {"index": idx, "name": str}}
+        self.current_channel_index = -1
+        self.current_pattern_index = -1
+        self.notes_by_channel_pattern = {}  # {"ch_pat": [notes...]}
+
+    def set_project_name(self, name: str):
+        """Set the project name when loaded."""
+        self.project_name = name
+        self._save()
+
+    def set_channels(self, channels_list: list):
+        """Set all channels from project load event."""
+        self.channels = {}
+        for ch in channels_list:
+            idx = ch["index"]
+            self.channels[idx] = {"index": idx, "name": ch["name"]}
+        self._save()
+
+    def set_patterns(self, patterns_list: list):
+        """Set all patterns from project load event."""
+        self.patterns = {}
+        for pat in patterns_list:
+            idx = pat["index"]
+            self.patterns[idx] = {"index": idx, "name": pat["name"]}
+        self._save()
+
+    def set_current_channel_pattern(self, channel_idx: int, pattern_idx: int):
+        """Update current channel and pattern."""
+        self.current_channel_index = channel_idx
+        self.current_pattern_index = pattern_idx
+        self._save()
+
+    def set_notes_for_channel_pattern(self, channel_idx: int, pattern_idx: int, notes: list):
+        """Store notes for a specific channel/pattern combination."""
+        key = f"{channel_idx}_{pattern_idx}"
+        self.notes_by_channel_pattern[key] = notes
+        self._save()
+
+    def get_notes_for_channel_pattern(self, channel_idx: int, pattern_idx: int) -> list:
+        """Get notes for a specific channel/pattern combination."""
+        key = f"{channel_idx}_{pattern_idx}"
+        return self.notes_by_channel_pattern.get(key, [])
+
+    def to_dict(self) -> dict:
+        """Convert state to dictionary for JSON export."""
+        return {
+            "project_name": self.project_name,
+            "channels": self.channels,
+            "patterns": self.patterns,
+            "current_channel_index": self.current_channel_index,
+            "current_pattern_index": self.current_pattern_index,
+            "notes_by_channel_pattern": self.notes_by_channel_pattern
+        }
+
+    def _save(self):
+        """Save state to JSON file for MCP server to read."""
+        try:
+            with open(PROJECT_STATE_FILE, 'w') as f:
+                json.dump(self.to_dict(), f, indent=2)
+        except Exception as e:
+            print(f"  Error saving project state: {e}")
 
 
 def trigger_fl_studio_script():
@@ -89,8 +159,8 @@ def duration_to_note_name(duration_qn):
         return str(duration_qn)
 
 
-def display_piano_roll_state():
-    """Read and display the current piano roll state."""
+def display_piano_roll_state(project_state: ProjectState = None):
+    """Read and display the current piano roll state, optionally updating project state."""
     try:
         if not PIANO_ROLL_STATE_FILE.exists():
             print(f"  Piano roll state file not found")
@@ -137,6 +207,13 @@ def display_piano_roll_state():
             for bar in sorted(notes_by_bar.keys()):
                 notes_str = ", ".join(notes_by_bar[bar])
                 print(f"    Bar {bar + 1}: {notes_str}")
+
+            # Update project state with notes if provided
+            if project_state:
+                channel_idx = project_state.current_channel_index
+                pattern_idx = project_state.current_pattern_index
+                if channel_idx >= 0 and pattern_idx >= 0:
+                    project_state.set_notes_for_channel_pattern(channel_idx, pattern_idx, notes)
         else:
             print(f"    (empty)")
 
@@ -158,6 +235,9 @@ class SimpleEventPrinter:
         # Track current state
         self._current_channel = "Unknown"
         self._current_pattern = "Unknown"
+
+        # Project state management
+        self.project_state = ProjectState()
 
     def start(self):
         """Start watching events in a background thread."""
@@ -191,6 +271,14 @@ class SimpleEventPrinter:
             "channel": self._current_channel,
             "pattern": self._current_pattern
         }
+
+    def get_project_state(self) -> dict:
+        """Get the full project state as a dictionary."""
+        return self.project_state.to_dict()
+
+    def get_project_name(self) -> str:
+        """Get the current project name."""
+        return self.project_state.project_name
 
     # -------------------------------------------------------------------------
     # Internal - Event Processing
@@ -253,9 +341,11 @@ class SimpleEventPrinter:
 
         # Handle project_loaded events
         if event_type == "project_loaded":
+            project_name = data.get('project_name', 'Unknown')
             channels = data.get('channels', [])
             patterns = data.get('patterns', [])
 
+            print(f"  Project: {project_name}")
             print(f"  Channels ({len(channels)}):")
             for ch in channels:
                 print(f"    {ch['index']}: {ch['name']}")
@@ -263,6 +353,11 @@ class SimpleEventPrinter:
             print(f"  Patterns ({len(patterns)}):")
             for pat in patterns:
                 print(f"    {pat['index']}: {pat['name']}")
+
+            # Update project state
+            self.project_state.set_project_name(project_name)
+            self.project_state.set_channels(channels)
+            self.project_state.set_patterns(patterns)
 
         # Handle target_channel_changed events
         elif event_type == "target_channel_changed":
@@ -275,6 +370,9 @@ class SimpleEventPrinter:
             self._current_channel = target_channel_name
             self._current_pattern = pattern_name
 
+            # Update project state with current channel/pattern
+            self.project_state.set_current_channel_pattern(target_channel_index, pattern_index)
+
             print(f"  Channel: {target_channel_index} - {target_channel_name}")
             print(f"  Pattern: {pattern_index} - {pattern_name}")
 
@@ -283,8 +381,8 @@ class SimpleEventPrinter:
             success = trigger_fl_studio_script()
             if success:
                 print(f"  ✓ Script triggered")
-                # Display the piano roll state after triggering
-                display_piano_roll_state()
+                # Display the piano roll state after triggering and update project state
+                display_piano_roll_state(self.project_state)
 
 
 # -----------------------------------------------------------------------------
