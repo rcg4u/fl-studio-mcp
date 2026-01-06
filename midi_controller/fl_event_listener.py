@@ -54,6 +54,41 @@ def trigger_fl_studio_script():
         return False
 
 
+def duration_to_note_name(duration_qn):
+    """Convert duration in quarter notes to note name (1/16, 1/8, 1/4, etc.)."""
+    # Map duration in quarter notes to note names
+    # Using 16th notes as the smallest unit for display
+    duration_map = {
+        0.0625: "1/16",   # 16th note (1/16 quarter note)
+        0.125: "1/8",     # 8th note
+        0.1875: "3/16",   # dotted 16th
+        0.25: "1/4",      # quarter note of the sixteenth
+        0.375: "3/8",     # dotted 8th
+        0.5: "1/2",       # half quarter note (8th)
+        0.75: "3/4",      # dotted quarter
+        1.0: "1",         # whole (quarter note)
+        1.5: "1.5",       # dotted whole
+        2.0: "2",         # double whole
+        3.0: "3",
+        4.0: "4"
+    }
+
+    # Find closest match (handle floating point precision)
+    for duration, name in sorted(duration_map.items()):
+        if abs(duration_qn - duration) < 0.01:
+            return name
+
+    # Fallback for unknown durations
+    if duration_qn < 0.1:
+        return "1/16"
+    elif duration_qn < 0.5:
+        return "1/8"
+    elif duration_qn < 1.0:
+        return "1/4"
+    else:
+        return str(duration_qn)
+
+
 def display_piano_roll_state():
     """Read and display the current piano roll state."""
     try:
@@ -78,6 +113,7 @@ def display_piano_roll_state():
             for note in notes:
                 midi_num = note.get('number', 0)
                 time_val = note.get('time', 0)
+                duration_val = note.get('length', 0)  # duration in ticks
 
                 # Convert to quarter notes and determine bar (4qn per bar)
                 time_qn = time_val / ppq
@@ -86,7 +122,12 @@ def display_piano_roll_state():
                 # Convert MIDI number to note name
                 octave = (midi_num // 12) - 1
                 note_name = note_names[midi_num % 12]
-                full_note = f"{note_name}{octave}"
+
+                # Convert duration from ticks to quarter notes
+                duration_qn = duration_val / ppq
+                duration_str = duration_to_note_name(duration_qn)
+
+                full_note = f"{note_name}{octave} ({duration_str})"
 
                 if bar not in notes_by_bar:
                     notes_by_bar[bar] = []
