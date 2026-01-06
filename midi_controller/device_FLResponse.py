@@ -113,6 +113,39 @@ def OnProjectLoad(status):
 
         # Get current pattern
         update_pattern()
+
+        # Collect all channels
+        channels_list = []
+        try:
+            channel_count = channels.channelCount()
+            for i in range(channel_count):
+                ch_name = channels.getChannelName(i)
+                channels_list.append({
+                    "index": i,
+                    "name": ch_name
+                })
+        except Exception as e:
+            print(f"Error collecting channels: {e}")
+
+        # Collect all patterns
+        patterns_list = []
+        try:
+            pattern_count = patterns.patternCount()
+            for i in range(pattern_count):
+                pat_name = patterns.getPatternName(i)
+                patterns_list.append({
+                    "index": i,
+                    "name": pat_name
+                })
+        except Exception as e:
+            print(f"Error collecting patterns: {e}")
+
+        # Send project loaded event with all channels and patterns
+        send_event("project_loaded", {
+            "channels": channels_list,
+            "patterns": patterns_list
+        })
+
     except Exception as e:
         print(f"Error in OnProjectLoad: {e}")
 

@@ -206,29 +206,44 @@ class SimpleEventPrinter:
         event_type = event.get('type', 'unknown')
         data = event.get('data', {})
 
-        # Extract event data
-        target_channel_name = data.get('target_channel_name', 'Unknown')
-        target_channel_index = data.get('target_channel_index', -1)
-        pattern_name = data.get('pattern_name', 'Unknown')
-        pattern_index = data.get('pattern_index', -1)
-
-        # Update current state
-        self._current_channel = target_channel_name
-        self._current_pattern = pattern_name
-
         # Print the event
         print()
         print(f"Event: {event_type}")
-        print(f"  Channel: {target_channel_index} - {target_channel_name}")
-        print(f"  Pattern: {pattern_index} - {pattern_name}")
 
-        # Trigger FL Studio script
-        print(f"  Triggering CMD+OPT+Y...")
-        success = trigger_fl_studio_script()
-        if success:
-            print(f"  ✓ Script triggered")
-            # Display the piano roll state after triggering
-            display_piano_roll_state()
+        # Handle project_loaded events
+        if event_type == "project_loaded":
+            channels = data.get('channels', [])
+            patterns = data.get('patterns', [])
+
+            print(f"  Channels ({len(channels)}):")
+            for ch in channels:
+                print(f"    {ch['index']}: {ch['name']}")
+
+            print(f"  Patterns ({len(patterns)}):")
+            for pat in patterns:
+                print(f"    {pat['index']}: {pat['name']}")
+
+        # Handle target_channel_changed events
+        elif event_type == "target_channel_changed":
+            target_channel_name = data.get('target_channel_name', 'Unknown')
+            target_channel_index = data.get('target_channel_index', -1)
+            pattern_name = data.get('pattern_name', 'Unknown')
+            pattern_index = data.get('pattern_index', -1)
+
+            # Update current state
+            self._current_channel = target_channel_name
+            self._current_pattern = pattern_name
+
+            print(f"  Channel: {target_channel_index} - {target_channel_name}")
+            print(f"  Pattern: {pattern_index} - {pattern_name}")
+
+            # Trigger FL Studio script
+            print(f"  Triggering CMD+OPT+Y...")
+            success = trigger_fl_studio_script()
+            if success:
+                print(f"  ✓ Script triggered")
+                # Display the piano roll state after triggering
+                display_piano_roll_state()
 
 
 # -----------------------------------------------------------------------------
