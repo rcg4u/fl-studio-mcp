@@ -5,13 +5,15 @@
 """
 FL Studio controller - Target Channel Tracking
 
-Tracks the piano roll's target channel and sends events when it changes.
-Uses OnSendTempMsg to reliably detect target channel menu interactions.
+Tracks the piano roll's target channel and current pattern, sending events
+when they change. Uses OnSendTempMsg to reliably detect target channel menu
+interactions.
 """
 
 import device
 import json
 import os
+import patterns
 import channels
 import ui
 
@@ -27,6 +29,10 @@ EVENT_FILE = os.path.join(SCRIPT_DIR, "fl_events.json")
 # Starts at index 0, will be updated as we detect changes
 _target_channel_index = 0
 _target_channel_name = "Unknown"
+
+# Current pattern tracking
+_current_pattern_index = 0
+_current_pattern_name = "Unknown"
 
 # The channel rack selection (green LED)
 # This is what's selected in the channel rack, may or may not match PR target
@@ -69,10 +75,49 @@ def find_channel_index_by_name(name):
         return -1
 
 
+def update_pattern():
+    """Update current pattern tracking."""
+    global _current_pattern_index, _current_pattern_name
+    try:
+        _current_pattern_index = patterns.patternNumber()
+        _current_pattern_name = patterns.getPatternName(_current_pattern_index)
+    except Exception as e:
+        print(f"Error updating pattern: {e}")
+
+
 def OnInit():
     print('FL Response initialized')
     print('Sending responses on: ' + device.getName())
-    print(f"Initial target channel: {_target_channel_index} - {_target_channel_name}")
+
+
+def OnProjectLoad(status):
+    """Called when project is loaded. Status 100 = fully loaded."""
+    global _target_channel_index, _target_channel_name
+    global _current_pattern_index, _current_pattern_name
+
+    # Only initialize on successful load
+    if status != 100:
+        return
+
+    try:
+        print("=" * 50)
+        print("OnProjectLoad: Initializing state...")
+
+        # Get current channel
+        channel_index = channels.channelNumber()
+        channel_name = channels.getChannelName(channel_index)
+        _target_channel_index = channel_index
+        _target_channel_name = channel_name
+        print(f"  Target channel: {channel_index} - {channel_name}")
+
+        # Get current pattern
+        update_pattern()
+        print(f"  Current pattern: {_current_pattern_index} - {_current_pattern_name}")
+
+        print("Project loaded successfully")
+        print("=" * 50)
+    except Exception as e:
+        print(f"Error in OnProjectLoad: {e}")
 
 
 def OnSysEx(fl_event):
@@ -84,6 +129,7 @@ def OnDirtyChannel(index, flag):
     """Called when a channel changes in the channel rack."""
     global _channel_rack_selection_index, _channel_rack_selection_name
     global _target_channel_index, _target_channel_name
+    global _current_pattern_index, _current_pattern_name
 
     # CE_Select (4) = channel selection changed (green LED click, mini piano roll, etc.)
     if flag == 4:
@@ -93,6 +139,9 @@ def OnDirtyChannel(index, flag):
             # Update channel rack selection (what's selected in the rack)
             _channel_rack_selection_index = index
             _channel_rack_selection_name = channel_name
+
+            # Update current pattern
+            update_pattern()
 
             print(f"[OnDirtyChannel] Channel rack selection: {index} - {channel_name}")
 
@@ -109,7 +158,9 @@ def OnDirtyChannel(index, flag):
                 # Send event with new target channel
                 # send_event("target_channel_changed", {
                 #    "target_channel_index": _target_channel_index,
-                #    "target_channel_name": _target_channel_name
+                #    "target_channel_name": _target_channel_name,
+                #    "pattern_index": _current_pattern_index,
+                #    "pattern_name": _current_pattern_name
                 #})
             else:
                 # Piano roll is NOT focused - this is just channel rack selection
@@ -148,6 +199,10 @@ def OnRefresh(flags):
     global _target_channel_index, _target_channel_name
     global _target_channel_menu_in_progress, _target_channel_menu_choice
     global _last_was_focused
+    global _current_pattern_index, _current_pattern_name
+
+    # Update current pattern
+    update_pattern()
 
     # Check if piano roll got focus
     has_focus = flags & 32  # HW_Dirty_FocusedWindow
@@ -167,10 +222,12 @@ def OnRefresh(flags):
                         _target_channel_name = channel_name
                         print(f"[OnRefresh] Menu CLOSED - applying target channel: {channel_index} - {channel_name}")
 
-                        # Send event with new target channel
+                        # Send event with new target channel and pattern
                         send_event("target_channel_changed", {
                             "target_channel_index": _target_channel_index,
-                            "target_channel_name": _target_channel_name
+                            "target_channel_name": _target_channel_name,
+                            "pattern_index": _current_pattern_index,
+                            "pattern_name": _current_pattern_name
                         })
                         # Mark as focused so OnIdle doesn't also send
                         _last_was_focused = True
@@ -189,10 +246,12 @@ def OnRefresh(flags):
                 _target_channel_name = channel_name
                 print(f"[OnRefresh] PR focused - target channel set from channel rack: {channel_index} - {channel_name}")
 
-                # Don't send event here - OnIdle will handle it
+                # Send event with new target channel and pattern
                 send_event("target_channel_changed", {
                     "target_channel_index": _target_channel_index,
-                    "target_channel_name": _target_channel_name
+                    "target_channel_name": _target_channel_name,
+                    "pattern_index": _current_pattern_index,
+                    "pattern_name": _current_pattern_name
                 })
                 # Mark as focused so OnIdle doesn't also send
                 _last_was_focused = True
@@ -201,6 +260,7 @@ def OnRefresh(flags):
 def OnIdle():
     """Called periodically - detects piano roll focus transitions."""
     global _last_was_focused
+    global _current_pattern_index, _current_pattern_name
 
     try:
         focused_window = ui.getFocusedFormID()
@@ -208,13 +268,19 @@ def OnIdle():
 
         # Detect transition from not-focused to focused
         if is_focused and not _last_was_focused:
+            # Update current pattern
+            update_pattern()
+
             print(f"[OnIdle] PR focus transition detected")
             print(f"[OnIdle] Current target channel: {_target_channel_index} - {_target_channel_name}")
+            print(f"[OnIdle] Current pattern: {_current_pattern_index} - {_current_pattern_name}")
 
-            # Send event with current target channel
+            # Send event with current target channel and pattern
             send_event("target_channel_changed", {
                 "target_channel_index": _target_channel_index,
-                "target_channel_name": _target_channel_name
+                "target_channel_name": _target_channel_name,
+                "pattern_index": _current_pattern_index,
+                "pattern_name": _current_pattern_name
             })
 
         # Update tracking state
