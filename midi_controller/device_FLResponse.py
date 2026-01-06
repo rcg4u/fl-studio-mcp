@@ -34,10 +34,7 @@ _target_channel_name = "Unknown"
 _current_pattern_index = 0
 _current_pattern_name = "Unknown"
 
-# The channel rack selection (green LED)
-# This is what's selected in the channel rack, may or may not match PR target
-_channel_rack_selection_index = None
-_channel_rack_selection_name = None
+# Note: Channel rack selection tracking removed - was set but never used
 
 # Track last focused state for OnIdle
 _last_was_focused = False
@@ -50,17 +47,16 @@ _target_channel_menu_choice = None
 
 def send_event(event_type, data):
     """Send event to listener via event file (JSONL format)."""
+    global _target_channel_name, _current_pattern_name
     try:
         event = {"type": event_type, "data": data}
         with open(EVENT_FILE, 'a') as f:
             f.write(json.dumps(event) + "\n")
-        # Print the complete event
-        print("=" * 50)
-        print("Event sent: " + event_type)
-        print(json.dumps(event, indent=2))
-        print("=" * 50)
+        print()
+        print(f"     Event {{ t: {_target_channel_name}, p: {_current_pattern_name} }}")
+        print()
     except Exception as e:
-        print("Event failed: " + event_type + " - " + str(e))
+        print(f"     Event failed: {event_type} - {str(e)}")
 
 
 def find_channel_index_by_name(name):
@@ -86,38 +82,42 @@ def update_pattern():
 
 
 def OnInit():
-    print('FL Response initialized')
-    print('Sending responses on: ' + device.getName())
+    global _target_channel_name, _current_pattern_name
+    print(f"OnInit()")
+    print()
+    print(f"     enter: target: {_target_channel_name}, pattern: {_current_pattern_name}")
+    print(f"     exit: target: {_target_channel_name}, pattern: {_current_pattern_name}")
+    print()
 
 
 def OnProjectLoad(status):
     """Called when project is loaded. Status 100 = fully loaded."""
     global _target_channel_index, _target_channel_name
     global _current_pattern_index, _current_pattern_name
+    print(f"OnProjectLoad(status={status})")
+    print()
+    print(f"     enter: target: {_target_channel_name}, pattern: {_current_pattern_name}")
 
     # Only initialize on successful load
     if status != 100:
+        print(f"     exit: target: {_target_channel_name}, pattern: {_current_pattern_name}")
+        print()
         return
 
     try:
-        print("=" * 50)
-        print("OnProjectLoad: Initializing state...")
-
         # Get current channel
         channel_index = channels.channelNumber()
         channel_name = channels.getChannelName(channel_index)
         _target_channel_index = channel_index
         _target_channel_name = channel_name
-        print(f"  Target channel: {channel_index} - {channel_name}")
 
         # Get current pattern
         update_pattern()
-        print(f"  Current pattern: {_current_pattern_index} - {_current_pattern_name}")
-
-        print("Project loaded successfully")
-        print("=" * 50)
     except Exception as e:
         print(f"Error in OnProjectLoad: {e}")
+
+    print(f"     exit: target: {_target_channel_name}, pattern: {_current_pattern_name}")
+    print()
 
 
 def OnSysEx(fl_event):
@@ -127,23 +127,38 @@ def OnSysEx(fl_event):
 
 def OnDirtyChannel(index, flag):
     """Called when a channel changes in the channel rack."""
-    global _channel_rack_selection_index, _channel_rack_selection_name
     global _target_channel_index, _target_channel_name
     global _current_pattern_index, _current_pattern_name
+
+    # Flag breakdown
+    flag_names = {
+        0: "CE_New",
+        1: "CE_Delete",
+        2: "CE_Replace",
+        3: "CE_Rename",
+        4: "CE_Select"
+    }
+    flag_name = flag_names.get(flag, f"unknown({flag})")
+
+    # Get channel name for display
+    try:
+        if index >= 0:
+            channel_name = channels.getChannelName(index)
+            index_str = f"{index} ({channel_name})"
+        else:
+            index_str = f"{index} (all channels)"
+    except:
+        index_str = str(index)
+
+    print(f"OnDirtyChannel(index={index_str}, flag={flag_name})")
+    print()
+    print(f"     enter: target: {_target_channel_name}, pattern: {_current_pattern_name}")
 
     # CE_Select (4) = channel selection changed (green LED click, mini piano roll, etc.)
     if flag == 4:
         try:
             channel_name = channels.getChannelName(index)
-
-            # Update channel rack selection (what's selected in the rack)
-            _channel_rack_selection_index = index
-            _channel_rack_selection_name = channel_name
-
-            # Update current pattern
             update_pattern()
-
-            print(f"[OnDirtyChannel] Channel rack selection: {index} - {channel_name}")
 
             # Check if piano roll is focused
             pr_is_focused = (ui.getFocusedFormID() == 3)  # widPianoRoll
@@ -158,22 +173,12 @@ def OnDirtyChannel(index, flag):
                 # Update the PR's target channel
                 _target_channel_index = index
                 _target_channel_name = channel_name
-                print(f"[OnDirtyChannel] PR focused - target channel updated: {index} - {channel_name}")
-
-                # Send event with new target channel
-                # send_event("target_channel_changed", {
-                #    "target_channel_index": _target_channel_index,
-                #    "target_channel_name": _target_channel_name,
-                #    "pattern_index": _current_pattern_index,
-                #    "pattern_name": _current_pattern_name
-                #})
-            else:
-                # Piano roll is NOT focused - this is just channel rack selection
-                # Do NOT update target channel (PR will use its own target when it opens)
-                print(f"[OnDirtyChannel] PR not focused - channel rack change only (target unchanged: {_target_channel_index} - {_target_channel_name})")
 
         except Exception as e:
             print(f"Error in OnDirtyChannel: {e}")
+
+    print(f"     exit: target: {_target_channel_name}, pattern: {_current_pattern_name}")
+    print()
 
 
 def OnSendTempMsg(msg, duration):
@@ -181,6 +186,7 @@ def OnSendTempMsg(msg, duration):
 
     This is the RELIABLE way to detect target channel menu interactions.
     """
+    global _target_channel_name, _current_pattern_name
     global _target_channel_menu_in_progress, _target_channel_menu_choice
 
     try:
@@ -206,6 +212,32 @@ def OnRefresh(flags):
     global _last_was_focused
     global _current_pattern_index, _current_pattern_name
 
+    # Flag breakdown
+    flag_names = []
+    flag_map = {
+        1: "HW_Dirty_Mixer_Sel",
+        2: "HW_Dirty_Mixer_Display",
+        4: "HW_Dirty_Mixer_Controls",
+        16: "HW_Dirty_RemoteLinks",
+        32: "HW_Dirty_FocusedWindow",
+        64: "HW_Dirty_Performance",
+        256: "HW_Dirty_LEDs",
+        512: "HW_Dirty_RemoteLinkValues",
+        1024: "HW_Dirty_Patterns",
+        2048: "HW_Dirty_Tracks",
+        4096: "HW_Dirty_ControlValues",
+        8192: "HW_ChannelEvent",
+        16384: "HW_Dirty_Colors"
+    }
+    for bit, name in flag_map.items():
+        if flags & bit:
+            flag_names.append(name)
+    flags_str = " | ".join(flag_names) if flag_names else "0"
+
+    print(f"OnRefresh(flags={flags_str})")
+    print()
+    print(f"     enter: target: {_target_channel_name}, pattern: {_current_pattern_name}")
+
     # Update current pattern
     update_pattern()
 
@@ -223,9 +255,9 @@ def OnRefresh(flags):
                     channel_index = find_channel_index_by_name(channel_name)
 
                     if channel_index >= 0:
+                        print(f"     Menu choice applied: {channel_name}")
                         _target_channel_index = channel_index
                         _target_channel_name = channel_name
-                        print(f"[OnRefresh] Menu CLOSED - applying target channel: {channel_index} - {channel_name}")
 
                         # Send event with new target channel and pattern
                         send_event("target_channel_changed", {
@@ -236,8 +268,6 @@ def OnRefresh(flags):
                         })
                         # Mark as focused so OnIdle doesn't also send
                         _last_was_focused = True
-                    else:
-                        print(f"[OnRefresh] Could not find channel index for: {channel_name}")
 
                 # Reset menu tracking
                 _target_channel_menu_in_progress = False
@@ -250,10 +280,6 @@ def OnRefresh(flags):
                 _target_channel_index = channel_index
                 _target_channel_name = channel_name
 
-               # _current_pattern_index = patterns.patternNumber()
-               # _current_pattern_name = patterns.patternName(_current_pattern_index)
-                print(f"[OnRefresh] PR focused - target channel set from channel rack: {channel_index} - {channel_name}")
-
                 # Send event with new target channel and pattern
                 send_event("target_channel_changed", {
                     "target_channel_index": _target_channel_index,
@@ -264,11 +290,16 @@ def OnRefresh(flags):
                 # Mark as focused so OnIdle doesn't also send
                 _last_was_focused = True
 
+    print(f"     exit: target: {_target_channel_name}, pattern: {_current_pattern_name}")
+    print()
+
 
 def OnIdle():
     """Called periodically - detects piano roll focus transitions."""
     global _last_was_focused
+    global _target_channel_index, _target_channel_name
     global _current_pattern_index, _current_pattern_name
+    # Note: OnIdle called too frequently to print every call
 
     try:
         focused_window = ui.getFocusedFormID()
@@ -278,10 +309,6 @@ def OnIdle():
         if is_focused and not _last_was_focused:
             # Update current pattern
             update_pattern()
-
-            print(f"[OnIdle] PR focus transition detected")
-            print(f"[OnIdle] Current target channel: {_target_channel_index} - {_target_channel_name}")
-            print(f"[OnIdle] Current pattern: {_current_pattern_index} - {_current_pattern_name}")
 
             # Send event with current target channel and pattern
             send_event("target_channel_changed", {
