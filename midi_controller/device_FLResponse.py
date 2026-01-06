@@ -147,6 +147,11 @@ def OnDirtyChannel(index, flag):
 
             # Check if piano roll is focused
             pr_is_focused = (ui.getFocusedFormID() == 3)  # widPianoRoll
+            pl_is_focused = (ui.getFocusedFormID() == 2)  # widPlayList
+
+            if pl_is_focused:
+                _target_channel_index = index
+                _target_channel_name = channel_name
 
             if pr_is_focused:
                 # Piano roll IS focused - this is likely the PR dropdown menu changing
@@ -244,6 +249,9 @@ def OnRefresh(flags):
                 channel_name = channels.getChannelName(channel_index)
                 _target_channel_index = channel_index
                 _target_channel_name = channel_name
+
+               # _current_pattern_index = patterns.patternNumber()
+               # _current_pattern_name = patterns.patternName(_current_pattern_index)
                 print(f"[OnRefresh] PR focused - target channel set from channel rack: {channel_index} - {channel_name}")
 
                 # Send event with new target channel and pattern
