@@ -8,7 +8,6 @@ def get_script_dir():
     return os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts")
 
 
-FLAG_FILE = os.path.join(get_script_dir(), "llm_interaction_active.flag")
 REQUEST_FILE = os.path.join(get_script_dir(), "mcp_request.json")
 RESPONSE_FILE = os.path.join(get_script_dir(), "mcp_response.json")
 STATE_FILE = os.path.join(get_script_dir(), "piano_roll_state.json")
@@ -202,53 +201,26 @@ def add_notes_to_piano_roll(request):
 
 def apply(form=None):
     """
-    Start LLM Interaction Mode (and process requests)
+    Process MCP requests and export piano roll state.
 
-    This script serves dual purposes:
-    1. Initial run (F3+_): Creates flag file and initializes LLM interaction mode
-    2. Auto-triggered runs (Cmd+Opt+Y): Processes pending MCP requests
-
-    The script is idempotent and can be re-run safely.
+    The MCP server is always active while running - no session flag needed.
     """
 
     # Debug: print to script output window
     print("=== BeginLLMInteraction.apply() called ===")
 
-    # Check flag file content to determine if this is initial run or auto-trigger
-    is_initial_run = True
-    if os.path.exists(FLAG_FILE):
+    # Process any pending requests
+    result = process_mcp_request()
+
+    # Write result to response file if there was a result
+    if result:
         try:
-            with open(FLAG_FILE, 'r') as f:
-                content = f.read().strip()
-            is_initial_run = (content != "active")
+            with open(RESPONSE_FILE, 'w') as f:
+                json.dump(result, f, indent=2)
         except:
             pass
 
-    print(f"Is initial run: {is_initial_run}")
-
-    if is_initial_run:
-        # First run or restarting: Set flag to active and initialize
-        print("Setting flag to 'active'")
-        with open(FLAG_FILE, 'w') as f:
-            f.write("active")
-
-        # Initialize empty request queue
-        with open(REQUEST_FILE, 'w') as f:
-            f.write("[]")
-        print("Initialized empty request queue")
-    else:
-        # Subsequent runs (auto-triggered): Process any pending requests
-        result = process_mcp_request()
-
-        # Write result to response file
-        if result:
-            try:
-                with open(RESPONSE_FILE, 'w') as f:
-                    json.dump(result, f, indent=2)
-            except:
-                pass
-
-    # Always export state after processing (or initialization)
+    # Always export state after processing
     print("Exporting piano roll state...")
     export_piano_roll_state()
     print(f"Exported {flp.score.noteCount} notes")

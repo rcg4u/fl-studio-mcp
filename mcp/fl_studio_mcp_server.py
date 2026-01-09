@@ -238,11 +238,9 @@ trigger = FLStudioTrigger()
 BRIDGE_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts"))
 REQUEST_FILE = BRIDGE_DIR / "mcp_request.json"
 RESPONSE_FILE = BRIDGE_DIR / "mcp_response.json"
-FLAG_FILE = BRIDGE_DIR / "llm_interaction_active.flag"
 
-# Path to MIDI controller Hardware directory for piano roll visibility flag
+# Path to MIDI controller Hardware directory
 HARDWARE_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Hardware/FLController"))
-PIANO_ROLL_VISIBLE_FLAG = HARDWARE_DIR / "piano_roll_visible.flag"
 PIANO_ROLL_CHANNEL_STATE_FILE = HARDWARE_DIR / "piano_roll_state.json"
 
 
@@ -357,20 +355,10 @@ class PianoRollChannelWatcher:
             except (json.JSONDecodeError, IOError):
                 pass
 
-        # Trigger refresh if needed and LLM mode is active
-        if should_trigger and self._is_llm_mode_active():
+        # Trigger refresh if needed
+        if should_trigger:
             self._log("Triggering piano roll state refresh...")
             self._trigger_refresh()
-
-    def _is_llm_mode_active(self):
-        """Check if LLM interaction mode is active"""
-        if not FLAG_FILE.exists():
-            return False
-        try:
-            with open(FLAG_FILE, 'r') as f:
-                return f.read().strip() == "active"
-        except:
-            return False
 
     def _trigger_refresh(self):
         """Focus piano roll, send F3+B keystroke, and restore focus (for pattern changes in FL Studio)"""
@@ -436,54 +424,6 @@ class PianoRollChannelWatcher:
 # Global watcher instance (started later)
 channel_watcher = None
 
-
-def should_auto_trigger():
-    """
-    Check if auto-triggering is enabled via flag file content.
-
-    Checks two conditions:
-    1. LLM interaction mode is active (flag file contains "active")
-    2. Piano roll window is visible (visibility flag contains "open")
-
-    If piano roll is closed while session is active, deactivate the session.
-
-    Returns:
-        bool: True if both conditions are met, False otherwise
-    """
-    # Check if LLM interaction mode is active
-    if not FLAG_FILE.exists():
-        return False
-
-    try:
-        with open(FLAG_FILE, 'r') as f:
-            interaction_active = f.read().strip() == "active"
-
-        if not interaction_active:
-            return False
-
-        # Check if piano roll window is visible
-        if not PIANO_ROLL_VISIBLE_FLAG.exists():
-            # If visibility flag doesn't exist yet, assume visible (backward compatibility)
-            return True
-
-        try:
-            with open(PIANO_ROLL_VISIBLE_FLAG, 'r') as f:
-                piano_roll_visible = f.read().strip() == "open"
-
-            # If session is active but piano roll is closed, deactivate the session
-            if not piano_roll_visible:
-                with open(FLAG_FILE, 'w') as f:
-                    f.write("inactive")
-                return False
-
-            return True
-
-        except:
-            # If can't read visibility flag, assume visible
-            return True
-
-    except:
-        return False
 
 @mcp.tool
 def send_notes(notes: list[dict], mode: str = "add") -> str:
