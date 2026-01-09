@@ -183,6 +183,67 @@ The system will be exposed as an MCP server allowing Claude to:
    Output: Results array
    ```
 
+## Event System & State Manager
+
+For tracking project state (channels, patterns, piano rolls), we use an event-driven architecture:
+
+### Components
+
+**FLStudioStateManager** (`fl_studio_state_manager.py`)
+- Monitors `fl_events.json` for events from FL Studio
+- Tracks channels, patterns, current target, and piano roll notes
+- Provides 4-method query API
+- Can run standalone or imported by MCP server
+
+**Event Source** (`device_FLResponse.py`)
+- Sends events when project loads or piano roll focus changes
+- Writes to `fl_events.json` (JSONL format)
+
+### Events
+
+| Event | When Sent | Data |
+|-------|-----------|------|
+| `project_loaded` | Project loads | All channels and patterns |
+| `target_channel_changed` | Piano roll focus/channel change | Current channel, pattern, triggers note refresh |
+
+### Query API
+
+```python
+from midi_controller.fl_studio_state_manager import FLStudioStateManager
+
+manager = FLStudioStateManager()
+manager.start()
+
+channels = manager.get_channels()
+patterns = manager.get_patterns()
+target = manager.get_current_target_channel_and_pattern()
+notes = manager.get_current_piano_roll_notes()
+```
+
+### Integration with Dual-Controller System
+
+The event system complements the dual-controller SysEx system:
+
+| System | Purpose | Communication |
+|--------|---------|---------------|
+| **Dual-Controller** (FLRequest/FLResponse) | Direct API calls, commands | MIDI SysEx (bidirectional) |
+| **Event System** (FLStudioStateManager) | State tracking, queries | JSONL file events |
+
+Both systems can be used together:
+- Use SysEx for immediate actions (switch patterns, get info)
+- Use event system for state queries (what channels exist, current notes)
+
+### Event System File Locations
+
+```
+~/Documents/Image-Line/FL Studio/Settings/Hardware/FLController/
+├── fl_events.json                 # Event stream (JSONL)
+└── project_state.json             # Persisted state
+
+midi_controller/
+└── fl_studio_state_manager.py    # State manager class
+```
+
 ## File Locations
 
 ### Root Directory Files

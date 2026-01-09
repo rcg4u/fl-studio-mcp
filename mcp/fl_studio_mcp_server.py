@@ -14,9 +14,30 @@ import time
 import threading
 from pathlib import Path
 
+# Import StateManager for FL Studio operations
+from midi_controller.fl_studio_state_manager import get_state_manager
+
 
 # Initialize FastMCP server
 mcp = FastMCP("FL Studio MCP Server")
+
+# =============================================================================
+# State Manager Integration (lazy initialization)
+# =============================================================================
+
+_state_manager = None
+_state_manager_started = False
+
+
+def _get_state_manager():
+    """Get or create the StateManager singleton (lazy initialization)."""
+    global _state_manager, _state_manager_started
+    if _state_manager is None:
+        _state_manager = get_state_manager()
+    if not _state_manager_started:
+        _state_manager.start()
+        _state_manager_started = True
+    return _state_manager
 
 
 
@@ -218,10 +239,6 @@ BRIDGE_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/
 REQUEST_FILE = BRIDGE_DIR / "mcp_request.json"
 RESPONSE_FILE = BRIDGE_DIR / "mcp_response.json"
 FLAG_FILE = BRIDGE_DIR / "llm_interaction_active.flag"
-
-# Path to the piano roll scripts directory
-SCRIPT_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts"))
-STATE_FILE = SCRIPT_DIR / "piano_roll_state.json"
 
 # Path to MIDI controller Hardware directory for piano roll visibility flag
 HARDWARE_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Hardware/FLController"))
@@ -469,31 +486,6 @@ def should_auto_trigger():
         return False
 
 @mcp.tool
-def get_piano_roll_state() -> str:
-    """
-    Read the current piano roll state from the exported JSON file.
-
-    The FL Studio script must have exported the state by pressing the 'Export State' button.
-
-    Returns:
-        A JSON string containing all notes and metadata from the piano roll.
-    """
-    if not STATE_FILE.exists():
-        return json.dumps({
-            "error": "No piano roll state file found. Please run the Piano Roll Bridge script and click 'Export State'.",
-            "expected_location": str(STATE_FILE)
-        })
-
-    try:
-        with open(STATE_FILE, 'r') as f:
-            state = json.load(f)
-        return json.dumps(state, indent=2)
-    except Exception as e:
-        return json.dumps({
-            "error": f"Failed to read piano roll state: {str(e)}"
-        })
-
-@mcp.tool
 def send_notes(notes: list[dict], mode: str = "add") -> str:
     """
     Send arbitrary notes to the FL Studio piano roll.
@@ -516,66 +508,14 @@ def send_notes(notes: list[dict], mode: str = "add") -> str:
     Returns:
         Status of the note creation request
     """
-    if not notes:
-        return "Error: notes list cannot be empty"
-
-    # Validate and prepare notes
-    prepared_notes = []
-    for i, note in enumerate(notes):
-        if "midi" not in note:
-            return f"Error: note {i} missing required 'midi' field"
-        if "duration" not in note:
-            return f"Error: note {i} missing required 'duration' field"
-
-        prepared_note = {
-            "midi": note["midi"],
-            "duration": note["duration"],
-            "time": note.get("time", 0),  # Time in quarter notes
-            "velocity": note.get("velocity", 0.8)
-        }
-        prepared_notes.append(prepared_note)
-
-    # Create request for the FL Studio bridge
-    request = {
-        "action": "add_notes",
-        "notes": prepared_notes,
-        "mode": mode
-    }
-
     try:
-        # Read existing requests or create new list
-        requests = []
-        if REQUEST_FILE.exists():
-            try:
-                with open(REQUEST_FILE, 'r') as f:
-                    content = json.load(f)
-                    if isinstance(content, list):
-                        requests = content
-            except:
-                pass
-
-        # If mode is replace, clear the list first and add a clear action
-        if mode == "replace":
-            requests = [{"action": "clear"}]
-
-        # Only proceed if LLM interaction mode is active
-        if not should_auto_trigger():
-            return f"LLM interaction mode is inactive. Run _BeginLLMInteraction from piano roll menu to start. Notes not queued: {[n['midi'] for n in prepared_notes]}"
-
-        # Append this notes request
-        requests.append(request)
-
-        # Write updated list
-        with open(REQUEST_FILE, 'w') as f:
-            json.dump(requests, f, indent=2)
-
-        # Trigger FL Studio to process the request
-        trigger_success = trigger.trigger_flstudio()
-        if trigger_success:
-            return f"Sent {len(prepared_notes)} notes to FL Studio (auto-triggered). MIDI notes: {[n['midi'] for n in prepared_notes]}"
+        manager = _get_state_manager()
+        success = manager.send_notes(notes, mode=mode)
+        if success:
+            midi_notes = [n.get('midi', '?') for n in notes]
+            return f"Sent {len(notes)} notes to FL Studio. MIDI notes: {midi_notes}"
         else:
-            return f"Sent {len(prepared_notes)} notes to queue (trigger failed - FL Studio may not be running). MIDI notes: {[n['midi'] for n in prepared_notes]}"
-
+            return "Failed to send notes. Make sure LLM interaction mode is active (run BeginLLMInteraction in FL Studio)."
     except Exception as e:
         return f"Error sending notes: {str(e)}"
 
@@ -599,76 +539,16 @@ def delete_notes(notes: list[dict]) -> str:
     Returns:
         Status of the delete request
     """
-    if not notes:
-        return "Error: notes list cannot be empty"
-
-    # Validate notes
-    for i, note in enumerate(notes):
-        if "midi" not in note:
-            return f"Error: note {i} missing required 'midi' field"
-        if "time" not in note:
-            return f"Error: note {i} missing required 'time' field"
-
-    # Create request for the FL Studio bridge
-    request = {
-        "action": "delete_notes",
-        "notes": notes
-    }
-
     try:
-        # Read existing requests or create new list
-        requests = []
-        if REQUEST_FILE.exists():
-            try:
-                with open(REQUEST_FILE, 'r') as f:
-                    content = json.load(f)
-                    if isinstance(content, list):
-                        requests = content
-            except:
-                pass
-
-        # Only proceed if LLM interaction mode is active
-        if not should_auto_trigger():
-            return f"LLM interaction mode is inactive. Run _BeginLLMInteraction from piano roll menu to start. Delete not queued: {[n['midi'] for n in notes]}"
-
-        # Append this delete request
-        requests.append(request)
-
-        # Write updated list
-        with open(REQUEST_FILE, 'w') as f:
-            json.dump(requests, f, indent=2)
-
-        # Trigger FL Studio to process the request
-        trigger_success = trigger.trigger_flstudio()
-        if trigger_success:
-            return f"Delete request for {len(notes)} notes sent to FL Studio (auto-triggered). MIDI notes: {[n['midi'] for n in notes]}"
+        manager = _get_state_manager()
+        success = manager.delete_notes(notes)
+        if success:
+            midi_notes = [n.get('midi', '?') for n in notes]
+            return f"Delete request for {len(notes)} notes sent to FL Studio. MIDI notes: {midi_notes}"
         else:
-            return f"Delete request for {len(notes)} notes added to queue (trigger failed - FL Studio may not be running). MIDI notes: {[n['midi'] for n in notes]}"
-
+            return "Failed to delete notes. Make sure LLM interaction mode is active (run BeginLLMInteraction in FL Studio)."
     except Exception as e:
-        return f"Error creating delete request: {str(e)}"
-
-
-@mcp.tool
-def clear_queue() -> str:
-    """
-    Clear the pending request queue without affecting the piano roll.
-
-    Use this to discard accumulated add/delete requests before they are applied.
-    The piano roll itself remains unchanged until you send new requests.
-
-    Returns:
-        Status of the queue clearing operation
-    """
-    try:
-        # Clear the request file
-        with open(REQUEST_FILE, 'w') as f:
-            f.write("[]")
-
-        return "Queue cleared. All pending requests have been discarded."
-
-    except Exception as e:
-        return f"Error clearing queue: {str(e)}"
+        return f"Error deleting notes: {str(e)}"
 
 
 @mcp.tool
@@ -683,28 +563,153 @@ def clear_piano_roll() -> str:
         Status of the clear request
     """
     try:
-        # Only proceed if LLM interaction mode is active
-        if not should_auto_trigger():
-            return "LLM interaction mode is inactive. Run _BeginLLMInteraction from piano roll menu (or F3+B) to start. Clear not queued."
-
-        # Create clear request
-        request = {
-            "action": "clear"
-        }
-
-        # Write clear request
-        with open(REQUEST_FILE, 'w') as f:
-            json.dump([request], f, indent=2)
-
-        # Trigger FL Studio to process the clear
-        trigger_success = trigger.trigger_flstudio()
-        if trigger_success:
-            return "Clear request sent to FL Studio (auto-triggered). All notes will be removed."
+        manager = _get_state_manager()
+        success = manager.clear_piano_roll()
+        if success:
+            return "Clear request sent to FL Studio. All notes will be removed."
         else:
-            return "Clear request added to queue (trigger failed - FL Studio may not be running)."
-
+            return "Failed to clear piano roll. Make sure LLM interaction mode is active (run BeginLLMInteraction in FL Studio)."
     except Exception as e:
-        return f"Error creating clear request: {str(e)}"
+        return f"Error clearing piano roll: {str(e)}"
+
+
+@mcp.tool
+def get_project_channels() -> str:
+    """
+    Get all channels in the current FL Studio project.
+
+    Queries FL Studio directly for fresh data.
+
+    Returns:
+        JSON string containing array of channels with 'index' and 'name' fields.
+
+    Example:
+        get_project_channels()  # Returns: [{"index": 0, "name": "808 Kick"}, ...]
+    """
+    try:
+        manager = _get_state_manager()
+        channels = manager.get_channels()
+        return json.dumps(channels, indent=2)
+    except Exception as e:
+        return json.dumps({"error": f"Error getting channels: {str(e)}"})
+
+
+@mcp.tool
+def get_project_patterns() -> str:
+    """
+    Get all patterns in the current FL Studio project.
+
+    Queries FL Studio directly for fresh data (1-based only, skips Pattern 0).
+
+    Returns:
+        JSON string containing array of patterns with 'index' and 'name' fields.
+
+    Example:
+        get_project_patterns()  # Returns: [{"index": 1, "name": "Drums"}, ...]
+    """
+    try:
+        manager = _get_state_manager()
+        patterns = manager.get_patterns()
+        return json.dumps(patterns, indent=2)
+    except Exception as e:
+        return json.dumps({"error": f"Error getting patterns: {str(e)}"})
+
+
+@mcp.tool
+def get_current_target() -> str:
+    """
+    Get the current target channel and pattern from the state manager.
+
+    Returns information about which channel and pattern are currently targeted
+    in the piano roll. This is automatically updated when you open different
+    piano rolls or change the target channel.
+
+    Returns:
+        JSON string containing:
+        - channel_index: Current channel index (0-based)
+        - channel_name: Current channel name
+        - pattern_index: Current pattern index (1-based)
+        - pattern_name: Current pattern name
+        Or null if no target has been set yet.
+
+    Example:
+        get_current_target()  # Returns: {"channel_index": 0, "channel_name": "808 Kick",
+                               #           "pattern_index": 1, "pattern_name": "Drums"}
+    """
+    try:
+        manager = _get_state_manager()
+        target = manager.get_current_target_channel_and_pattern()
+        if target:
+            return json.dumps(target, indent=2)
+        else:
+            return json.dumps({
+                "info": "No target set yet. Open a piano roll in FL Studio to trigger target_channel_changed event."
+            })
+    except Exception as e:
+        return json.dumps({"error": f"Error getting current target: {str(e)}"})
+
+
+@mcp.tool
+def get_current_piano_roll_notes() -> str:
+    """
+    Get the notes for the current piano roll from the state manager.
+
+    Returns all notes in the currently targeted piano roll, including timing,
+    duration, velocity, and other properties. The state is automatically
+    refreshed when you change channels or patterns.
+
+    Returns:
+        JSON string containing:
+        - ppq: Pulses per quarter note (timing resolution)
+        - noteCount: Number of notes in the piano roll
+        - notes: Array of note objects with properties (number, time, length, velocity, etc.)
+        Or null if no notes have been loaded yet.
+
+    Example:
+        get_current_piano_roll_notes()  # Returns: {"ppq": 96, "noteCount": 5,
+                                         #           "notes": [{"number": 60, "time": 0, ...}, ...]}
+    """
+    try:
+        manager = _get_state_manager()
+        notes = manager.get_current_piano_roll_notes()
+        if notes:
+            return json.dumps(notes, indent=2)
+        else:
+            return json.dumps({
+                "info": "No piano roll notes loaded. Ensure target_channel_changed event has been received.",
+                "hint": "Open a piano roll in FL Studio to trigger automatic note loading."
+            })
+    except Exception as e:
+        return json.dumps({"error": f"Error getting piano roll notes: {str(e)}"})
+
+
+@mcp.tool
+def reload() -> str:
+    """
+    Manually trigger a piano roll state refresh.
+
+    This saves current window focus, activates FL Studio, focuses the piano roll,
+    sends CMD+OPT+Y (or Ctrl+Alt+Y on Windows) to trigger the piano roll script,
+    and then restores focus.
+
+    Use this to manually refresh the piano roll state if automatic updates
+    aren't working or if you've made manual edits in FL Studio.
+
+    Returns:
+        Status message indicating success or failure.
+
+    Example:
+        reload()  # Returns: "Piano roll reload triggered successfully."
+    """
+    try:
+        manager = _get_state_manager()
+        success = manager.manual_reload()
+        if success:
+            return "Piano roll reload triggered successfully. State will refresh momentarily."
+        else:
+            return "Failed to trigger piano roll reload. Check that FL Studio is running."
+    except Exception as e:
+        return f"Error triggering piano roll reload: {str(e)}"
 
 
 def _strip_response(response_str):
@@ -712,120 +717,6 @@ def _strip_response(response_str):
     if isinstance(response_str, str) and response_str.startswith("Result: "):
         return response_str[8:]  # Remove "Result: " prefix
     return response_str
-
-
-def _fetch_channels():
-    """
-    Helper function to fetch all channels from FL Studio.
-
-    Returns:
-        List of dicts with 'index' and 'name' for each channel
-
-    Raises:
-        Exception if unable to fetch channels
-    """
-    from midi_controller.fl_dual_port import send_command
-
-    # Get channel count
-    count_str = send_command("channels.channelCount()", expect_response=True)
-    count_str = _strip_response(count_str)
-    channel_count = int(count_str)
-
-    # Get each channel name
-    channels = []
-    for i in range(channel_count):
-        channel_name = send_command(f"channels.getChannelName({i})", expect_response=True)
-        channel_name = _strip_response(channel_name)
-        channels.append({
-            "index": i,
-            "name": channel_name
-        })
-
-    return channels
-
-
-@mcp.tool
-def get_channels() -> str:
-    """
-    Get all channels in the current FL Studio project.
-
-    Returns a JSON array with channel information including:
-    - index: Channel index (0-based)
-    - name: Channel name
-
-    Returns:
-        JSON string containing array of channels
-
-    Example:
-        get_channels()  # Returns: [{"index": 0, "name": "808 Kick"}, {"index": 1, "name": "808 Clap"}, ...]
-    """
-    try:
-        channels = _fetch_channels()
-        return json.dumps(channels, indent=2)
-
-    except TimeoutError:
-        return json.dumps({
-            "error": "No response from FL Studio. Ensure FL Studio is running and MIDI controllers are set up correctly."
-        })
-    except ValueError as e:
-        return json.dumps({
-            "error": f"Error parsing response from FL Studio: {str(e)}"
-        })
-    except Exception as e:
-        return json.dumps({
-            "error": f"Error getting channels: {str(e)}"
-        })
-
-
-@mcp.tool
-def get_piano_roll_channel() -> str:
-    """
-    Get the channel currently shown in the piano roll.
-
-    Returns both the channel index and name for easy identification.
-
-    Returns:
-        JSON string containing:
-        - index: Channel index (0-based)
-        - name: Channel name
-
-    Example:
-        get_piano_roll_channel()  # Returns: {"index": 1, "name": "FLEX Bass"}
-    """
-    try:
-        # Read from the piano roll state file written by the MIDI controller
-        # This gives us the actual piano roll channel, not just the selected channel
-        if not PIANO_ROLL_CHANNEL_STATE_FILE.exists():
-            return json.dumps({
-                "error": "Piano roll state file not found. Ensure FL Studio MIDI controller is running."
-            })
-
-        with open(PIANO_ROLL_CHANNEL_STATE_FILE, 'r') as f:
-            state = json.load(f)
-
-        channel_index = state.get('channel')
-        channel_name = state.get('channelName', 'Unknown')
-        visible = state.get('visible', False)
-
-        if channel_index is None:
-            return json.dumps({
-                "error": "No channel information in piano roll state file."
-            })
-
-        return json.dumps({
-            "index": channel_index,
-            "name": channel_name,
-            "visible": visible
-        })
-
-    except json.JSONDecodeError as e:
-        return json.dumps({
-            "error": f"Error parsing piano roll state file: {str(e)}"
-        })
-    except Exception as e:
-        return json.dumps({
-            "error": f"Error getting piano roll channel: {str(e)}"
-        })
 
 
 @mcp.tool

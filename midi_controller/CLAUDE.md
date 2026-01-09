@@ -218,6 +218,61 @@ dependencies = [
 - Batch requests (multiple operations)
 - Custom keyboard shortcuts for piano roll scripts
 
+## State Manager (FLStudioStateManager)
+
+For tracking FL Studio project state (channels, patterns, piano roll notes), use the `FLStudioStateManager` class.
+
+### Usage
+
+```python
+from midi_controller.fl_studio_state_manager import FLStudioStateManager
+
+manager = FLStudioStateManager()
+manager.start()
+
+# Query methods
+channels = manager.get_channels()                           # [{'index': 0, 'name': '808 Kick'}, ...]
+patterns = manager.get_patterns()                           # [{'index': 1, 'name': 'Drums'}, ...]
+target = manager.get_current_target_channel_and_pattern()   # Current channel/pattern
+notes = manager.get_current_piano_roll_notes()              # Current piano roll notes
+
+manager.stop()
+```
+
+### Standalone Mode
+
+For testing/debugging without MCP server:
+
+```bash
+python3 midi_controller/fl_studio_state_manager.py
+> channels    # List all channels
+> patterns    # List all patterns
+> target      # Show current target
+> notes       # Show current piano roll notes
+> summary     # Show all state
+```
+
+### How It Works
+
+1. **device_FLResponse.py** (FL Studio hardware device) sends events to `fl_events.json`
+2. **FLStudioStateManager** monitors the event file in background thread
+3. On `target_channel_changed` event:
+   - Updates current target
+   - Sends CMD+OPT+Y to trigger piano roll script
+   - Loads notes from `piano_roll_state.json`
+4. Provides query API for getting state
+
+### Files
+
+```
+~/Documents/Image-Line/FL Studio/Settings/Hardware/FLController/
+├── fl_events.json                 # Event stream (JSONL)
+└── project_state.json             # Persisted state
+
+midi_controller/
+└── fl_studio_state_manager.py    # State manager class
+```
+
 ## Integration with fl-studio-mcp
 
 This midi-controller project works with the fl-studio-mcp system:

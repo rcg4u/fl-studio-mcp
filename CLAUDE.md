@@ -279,6 +279,36 @@ Claude → MCP Server → Request Queue (JSON) → MCP Server Sends Trigger
                                            State Export (JSON)
 ```
 
+### Event System & State Tracking
+
+For querying FL Studio project state (channels, patterns, piano rolls), the system uses an event-driven architecture:
+
+```
+FL Studio (device_FLResponse.py)
+    ↓ sends events
+fl_events.json
+    ↓ monitored by
+FLStudioStateManager (fl_studio_state_manager.py)
+    ↓ provides query API
+MCP Server
+    ↓
+Claude
+```
+
+**Events sent by FL Studio:**
+- `project_loaded` - All channels and patterns (when project opens)
+- `target_channel_changed` - Current channel/pattern (when piano roll focus changes)
+
+**State Manager Query API:**
+- `get_channels()` - List all channels in the project
+- `get_patterns()` - List all patterns in the project
+- `get_current_target_channel_and_pattern()` - Get current selection
+- `get_current_piano_roll_notes()` - Get notes for current piano roll
+
+This event system complements the piano roll operations:
+- Use **piano roll tools** (`send_notes`, `delete_notes`) to modify notes
+- Use **state queries** to discover what channels/patterns exist and get current state
+
 ## Workflow
 
 1. **Run BeginLLMInteraction** (Tools → Scripting → BeginLLMInteraction) → Start session

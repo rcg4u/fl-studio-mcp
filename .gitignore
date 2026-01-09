@@ -72,3 +72,7 @@ uv.lock
 
 # Python version file (managed by uv)
 .python-version
+
+# FL Studio project directories (local projects, not part of repo)
+KickAndBass/
+TwoPatternsKickAndBass/
