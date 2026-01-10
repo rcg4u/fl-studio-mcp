@@ -39,9 +39,6 @@ def _get_state_manager():
         _state_manager_started = True
     return _state_manager
 
-
-
-
 class FLStudioTrigger:
     """Cross-platform FL Studio trigger - integrated into MCP server"""
 
@@ -244,185 +241,25 @@ HARDWARE_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Setting
 PIANO_ROLL_CHANNEL_STATE_FILE = HARDWARE_DIR / "piano_roll_state.json"
 
 
-class PianoRollChannelWatcher:
-    """
-    Watches for piano roll channel and pattern changes and triggers state refresh.
-
-    When the user opens a different channel's piano roll or changes patterns
-    while LLM interaction mode is active, this triggers Cmd+Opt+Y to refresh the notes state.
-    """
-
-    def __init__(self, trigger_instance):
-        self.trigger = trigger_instance
-        self.running = False
-        self.thread = None
-        self.last_channel = None
-        self.last_visible = None
-        self.last_pattern = None
-        self.last_channel_mtime = 0
-        self.last_pattern_mtime = 0
-        self.log_file = HARDWARE_DIR / "watcher.log"
-
-    def _log(self, message):
-        """Write a timestamped message to the log file"""
-        try:
-            from datetime import datetime
-            timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-            with open(self.log_file, 'a') as f:
-                f.write(f"[{timestamp}] {message}\n")
-        except:
-            pass
-
-    def start(self):
-        """Start the watcher in a background thread"""
-        if self.running:
-            return
-        self.running = True
-        self.thread = threading.Thread(target=self._watch_loop, daemon=True)
-        self.thread.start()
-        self._log("Started watching for channel changes")
-
-    def stop(self):
-        """Stop the watcher"""
-        self.running = False
-        if self.thread:
-            self.thread.join(timeout=1)
-
-    def _watch_loop(self):
-        """Main watch loop - polls the piano_roll_state.json file"""
-        while self.running:
-            try:
-                self._check_for_changes()
-            except Exception as e:
-                self._log(f"Error: {e}")
-            time.sleep(0.2)  # Poll every 200ms
-
-    def _check_for_changes(self):
-        """Check if piano roll channel or pattern has changed"""
-        should_trigger = False
-
-        # Check channel state file
-        if PIANO_ROLL_CHANNEL_STATE_FILE.exists():
-            try:
-                current_mtime = os.path.getmtime(PIANO_ROLL_CHANNEL_STATE_FILE)
-                if current_mtime != self.last_channel_mtime:
-                    self.last_channel_mtime = current_mtime
-
-                    with open(PIANO_ROLL_CHANNEL_STATE_FILE, 'r') as f:
-                        state = json.load(f)
-
-                    visible = state.get('visible', False)
-                    channel = state.get('channel')
-                    channel_name = state.get('channelName', 'Unknown')
-
-                    # Case 1: Piano roll just opened
-                    if visible and not self.last_visible:
-                        self._log(f"Piano roll opened with channel {channel}: {channel_name}")
-                        should_trigger = True
-
-                    # Case 2: Channel changed while piano roll is open
-                    elif visible and self.last_visible and channel != self.last_channel:
-                        self._log(f"Channel changed to {channel}: {channel_name}")
-                        should_trigger = True
-
-                    # Update tracked state
-                    self.last_visible = visible
-                    self.last_channel = channel
-            except (json.JSONDecodeError, IOError):
-                pass
-
-        # Check pattern state file
-        PATTERN_STATE_FILE = HARDWARE_DIR / "fl_pattern_state.json"
-        if PATTERN_STATE_FILE.exists():
-            try:
-                current_mtime = os.path.getmtime(PATTERN_STATE_FILE)
-                if current_mtime != self.last_pattern_mtime:
-                    self.last_pattern_mtime = current_mtime
-
-                    with open(PATTERN_STATE_FILE, 'r') as f:
-                        state = json.load(f)
-
-                    pattern = state.get('pattern')
-
-                    # Case 3: Pattern changed
-                    if self.last_pattern is not None and pattern != self.last_pattern:
-                        pattern_name = state.get('patternName', 'Unknown')
-                        self._log(f"Pattern changed to {pattern}: {pattern_name}")
-                        should_trigger = True
-
-                    # Update tracked pattern
-                    self.last_pattern = pattern
-            except (json.JSONDecodeError, IOError):
-                pass
-
-        # Trigger refresh if needed
-        if should_trigger:
-            self._log("Triggering piano roll state refresh...")
-            self._trigger_refresh()
-
-    def _trigger_refresh(self):
-        """Focus piano roll, send F3+B keystroke, and restore focus (for pattern changes in FL Studio)"""
-        try:
-            from midi_controller.fl_dual_port import send_command
-
-            # Save current focused window ID (likely playlist: widPlaylist = 5)
-            saved_window_id = None
-            try:
-                result = send_command("ui.getFocusedFormID()", expect_response=True)
-                self._log(f"ui.getFocusedFormID() returned: {repr(result)}")
-
-                # Strip "Result: " prefix if present
-                if result and isinstance(result, str):
-                    if result.startswith("Result: "):
-                        result = result[8:]  # Remove "Result: " prefix
-
-                    if result and result != "None":
-                        saved_window_id = int(result.strip())
-                        self._log(f"Saved current focus: window ID {saved_window_id}")
-                    else:
-                        self._log("ui.getFocusedFormID() returned None or empty")
-            except Exception as e:
-                self._log(f"Failed to get current focus: {e}")
-
-            # Focus the piano roll window
-            try:
-                send_command("ui.setFocused(3)", expect_response=False)  # widPianoRoll = 3
-                time.sleep(0.15)  # Brief wait for window focus
-                self._log("Piano roll focused (widPianoRoll = 3)")
-            except Exception as e:
-                self._log(f"Failed to focus piano roll: {e}")
-
-            # Send F3+B keystroke
-            from pynput.keyboard import Key, Controller
-            keyboard = Controller()
-
-            # Press F3 and B together (F3 held while B is pressed)
-            with keyboard.pressed(Key.f3):
-                keyboard.press('b')
-                keyboard.release('b')
-
-            self._log("F3+B keystroke sent")
-
-            # Wait for FL Studio to process the keystroke
-            time.sleep(0.3)
-
-            # Restore focus to previous window (e.g., playlist)
-            if saved_window_id is not None:
-                try:
-                    send_command(f"ui.setFocused({saved_window_id})", expect_response=False)
-                    self._log(f"Restored focus to window ID {saved_window_id}")
-                    time.sleep(0.1)  # Brief wait for focus to take effect
-                except Exception as e:
-                    self._log(f"Failed to restore focus: {e}")
-            else:
-                self._log("Warning: No saved window ID to restore focus to")
-
-        except Exception as e:
-            self._log(f"Failed in _trigger_refresh: {e}")
-
-
-# Global watcher instance (started later)
-channel_watcher = None
+# =============================================================================
+# DISABLED: PianoRollChannelWatcher - Testing if StateManager handles everything
+# =============================================================================
+# This class watched for piano roll channel/pattern changes and triggered refresh.
+# Commented out to test if StateManager's event-based system is sufficient.
+#
+# class PianoRollChannelWatcher:
+#     """
+#     Watches for piano roll channel and pattern changes and triggers state refresh.
+#
+#     When the user opens a different channel's piano roll or changes patterns
+#     while LLM interaction mode is active, this triggers Cmd+Opt+Y to refresh the notes state.
+#     """
+#
+#     [entire class implementation removed for testing]
+#
+# # Global watcher instance (started later)
+# channel_watcher = None
+# =============================================================================
 
 
 @mcp.tool
@@ -712,6 +549,264 @@ def show_piano_roll(channel_id: int) -> str:
         return f"Error showing piano roll: {str(e)}"
 
 
+def _select_pattern_internal(pattern_identifier):
+    """
+    Internal helper to select a pattern without returning a message.
+    Used by both select_pattern tool and get_all_pattern_notes.
+
+    Returns the pattern index on success, None on failure.
+    """
+    try:
+        from midi_controller.fl_dual_port import send_command
+
+        # Save current window focus before making changes
+        saved_window = trigger.save_current_window()
+
+        # Try to parse as index first
+        pattern_index = None
+        try:
+            pattern_index = int(pattern_identifier)
+        except ValueError:
+            # Not a number, so it's a name - look it up
+            manager = _get_state_manager()
+            patterns = manager.get_patterns()
+            for p in patterns:
+                if p['name'].lower() == str(pattern_identifier).lower():
+                    pattern_index = p['index']
+                    break
+
+        if pattern_index is None:
+            return None
+
+        # Step 1: Jump to pattern
+        send_command(f"patterns.jumpToPattern({pattern_index})", expect_response=False)
+        time.sleep(0.001)  # Wait 0.001 seconds after jumpToPattern
+
+        # Step 2: Focus the piano roll window
+        send_command("ui.setFocused(3)", expect_response=False)  # widPianoRoll = 3
+        time.sleep(0.001)  # Wait 0.001 seconds after focusing piano roll
+
+        # Step 3: Trigger script execution (in the middle)
+        manager = _get_state_manager()
+        manager._trigger_script_execution()
+        time.sleep(0.001)  # Wait 0.001 seconds after trigger
+
+        # Step 4: Focus the playlist window (at the end)
+        send_command("ui.setFocused(2)", expect_response=False)  # widPlaylist = 2
+        time.sleep(0.001)  # Wait 0.001 seconds after focusing playlist
+
+        # Step 5: Restore focus to original window (terminal)
+        if saved_window:
+            trigger.restore_focus(saved_window)
+
+        return pattern_index
+    except Exception:
+        return None
+
+
+@mcp.tool
+def select_pattern(pattern_identifier: str) -> str:
+    """
+    Select and switch to a pattern by name or index (1-based).
+
+    This uses the reliable sequence: jumpToPattern → trigger script execution.
+    Automatically switches to the pattern and refreshes the piano roll view using
+    the same trigger mechanism as send_notes.
+
+    Args:
+        pattern_identifier: Either a pattern name (e.g., "Chords", "808 Kick") or a 1-based index (e.g., "1", "2")
+
+    Returns:
+        Status message confirming pattern selection
+
+    Examples:
+        select_pattern("Chords")      # Select by name
+        select_pattern("2")            # Select by index (1-based)
+        select_pattern("Melody 1")     # Select by name with spaces
+    """
+    try:
+        from midi_controller.fl_dual_port import send_command
+
+        # Use internal helper to perform the selection
+        pattern_index = _select_pattern_internal(pattern_identifier)
+
+        if pattern_index is None:
+            return f"Error: Pattern '{pattern_identifier}' not found. Use pattern name or 1-based index."
+
+        # Get pattern name for confirmation
+        pattern_name = send_command(f"patterns.getPatternName({pattern_index})", expect_response=True)
+
+        return f"Selected pattern {pattern_index} ({pattern_name}). Pattern switched (jumpTo → wait 0.001s → focus piano roll → wait 0.001s → trigger → wait 0.001s → focus playlist → wait 0.001s → restore terminal focus)."
+
+    except Exception as e:
+        return f"Error selecting pattern: {str(e)}"
+
+
+@mcp.tool
+def get_all_pattern_notes() -> str:
+    """
+    Get all notes from all patterns in the current FL Studio project.
+
+    This tool iterates through each pattern, selects it, and collects all notes.
+    Returns a comprehensive data structure with all patterns and their note data.
+
+    Returns:
+        JSON string containing all patterns with their notes
+
+    Example:
+        get_all_pattern_notes()  # Returns: {
+                                 #   "patterns": [
+                                 #     {"index": 1, "name": "Chords", "noteCount": 16, "notes": [...]},
+                                 #     {"index": 2, "name": "Melody 1", "noteCount": 1, "notes": [...]}
+                                 #   ],
+                                 #   "totalNotes": 22,
+                                 #   "totalPatterns": 4
+                                 # }
+    """
+    try:
+        manager = _get_state_manager()
+
+        # Get all patterns
+        patterns = manager.get_patterns()
+        if not patterns:
+            return json.dumps({
+                "error": "No patterns found in project",
+                "patterns": [],
+                "totalNotes": 0,
+                "totalPatterns": 0
+            })
+
+        result_patterns = []
+        total_notes = 0
+
+        # Iterate through each pattern
+        for pattern in patterns:
+            pattern_index = pattern['index']
+            pattern_name = pattern['name']
+
+            # Select the pattern using internal helper (this also triggers state refresh)
+            _select_pattern_internal(pattern_index)
+
+            # Wait for pattern to fully load before getting notes
+            time.sleep(0.2)
+
+            # Get notes for this pattern
+            notes_data = manager.get_current_piano_roll_notes()
+
+            if notes_data and 'notes' in notes_data:
+                notes = notes_data['notes']
+                note_count = len(notes)
+                total_notes += note_count
+
+                result_patterns.append({
+                    "index": pattern_index,
+                    "name": pattern_name,
+                    "noteCount": note_count,
+                    "ppq": notes_data.get('ppq', 96),
+                    "notes": notes
+                })
+            else:
+                # Pattern has no notes
+                result_patterns.append({
+                    "index": pattern_index,
+                    "name": pattern_name,
+                    "noteCount": 0,
+                    "ppq": 96,
+                    "notes": []
+                })
+
+        return json.dumps({
+            "patterns": result_patterns,
+            "totalNotes": total_notes,
+            "totalPatterns": len(result_patterns)
+        }, indent=2)
+
+    except Exception as e:
+        return json.dumps({"error": f"Error getting all pattern notes: {str(e)}"})
+
+
+@mcp.tool
+def get_pattern_notes(pattern_identifier: str, delay: float = 0.1) -> str:
+    """
+    Get all notes from a specific pattern in the current FL Studio project.
+
+    This tool selects a pattern and collects all notes from it.
+
+    Args:
+        pattern_identifier: Either a pattern name (e.g., "Chords", "Melody 1") or a 1-based index (e.g., "1", "2")
+        delay: Delay in seconds to wait for pattern to fully load (default 0.1)
+
+    Returns:
+        JSON string containing pattern notes data
+
+    Example:
+        get_pattern_notes("Chords")      # Get by name
+        get_pattern_notes("1")           # Get by index (1-based)
+        get_pattern_notes("Melody 1", 0.15)  # With custom delay
+    """
+    try:
+        manager = _get_state_manager()
+
+        # Get all patterns to find the matching one
+        patterns = manager.get_patterns()
+        if not patterns:
+            return json.dumps({
+                "error": "No patterns found in project"
+            })
+
+        # Find the pattern by name or index
+        target_pattern = None
+
+        # Try to match by index first
+        try:
+            index = int(pattern_identifier)
+            target_pattern = next((p for p in patterns if p['index'] == index), None)
+        except ValueError:
+            # Not a number, try by name
+            target_pattern = next((p for p in patterns if p['name'] == pattern_identifier), None)
+
+        if not target_pattern:
+            return json.dumps({
+                "error": f"Pattern '{pattern_identifier}' not found"
+            })
+
+        pattern_index = target_pattern['index']
+        pattern_name = target_pattern['name']
+
+        # Select the pattern using internal helper
+        _select_pattern_internal(pattern_index)
+
+        # Wait for pattern to fully load before getting notes
+        time.sleep(delay)
+
+        # Get notes for this pattern
+        notes_data = manager.get_current_piano_roll_notes()
+
+        if notes_data and 'notes' in notes_data:
+            notes = notes_data['notes']
+            note_count = len(notes)
+
+            return json.dumps({
+                "index": pattern_index,
+                "name": pattern_name,
+                "noteCount": note_count,
+                "ppq": notes_data.get('ppq', 96),
+                "notes": notes
+            }, indent=2)
+        else:
+            # Pattern has no notes
+            return json.dumps({
+                "index": pattern_index,
+                "name": pattern_name,
+                "noteCount": 0,
+                "ppq": 96,
+                "notes": []
+            }, indent=2)
+
+    except Exception as e:
+        return json.dumps({"error": f"Error getting pattern notes: {str(e)}"})
+
+
 @mcp.tool
 def call_fl_midi_controller_api(method: str, args: list = None, kwargs: dict = None, expect_response: bool = True) -> str:
     """
@@ -782,8 +877,8 @@ def call_fl_midi_controller_api(method: str, args: list = None, kwargs: dict = N
 
 if __name__ == "__main__":
     # Start the piano roll channel watcher
-    channel_watcher = PianoRollChannelWatcher(trigger)
-    channel_watcher.start()
+    # channel_watcher = PianoRollChannelWatcher(trigger)
+    # channel_watcher.start()
 
     # Run the MCP server
     mcp.run()

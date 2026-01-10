@@ -293,6 +293,7 @@ def OnRefresh(flags):
 
     if has_focus:
         focused_window = ui.getFocusedFormID()
+
         if focused_window == 3:  # widPianoRoll
             # Check if target channel menu just closed (focus returns to PR)
             if _target_channel_menu_in_progress:
