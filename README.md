@@ -1,6 +1,6 @@
 # FL Studio Piano Roll MCP
 
-An MCP (Model Context Protocol) server that enables AI assistants like Claude to interact with FL Studio's piano roll. Create melodies, chord progressions, and musical patterns through natural language conversation with **automatic, real-time updates**.
+An MCP (Model Context Protocol) server that enables Claude to interact with FL Studio's piano roll and project state through bidirectional MIDI communication. Create melodies, chord progressions, and musical patterns through natural language conversation with **automatic, real-time updates**.
 
 See the playlist here:
 [LLMs and FL Studio Piano Roll (MacOs Version)](https://youtube.com/playlist?list=PL3miIiuTRI6fgugjvJhGsXoe_oX65-o0S&si=X68d7kPWanyCq9m4)
@@ -8,10 +8,11 @@ See the playlist here:
 ## Overview
 
 Talk to Claude and watch your musical ideas appear instantly in FL Studio:
-- Generate chord progressions by name or custom notes
-- Create melodies and bass lines
-- Modify existing MIDI notes
-- Export and analyze piano roll state
+- **Generate and modify** chord progressions, melodies, and bass lines
+- **Query project state** - discover all channels and patterns in your project
+- **Navigate** between different channels and patterns
+- **Real-time synchronization** - Claude always sees your manual edits via events
+- **Direct API access** - advanced users can execute any FL Studio function
 - **Zero manual intervention** - notes appear automatically with built-in trigger!
 
 ## Platform Support
@@ -61,200 +62,218 @@ cd fl-studio-mcp
 1. Open FL Studio
 2. Open or create a piano roll
 
-**Step 2: Start LLM Interaction Session**
+**Step 2: Start Claude and begin working**
 
-Run this script **once** to start working with the LLM:
+Just start talking to Claude! The system automatically:
+- Monitors your piano roll for changes
+- Syncs state whenever you switch channels or patterns
+- Sends notes to the piano roll in real-time
+- Detects your manual edits automatically
 
-```
-Tools → Scripting → BeginLLMInteraction
-```
-
-This starts the session, initializes the request queue, and exports the piano roll state (no dialog appears).
-
-**Step 3: Talk to Claude or your LLM**
-
-Now just talk to your AI assistant:
-
-- "Add a C major chord"
-- "Create a sad chord progression in Am"
-- "Add a bass line"
-- "Create a pentatonic melody"
-
-Notes will appear automatically in FL Studio!
-
-**Step 4: End the Session (When Done)**
-
-When you're finished, run this script to close the session:
+**Example conversation:**
 
 ```
-Tools → Scripting → EndLLMInteraction
-```
-
-This ends the session and prevents further note sending until you start a new session.
-
-### Important Tips
-
-#### Refreshing State After Manual Edits
-
-If you manually add/edit notes in FL Studio **between** talking to Claude,
-you must refresh the state so Claude can see your changes:
-
-1. Press `Cmd+Opt+Y` (macOS) or `Ctrl+Alt+Y` (Windows) to refresh the state
-2. Then talk to Claude
-
-This ensures Claude sees your manual changes!
-
-**Note:** The session must be active (BeginLLMInteraction must have been run) for this to work.
-
-
-**Example:**
-```
-You: "Add C major chord"
-[Claude adds it automatically ✅]
+You: "Add a C major chord"
+[Claude sends it, notes appear automatically ✅]
 
 [You manually add a melody 🎹]
 
-[Press Cmd+Opt+Y to refresh state 🔄]
+You: "Add a bass line under that"
+[Claude sees your melody AND adds bass ✅]
+```
 
-You: "Add a bass line"
-[Claude sees the chord AND melody ✅]
+No setup scripts needed - it all happens automatically!
+
+### Navigation & Discovery
+
+Claude can help you navigate your project:
+
+```
+You: "What channels do I have?"
+[Claude lists all channels in your project]
+
+You: "Switch to the drums channel"
+[Claude opens the drums piano roll]
+
+You: "Show me the pattern called 'Chorus'"
+[Claude switches to that pattern]
+
+You: "What notes are in the Verse pattern?"
+[Claude reads and shows the notes]
 ```
 
 ### Example Requests
 
+**Creating music:**
 - "Create a I-IV-V-I progression in C major"
 - "Add a pentatonic melody over these chords"
 - "Add a bass note on the root of each chord"
+- "Create a 16-bar drum pattern"
+
+**Modifying music:**
 - "Change that G note to an A"
-- "Clear everything and create a jazz progression"
-- "Add some arpeggios starting at beat 4"
+- "Make this melody 2 octaves higher"
+- "Add velocity variations to this line"
+
+**Exploring your project:**
+- "List all the channels"
+- "Show me what patterns exist"
+- "What's in the 'Bridge' pattern?"
+- "Clear everything and start fresh"
 
 ## Available Tools
 
-Your AI assistant has access to these MCP tools:
+Claude has access to 13 MCP tools organized by category:
 
-- `get_piano_roll_state()` - Read current piano roll state
-- `send_notes(notes, mode)` - Add or replace notes (chords are just multiple notes with the same time)
+**Piano Roll Operations:**
+- `send_notes(notes, mode)` - Add or replace notes in the piano roll
 - `delete_notes(notes)` - Remove specific notes
-- `clear_queue()` - Discard pending requests
+- `clear_piano_roll()` - Clear all notes at once
 
-See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant uses these tools.
+**Project State Queries:**
+- `get_project_channels()` - List all channels in your project
+- `get_project_patterns()` - List all patterns
+- `get_current_target()` - See which channel and pattern are currently open
+- `get_current_piano_roll_notes()` - Get notes from the current piano roll
+- `get_pattern_notes(pattern_id)` - Read notes from any pattern
+- `get_all_pattern_notes()` - Get notes from all patterns at once
+
+**Navigation & Control:**
+- `show_piano_roll(channel_id)` - Open the piano roll for a specific channel
+- `select_pattern(pattern_id)` - Switch to a different pattern
+- `reload()` - Manually refresh the piano roll state
+
+**Advanced (Low-Level API):**
+- `call_fl_midi_controller_api(method, args, kwargs)` - Direct access to FL Studio's Python API
+
+See [CLAUDE.md](CLAUDE.md) for detailed documentation on how Claude uses these tools.
 
 ## Architecture
 
+The system uses **bidirectional MIDI communication** and **event-based state synchronization**:
+
 ```
-┌─────────┐         ┌────────────┐         ┌──────────────┐
-│ Claude  │────────▶│ MCP Server │────────▶│ Request Queue│
-└─────────┘         └────────────┘         │ (JSON file)  │
-                                           └──────┬───────┘
-                                                  │
-                                                  ▼
-                                         MCP Server
-                                         Sends Trigger
-                                   (Cmd+Opt+Y / Ctrl+Alt+Y)
-                                                │
-                                                ▼
-┌─────────────┐         ┌─────────────────────────────────┐
-│ Piano Roll  │◀────────│ FL Studio Bridge Script         │
-└─────────────┘         │ (re-runs, applies changes)      │
-                        └─────────────────────────────────┘
-                                     │
-                                     ▼
-                              ┌─────────────┐
-                              │ Piano Roll  | 
-                              | State Export│
-                              │ (JSON file) │
-                              └─────────────┘
+┌────────────────────────────────────────────────────────────┐
+│ FL Studio (DAW)                                             │
+├────────────────────────────────────────────────────────────┤
+│  • device_FLResponse.py - Monitors changes, sends events   │
+│  • device_FLRequest.py - Receives commands via SysEx       │
+│  • BeginLLMInteraction.pyscript - Applies note changes     │
+└────────────────────────────────────────────────────────────┘
+         ↑              ↓              ↓              ↓
+       SysEx       fl_events.json  mcp_request.json  piano_roll_state.json
+    (IAC Ports)    (event stream)  (request queue)   (state snapshot)
+         ↑              ↓              ↓              ↓
+┌────────────────────────────────────────────────────────────┐
+│ Python Backend                                              │
+├────────────────────────────────────────────────────────────┤
+│  • FLStudioStateManager - Manages state & triggers        │
+│  • MCP Server - Exposes 13 tools to Claude                │
+│  • fl_dual_port.py - Bidirectional MIDI/SysEx            │
+└────────────────────────────────────────────────────────────┘
+         ↓
+      Claude
 ```
 
-1. User runs BeginLLMInteraction to start session
-2. AI assistant sends musical requests via MCP tools
-3. MCP server writes requests to JSON queue
-4. MCP server sends trigger with 2-second delay
-5. FL Studio re-runs BeginLLMInteraction script
-6. Script processes queue and applies changes
-7. Notes appear in piano roll after delay
-8. State is exported for Claude to see
-9. User runs EndLLMInteraction when done
+### How It Works
+
+1. **Claude sends a request** → MCP Server queues it to `mcp_request.json`
+2. **StateManager triggers FL Studio** → Sends Cmd+Opt+Y keystroke
+3. **FL Studio runs script** → BeginLLMInteraction processes requests
+4. **Notes appear in piano roll** → Visible on screen immediately
+5. **FL Studio sends events** → device_FLResponse notifies of changes
+6. **StateManager monitors events** → Updates tracked state
+7. **Claude sees updates** → Via state query tools
+
+**Key feature:** When you manually edit in FL Studio, the event system automatically detects it, so Claude always sees your changes without needing manual refresh!
 
 ## Troubleshooting
 
-### Script Not Appearing in FL Studio
+### Notes Not Appearing
 
-**Problem:** Bridge script doesn't show in Tools menu
-
-**Solutions:**
-- Re-run the setup script: `./install_prerequisites.sh`
-- Ensure file has `.pyscript` extension
-- Restart FL Studio
-- Check FL Studio version supports Python scripting
-
-### Changes Not Appearing
-
-**Problem:** Sent requests but nothing happens
+**Problem:** You send a request but nothing happens in FL Studio
 
 **Solutions:**
-- Verify you ran `BeginLLMInteraction` in FL Studio to start the session
-- Make sure FL Studio window is active
-- Try pressing Cmd+Opt+Y (macOS) or Ctrl+Alt+Y (Windows) manually to trigger
-- Check that Claude has **Accessibility permissions** (System Settings → Privacy & Security → Accessibility)
-- Check if the session is active (flag file should contain "active")
+1. Verify FL Studio is running and a piano roll is open
+2. Check Claude has **Accessibility permissions** (System Settings → Privacy & Security → Accessibility)
+3. Try pressing Cmd+Opt+Y manually (or Ctrl+Alt+Y on Windows) to trigger the script
+4. Restart Claude Code to reconnect the MCP server
+5. Restart FL Studio and try again
 
-### Trigger Not Working
+### Claude Can't See Your Manual Edits
 
-**Problem:** Notes don't appear after sending
+**Problem:** You manually add/edit notes in FL Studio, but Claude doesn't know about them
+
+**Solution:** The event system should detect changes automatically. If it doesn't:
+- Click on a different channel and back to refresh events
+- Run `reload()` tool to manually refresh the piano roll state
+- Ensure device scripts are installed in FL Studio hardware folder
+
+### State Query Tools Return Empty/Wrong Data
+
+**Problem:** `get_project_channels()`, `get_project_patterns()`, etc. return nothing or errors
 
 **Solutions:**
-- Restart Claude Code to reconnect MCP server
-- Run `BeginLLMInteraction` in FL Studio again to restart the session
-- Make sure dependencies are installed: `uv sync`
-- Check that Terminal/Claude has **Accessibility permissions** (System Settings → Privacy & Security → Accessibility)
-
-### LLM Interaction Mode Inactive
-
-**Problem:** Error message "LLM interaction mode is inactive"
-
-**Solutions:**
-- Run `BeginLLMInteraction` in FL Studio to start a new session
-- The session was either never started or was ended with `EndLLMInteraction`
-- Check that the flag file exists and contains "active"
+- Ensure you have a project open in FL Studio
+- Check that hardware device scripts are installed (device_FLRequest.py, device_FLResponse.py)
+- Check MIDI communication: Verify IAC Driver ports are available on macOS
+- Try pressing Cmd+Opt+Y to trigger a manual state refresh
 
 ### MCP Server Not Connecting
 
-**Problem:** AI assistant doesn't have FL Studio tools
+**Problem:** Claude says it doesn't have FL Studio tools
 
 **Solutions:**
-- Restart your MCP client (Claude Desktop/Code)
-- Verify configuration file has correct path to `fl_studio_mcp_server.py`
-- Ensure dependencies are installed: `uv sync`
-- Check that the virtual environment was created in `.venv/`
+1. Restart Claude Code
+2. Verify MCP is registered: Check `~/.claude_app/claude_desktop_config.json`
+3. Ensure dependencies are installed: `uv sync`
+4. Check that the virtual environment was created in `.venv/`
 
 ### Notes at Wrong Positions
 
 **Problem:** Notes appear at incorrect times
 
 **Solutions:**
-- Time values should be in quarter notes, not ticks
-- `time=0` is beat 1, `time=4` is beat 5 (measure 2 in 4/4)
-- Check PPQ value in state export for reference
+- Verify you're using **quarter notes**, not ticks
+  - `time=0` = beat 1
+  - `time=4` = beat 5 (measure 2 in 4/4)
+- Check the PPQ (pulses per quarter note) in current piano roll state
+- Remember: duration and time are both in quarter note units
 
-### Permission Errors
+### Hardware Device Scripts Not Working
 
-**Problem:** Cannot write to JSON files
+**Problem:** Tools that query state (channels, patterns) don't work, or trigger fails
 
 **Solutions:**
-- Ensure FL Studio scripts directory exists
-- Check file permissions (should be read/write)
-- On Windows, may need to run FL Studio as administrator
+- Verify symlinks exist in `~/Documents/Image-Line/FL Studio/Settings/Hardware/FLController/`
+  - `device_FLRequest.py` (→ source file)
+  - `device_FLResponse.py` (→ source file)
+- On macOS, verify IAC Driver ports are available (Audio MIDI Setup)
+- Restart FL Studio
+- Check FL Studio version supports Python hardware devices
+
+### Windows-Specific Issues
+
+**Note:** Windows support is secondary. Known limitations:
+- Keystroke triggering may need additional setup
+- MIDI port configuration may differ
+- For best experience, use macOS
 
 ## File Locations
 
-**FL Studio scripts directory:**
+**FL Studio hardware device scripts:**
+```
+~/Documents/Image-Line/FL Studio/Settings/Hardware/FLController/
+├── device_FLRequest.py      (symlink: processes SysEx commands)
+├── device_FLResponse.py     (symlink: sends project events)
+├── fl_events.json           (event stream from FL Studio)
+└── project_state.json       (persisted project state)
+```
+
+**FL Studio piano roll scripts:**
 ```
 ~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts/
-├── BeginLLMInteraction.pyscript  (start LLM interaction session)
-├── EndLLMInteraction.pyscript    (end LLM interaction session)
-├── llm_interaction_active.flag   (session state flag)
+├── BeginLLMInteraction.pyscript  (processes note requests)
 ├── mcp_request.json              (request queue)
 ├── mcp_response.json             (execution results)
 └── piano_roll_state.json         (exported piano roll state)
@@ -262,21 +281,27 @@ See [CLAUDE.md](CLAUDE.md) for detailed documentation on how the AI assistant us
 
 **Source repository:**
 ```
-/path/to/fl-studio-mcp/
-├── piano_roll/
-│   ├── BeginLLMInteraction.pyscript  (source: start LLM interaction)
-│   └── EndLLMInteraction.pyscript    (source: end LLM interaction)
+/Users/calvinw/develop/fl-studio-mcp/
 ├── mcp/
-│   └── fl_studio_mcp_server.py       (MCP server with built-in trigger)
-├── install_prerequisites.sh          (install uv & Python environment and piano roll script)
-├── install_mcp_for_claude.sh         (MCP for Claude Code)
-├── install_mcp_for_gemini.sh         (MCP for Gemini CLI)
-├── install_mcp_for_codex.sh          (MCP for Codex)
-├── CLAUDE.md                         (AI assistant documentation)
-└── README.md                         (this file)
+│   ├── fl_studio_mcp_server.py           (MCP server: 13 tools)
+│   └── install_mcp_for_claude.sh         (MCP registration)
+├── midi_controller/
+│   ├── fl_studio_state_manager.py        (state management & triggering)
+│   ├── fl_dual_port.py                   (bidirectional MIDI/SysEx)
+│   ├── focus_management.py               (window focus handling)
+│   ├── device_FLRequest.py               (source: FL Studio command handler)
+│   └── device_FLResponse.py              (source: FL Studio event broadcaster)
+├── piano_roll/
+│   └── BeginLLMInteraction.pyscript      (source: processes note requests)
+├── install_prerequisites.sh              (setup uv, Python, symlinks)
+├── CLAUDE.md                             (AI assistant documentation)
+├── DEVELOPER.md                          (architecture & internals)
+└── README.md                             (this file: user guide)
 ```
 
 ## Development
+
+For information about the internal architecture, MIDI communication, and state management system, see [DEVELOPER.md](DEVELOPER.md).
 
 ## Contributing
 

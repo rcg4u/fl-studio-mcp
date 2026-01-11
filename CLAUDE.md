@@ -1,577 +1,618 @@
-# FL Studio Direct Integration - Documentation
+# FL Studio MCP - AI Assistant Guide
 
-## Platform Support
-
-**⚠️ macOS Primary, Windows Secondary** - This project primarily supports macOS with full auto-trigger functionality. Windows support is partially implemented but may require additional configuration.
+This guide explains how Claude and other AI assistants should use the FL Studio MCP tools.
 
 ## Overview
 
-This system allows Claude to interact with FL Studio's piano roll through direct file-based communication. It provides seamless integration between Claude's AI capabilities and FL Studio's music production environment with built-in timing delays to ensure reliable operation.
+The FL Studio MCP server provides **13 tools** that enable Claude to:
+1. **Modify piano roll notes** - Add, delete, or replace notes
+2. **Query project state** - Discover channels, patterns, and current notes
+3. **Navigate your project** - Switch channels, select patterns, refresh state
+4. **Execute advanced commands** - Direct FL Studio API access for power users
 
-## Installation and Setup
+The system automatically:
+- Triggers FL Studio when you send notes (CMD+OPT+Y keystroke)
+- Monitors for manual edits via FL Studio events
+- Keeps state synchronized between Claude and FL Studio
+- Handles timing/focus management seamlessly
 
-### 1. Install MCP Server for Claude
-```bash
-./install_mcp_for_claude.sh
-```
-This registers the MCP server with Claude Code. The server is named `fl-studio-mcp`.
+## Getting Started
 
-### 2. Usage Workflow
+### 1. Verify Tools Are Available
 
-**For each session:**
-1. **Open FL Studio** and open a piano roll
-2. **Run BeginLLMInteraction** once (Tools → Scripting → BeginLLMInteraction) to start the session
-3. **Start Claude** - the trigger mechanism is built into the MCP server
-4. **Send notes and work with Claude** - notes appear automatically!
-5. **Run EndLLMInteraction** (Tools → Scripting → EndLLMInteraction) when done to close the session
+Check that you have these MCP tools (they'll have the `mcp__fl_studio_mcp__` prefix):
 
-**Note:** Claude Code needs Accessibility permissions (System Settings → Privacy & Security → Accessibility) to send keystrokes to FL Studio.
-
-## Getting Started (For AI Assistants)
-
-If you're an LLM helping the user with this system, here's what you need to know:
-
-### 1. Check Available Tools
-
-First, verify you have access to these MCP tools (they'll have the `mcp__fl_studio_mcp__` prefix):
-- `mcp__fl_studio_mcp__get_piano_roll_state` - Read the piano roll
-- `mcp__fl_studio_mcp__send_notes` - Add or replace notes (including chords)
-- `mcp__fl_studio_mcp__delete_notes` - Remove specific notes
+**Piano Roll Operations:**
+- `mcp__fl_studio_mcp__send_notes` - Add or replace notes
+- `mcp__fl_studio_mcp__delete_notes` - Delete specific notes
 - `mcp__fl_studio_mcp__clear_piano_roll` - Clear all notes
-- `mcp__fl_studio_mcp__clear_queue` - Clear pending requests
 
-If these aren't available, the MCP server needs to be started or reconnected. The server is registered as `fl-studio-mcp` in Claude Code.
+**State Queries:**
+- `mcp__fl_studio_mcp__get_project_channels` - List all channels
+- `mcp__fl_studio_mcp__get_project_patterns` - List all patterns
+- `mcp__fl_studio_mcp__get_current_target` - Current channel/pattern
+- `mcp__fl_studio_mcp__get_current_piano_roll_notes` - Current notes
+- `mcp__fl_studio_mcp__get_pattern_notes` - Notes from specific pattern
+- `mcp__fl_studio_mcp__get_all_pattern_notes` - All patterns' notes
 
-### 2. Auto-Trigger System
+**Navigation & Control:**
+- `mcp__fl_studio_mcp__show_piano_roll` - Open piano roll for channel
+- `mcp__fl_studio_mcp__select_pattern` - Switch to pattern
+- `mcp__fl_studio_mcp__reload` - Manual state refresh
 
-The trigger mechanism is now **built into the MCP server**:
-- When you send notes/requests, the MCP server automatically triggers FL Studio
-- A 2-second delay ensures FL Studio has time to receive focus and process the request
-- No separate auto-trigger script needed
-- Works with both detached and docked piano roll windows
+**Advanced:**
+- `mcp__fl_studio_mcp__call_fl_midi_controller_api` - Direct FL Studio API
 
-### 3. Always Start With State
+If these aren't available, the MCP server isn't connected. The server is registered as `fl-studio-mcp` in Claude Code.
 
-Before making ANY changes, get the current piano roll state:
+### 2. Always Start by Getting Current State
+
+Before making ANY changes, query the current state:
 
 ```python
-state = mcp__fl_studio_mcp__get_piano_roll_state()
+# Get current piano roll notes
+current_notes = mcp__fl_studio_mcp__get_current_piano_roll_notes()
+
+# See what channels exist
+channels = mcp__fl_studio_mcp__get_project_channels()
+
+# See what patterns exist
+patterns = mcp__fl_studio_mcp__get_project_patterns()
+
+# See which channel/pattern are currently open
+target = mcp__fl_studio_mcp__get_current_target()
 ```
 
 This tells you:
-- What notes already exist
+- What notes already exist in the current piano roll
 - The PPQ (timing resolution)
-- What you're working with
+- What channels and patterns are available
+- Which is currently selected
 
-### 4. Key Concepts for LLMs
+## Tool Reference
 
-**Built-in Auto-Trigger System:**
-- MCP server writes requests to `mcp_request.json`
-- MCP server automatically sends Cmd+Opt+Y (macOS) or Ctrl+Alt+Y (Windows)
-- 2-second delay ensures proper focus handling
-- FL Studio re-runs the last script (BeginLLMInteraction)
-- Notes appear automatically after the delay
-- Cross-platform trigger support with focus management
-- Session must be started with BeginLLMInteraction and ended with EndLLMInteraction
+### Piano Roll Operations
 
-**Time is Always in Quarter Notes:**
-- `time=0` = beat 1
-- `time=4` = beat 5 (measure 2 in 4/4)
-- `duration=1` = quarter note
-- `duration=4` = whole note
-- Never use ticks - the bridge converts automatically
+#### `send_notes(notes, mode="add")`
 
-**Chords Are Just Multiple Notes:**
-- A chord = multiple notes with the same `time` value
-- Send them all in one `send_notes` call with matching times
-- For example: C major = MIDI 60, 64, 67 all at same time
+Add or replace notes in the piano roll.
 
-### 5. Common Interaction Patterns
+**Parameters:**
+- `notes`: List of note dictionaries, each with:
+  - `midi` (int, 0-127): MIDI note number
+  - `duration` (float): Duration in quarter notes (0.5=8th, 1=quarter, 2=half, 4=whole)
+  - `time` (float): Start position in quarter notes (0=beat 1, 4=beat 5)
+  - `velocity` (float, optional): Velocity 0.0-1.0 (default: 0.8)
+- `mode` (string): "add" (append) or "replace" (clear then add)
 
-**Pattern: Add a chord progression**
+**Example - Single note:**
 ```python
-# User: "Add a I-IV-V progression in C"
-
-# Start by getting state (good practice)
-state = mcp__fl_studio_mcp__get_piano_roll_state()
-
-# Send each chord
 mcp__fl_studio_mcp__send_notes([
-    {"midi": 60, "duration": 4, "time": 0},
-    {"midi": 64, "duration": 4, "time": 0},
-    {"midi": 67, "duration": 4, "time": 0}
-], mode="add")  # C major
-
-mcp__fl_studio_mcp__send_notes([
-    {"midi": 65, "duration": 4, "time": 4},
-    {"midi": 69, "duration": 4, "time": 4},
-    {"midi": 72, "duration": 4, "time": 4}
-], mode="add")  # F major
-
-mcp__fl_studio_mcp__send_notes([
-    {"midi": 67, "duration": 4, "time": 8},
-    {"midi": 71, "duration": 4, "time": 8},
-    {"midi": 74, "duration": 4, "time": 8}
-], mode="add")  # G major
-
-# Notes will appear automatically!
+    {"midi": 60, "duration": 4, "time": 0}
+])
+# Adds C4 (middle C) as a whole note at beat 1
 ```
 
-**Pattern: Modify existing notes**
+**Example - Chord (multiple notes at same time):**
 ```python
-# User: "Change that G note to an A"
-
-# Get state to see what's there
-state = mcp__fl_studio_mcp__get_piano_roll_state()
-
-# Find the G note in the state (look for number: 67)
-# Delete it
-mcp__fl_studio_mcp__delete_notes([{"midi": 67, "time": 0}])
-
-# Add replacement
-mcp__fl_studio_mcp__send_notes([{"midi": 69, "duration": 4, "time": 0}])
-
-# Changes appear automatically!
+mcp__fl_studio_mcp__send_notes([
+    {"midi": 60, "duration": 4, "time": 0},  # C
+    {"midi": 64, "duration": 4, "time": 0},  # E
+    {"midi": 67, "duration": 4, "time": 0}   # G
+])
+# Adds C major chord
 ```
 
-**Pattern: Start fresh**
+**Example - Melody:**
 ```python
-# User: "Clear everything and give me a C major scale"
-
-# Use replace mode to clear and add
 mcp__fl_studio_mcp__send_notes([
     {"midi": 60, "duration": 0.5, "time": 0},   # C
     {"midi": 62, "duration": 0.5, "time": 0.5}, # D
     {"midi": 64, "duration": 0.5, "time": 1},   # E
-    {"midi": 65, "duration": 0.5, "time": 1.5}, # F
-    {"midi": 67, "duration": 0.5, "time": 2},   # G
-    {"midi": 69, "duration": 0.5, "time": 2.5}, # A
-    {"midi": 71, "duration": 0.5, "time": 3},   # B
-    {"midi": 72, "duration": 0.5, "time": 3.5}  # C
-], mode="replace")
-
-# Automatically clears old notes and adds new scale!
-```
-
-**Pattern: User makes manual edits**
-```python
-# User manually adds notes in FL Studio
-
-# User: "I just added some notes manually"
-
-# Remind user to refresh state
-# "Please press Cmd+Opt+Y (or Ctrl+Alt+Y) so I can see your changes"
-
-# User presses the key combo
-
-# Get updated state
-state = mcp__fl_studio_mcp__get_piano_roll_state()
-
-# Now you can see the manual edits
-```
-
-### 6. Important Rules for LLMs
-
-**DO:**
-- ✅ Always get state first with `get_piano_roll_state()`
-- ✅ Always specify `time` for every note (don't rely on defaults)
-- ✅ Use quarter notes for time and duration
-- ✅ Tell user notes will appear automatically after a brief delay
-- ✅ Use `mode="add"` by default (accumulate changes)
-- ✅ Use `mode="replace"` when user wants to start fresh
-- ✅ Remind user to press Cmd+Opt+Y or use menu after manual edits to refresh state
-
-**DON'T:**
-- ❌ Don't tell user to click buttons (there are none - it's automatic!)
-- ❌ Don't use ticks/PPQ directly - always use quarter notes
-- ❌ Don't forget to get state before making changes
-- ❌ Don't assume you can see manual edits without state refresh
-- ❌ Don't worry about starting separate scripts - it's all built-in
-
-### 7. Troubleshooting for LLMs
-
-**User says "Nothing happened"**
-- Ask: "Did you run BeginLLMInteraction in FL Studio first?"
-- Ask: "Does Claude have Accessibility permissions?" (System Settings → Privacy & Security → Accessibility)
-- Ask: "Is FL Studio running and is a piano roll open?"
-- Suggest: "Try pressing Cmd+Opt+Y manually or use Tools → Scripting → BeginLLMInteraction"
-
-**User says "It replaced everything"**
-- Check if you used `mode="replace"` accidentally
-- Should use `mode="add"` for incremental changes
-
-**User says "Times are wrong"**
-- Verify you're using quarter notes, not ticks
-- Remember: time=4 is beat 5, not beat 4 (counting starts at 0)
-
-**User makes manual edits**
-- Remind them: "Press Cmd+Opt+Y to refresh the state so I can see your changes"
-
-### 8. Musical Knowledge Tips
-
-When helping with music:
-- **MIDI note numbers**: C4 (middle C) = 60, each semitone = +1
-- **FL Studio Octave Display**: FL Studio displays notes ONE OCTAVE HIGHER than standard MIDI convention. When you send MIDI 60 (C4 in standard), FL Studio shows it as C5. Use this reference:
-  - MIDI 60 = C4 (standard) = **C5 in FL Studio**
-  - MIDI 69 = A4 (standard) = **A5 in FL Studio**
-  - MIDI 72 = C5 (standard) = **C6 in FL Studio**
-- **Common durations**: 0.25=16th, 0.5=8th, 1=quarter, 2=half, 4=whole
-- **Chord voicings**: Consider inversions for smoother voice leading
-- **Bass notes**: Typically 1-2 octaves below the chord (MIDI 36-48 range)
-- **Time signatures**: In 4/4, measures are 4 beats (time increments of 4)
-
-### 9. Example Session
-
-```
-User: "Initialize FL Studio"
-[User runs BeginLLMInteraction script in FL Studio]
-
-User: "Add a sad chord progression"
-
-You: Get state first
-> mcp__fl-studio__get_piano_roll_state()
-
-You: Send Am - F - C - G progression
-> mcp__fl-studio__send_notes([...]) # Am at time 0
-> mcp__fl-studio__send_notes([...]) # F at time 4
-> mcp__fl-studio__send_notes([...]) # C at time 8
-> mcp__fl-studio__send_notes([...]) # G at time 12
-
-You: "I've added a sad Am-F-C-G progression. Notes should appear automatically!"
-
-[Notes appear in FL Studio automatically! 🎵]
-
-User: "Great! Add a bass line"
-
-You: Send bass notes
-> mcp__fl-studio__send_notes([...]) # Bass notes at appropriate times
-
-You: "Added bass notes!"
-
-[Bass notes appear automatically! 🎸]
-
-User: "Perfect! I'm done"
-
-[User runs EndLLMInteraction script to close the session]
-```
-
-## Architecture
-
-The system consists of three main components:
-
-1. **MCP Server** (`fl_studio_mcp_server.py`) - Provides tools for Claude to send musical requests and automatically triggers FL Studio
-2. **FL Studio Bridge Scripts**:
-   - `BeginLLMInteraction.pyscript` - Starts LLM interaction session and processes requests
-   - `EndLLMInteraction.pyscript` - Ends LLM interaction session
-3. **JSON Communication Files** - Request queue and state files for communication
-
-### Communication Flow
-
-```
-Claude → MCP Server → Request Queue (JSON) → MCP Server Sends Trigger
-                                                      ↓
-                                       Sends Cmd+Opt+Y (macOS) or Ctrl+Alt+Y (Windows)
-                                                      ↓
-                                           FL Studio Re-runs Script
-                                                      ↓
-                                           Notes Added to Piano Roll
-                                                      ↓
-                                           State Export (JSON)
-```
-
-### Event System & State Tracking
-
-For querying FL Studio project state (channels, patterns, piano rolls), the system uses an event-driven architecture:
-
-```
-FL Studio (device_FLResponse.py)
-    ↓ sends events
-fl_events.json
-    ↓ monitored by
-FLStudioStateManager (fl_studio_state_manager.py)
-    ↓ provides query API
-MCP Server
-    ↓
-Claude
-```
-
-**Events sent by FL Studio:**
-- `project_loaded` - All channels and patterns (when project opens)
-- `target_channel_changed` - Current channel/pattern (when piano roll focus changes)
-
-**State Manager Query API:**
-- `get_channels()` - List all channels in the project
-- `get_patterns()` - List all patterns in the project
-- `get_current_target_channel_and_pattern()` - Get current selection
-- `get_current_piano_roll_notes()` - Get notes for current piano roll
-
-This event system complements the piano roll operations:
-- Use **piano roll tools** (`send_notes`, `delete_notes`) to modify notes
-- Use **state queries** to discover what channels/patterns exist and get current state
-
-## Workflow
-
-1. **Run BeginLLMInteraction** (Tools → Scripting → BeginLLMInteraction) → Start session
-   - Sets flag file to "active"
-   - Initializes empty request queue (sets to `[]`)
-   - Exports current piano roll state to `piano_roll_state.json`
-   - No dialog appears
-
-2. **Claude sends requests** → MCP Server writes to request queue
-
-3. **MCP Server triggers FL Studio** → Automatically sends Cmd+Opt+Y with built-in delay
-
-4. **FL Studio re-runs script** → BeginLLMInteraction processes queue and updates state
-
-5. **Notes appear** → Visible in piano roll after delay
-
-6. **Run EndLLMInteraction** (Tools → Scripting → EndLLMInteraction) → End session
-   - Sets flag file to "inactive"
-   - Clears request queue
-   - Prevents further note sending until BeginLLMInteraction is run again
-   - **Note:** Session also automatically ends if piano roll window is closed (detected via MIDI controller polling)
-
-## Available MCP Tools
-
-### `get_piano_roll_state()`
-Read the current piano roll state exported by FL Studio.
-
-**Returns:** JSON with PPQ, note count, and all notes with properties (number, time, length, velocity, etc.)
-
-**Example:**
-```python
-state = get_piano_roll_state()
-# See all notes currently in the piano roll
-```
-
-### `send_notes(notes, mode="add")`
-Send arbitrary notes to the piano roll.
-
-**Parameters:**
-- `notes`: List of note dictionaries
-  - `midi`: MIDI note number (0-127)
-  - `duration`: Duration in quarter notes
-  - `time`: Start time in quarter notes
-  - `velocity`: Optional, 0.0-1.0 (default 0.8)
-- `mode`: "add" or "replace"
-
-**Example:**
-```python
-# Send a C major chord at beat 0
-send_notes([
-    {"midi": 60, "duration": 2, "time": 0},
-    {"midi": 64, "duration": 2, "time": 0},
-    {"midi": 67, "duration": 2, "time": 0}
+    {"midi": 65, "duration": 0.5, "time": 1.5}  # F
 ])
-
-# Send a melody
-send_notes([
-    {"midi": 60, "duration": 0.5, "time": 0},
-    {"midi": 62, "duration": 0.5, "time": 0.5},
-    {"midi": 64, "duration": 0.5, "time": 1},
-    {"midi": 65, "duration": 0.5, "time": 1.5}
-])
+# Adds a 4-note ascending melody
 ```
 
+**Important:** Always specify `time` for every note. Don't rely on defaults.
 
-### `delete_notes(notes)`
+#### `delete_notes(notes)`
+
 Delete specific notes from the piano roll.
 
 **Parameters:**
-- `notes`: List of note dictionaries to delete
-  - `midi`: MIDI note number
-  - `time`: Start time in quarter notes
+- `notes`: List of note dictionaries to delete, each with:
+  - `midi` (int): MIDI note number
+  - `time` (float): Start position in quarter notes
 
 **Example:**
 ```python
-# Delete G note at beat 0
-delete_notes([{"midi": 67, "time": 0}])
+# Delete G note at beat 1
+mcp__fl_studio_mcp__delete_notes([
+    {"midi": 67, "time": 0}
+])
 
 # Delete multiple notes
-delete_notes([
+mcp__fl_studio_mcp__delete_notes([
     {"midi": 67, "time": 0},
     {"midi": 72, "time": 4}
 ])
 ```
 
-### `clear_queue()`
-Clear all pending requests without affecting the piano roll.
+#### `clear_piano_roll()`
 
-**Use case:** Rarely needed in auto mode, but can discard pending requests.
+Clear all notes from the current piano roll.
 
 **Example:**
 ```python
-# Clear pending requests
-clear_queue()
+mcp__fl_studio_mcp__clear_piano_roll()
+# Piano roll is now empty
 ```
 
-## Modes
+### State Queries
 
-### Add Mode (`mode="add"`)
-- Appends to existing queue
-- Adds to existing notes in piano roll
-- Default behavior
+#### `get_project_channels()`
 
-### Replace Mode (`mode="replace"`)
-- Clears queue first
-- Adds `{"action": "clear"}` to delete all notes
-- Then adds new notes
-- Use for complete rewrites
+Get list of all channels in the project.
 
-## Time and Duration
+**Returns:** JSON string with array: `[{"index": 0, "name": "Kick"}, ...]`
 
-- **Time units:** Quarter notes (beats)
-  - `time=0` → Beat 1
-  - `time=4` → Beat 5 (start of measure 2 in 4/4)
-  - `time=8` → Beat 9 (start of measure 3)
+**Example:**
+```python
+channels = mcp__fl_studio_mcp__get_project_channels()
+# Returns: [
+#   {"index": 0, "name": "Kick"},
+#   {"index": 1, "name": "Snare"},
+#   {"index": 2, "name": "Chords"},
+#   ...
+# ]
+```
 
-- **Duration units:** Quarter note multipliers
-  - `0.25` = 16th note
-  - `0.5` = 8th note
-  - `1.0` = Quarter note
-  - `1.5` = Dotted quarter
-  - `2.0` = Half note
-  - `4.0` = Whole note
+#### `get_project_patterns()`
 
-- **PPQ (Pulses Per Quarter):** Typically 96 or 480
-  - Ticks = PPQ × Quarter Notes
-  - Conversion handled automatically by bridge script
+Get list of all patterns in the project.
 
-## Request Queue System
+**Returns:** JSON string with array: `[{"index": 1, "name": "Drums"}, ...]`
 
-Requests accumulate as a list of actions in `mcp_request.json`:
+**Note:** Pattern 0 is skipped (it's internal to FL Studio). Patterns are 1-based.
 
+**Example:**
+```python
+patterns = mcp__fl_studio_mcp__get_project_patterns()
+# Returns: [
+#   {"index": 1, "name": "Drums"},
+#   {"index": 2, "name": "Chords"},
+#   {"index": 3, "name": "Verse"},
+#   ...
+# ]
+```
+
+#### `get_current_target()`
+
+Get the currently open channel and pattern.
+
+**Returns:** JSON string with current target info:
 ```json
-[
-  {"action": "delete_notes", "notes": [{"midi": 67, "time": 0}]},
-  {"action": "add_notes", "notes": [{"midi": 69, "duration": 2, "time": 0}]},
-  {"action": "add_notes", "notes": [{"midi": 65, "duration": 2, "time": 2}]}
-]
+{
+  "channel_index": 0,
+  "channel_name": "Kick",
+  "pattern_index": 1,
+  "pattern_name": "Drums"
+}
 ```
 
-**Processing order:** Actions are executed in order when auto-trigger fires.
-
-## File Locations
-
-**FL Studio scripts directory:**
-```
-~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts/
-├── BeginLLMInteraction.pyscript  (start LLM interaction session)
-├── EndLLMInteraction.pyscript    (end LLM interaction session)
-├── llm_interaction_active.flag   (session state flag)
-├── mcp_request.json              (request queue)
-├── mcp_response.json             (execution results)
-└── piano_roll_state.json         (exported piano roll state)
+**Example:**
+```python
+target = mcp__fl_studio_mcp__get_current_target()
+# Tells you which channel and pattern are currently visible
 ```
 
-**Source repository:**
-```
-/Users/calvinw/develop/fl-studio-mcp/
-├── piano_roll/
-│   ├── BeginLLMInteraction.pyscript  (source: start LLM interaction)
-│   └── EndLLMInteraction.pyscript    (source: end LLM interaction)
-├── mcp/
-│   └── fl_studio_mcp_server.py       (MCP server with built-in trigger)
-├── install_prerequisites.sh          (install uv and Python)
-├── install_mcp_for_claude.sh         (register MCP server)
-├── CLAUDE.md                         (this file)
-└── README.md                         (user documentation)
+#### `get_current_piano_roll_notes()`
+
+Get all notes from the currently open piano roll.
+
+**Returns:** JSON string with note data:
+```json
+{
+  "ppq": 96,
+  "noteCount": 4,
+  "notes": [
+    {"number": 60, "time": 0, "length": 96, "velocity": 204, ...},
+    {"number": 64, "time": 0, "length": 96, "velocity": 204, ...},
+    ...
+  ]
+}
 ```
 
-## Typical Workflows
+**Example:**
+```python
+notes_data = mcp__fl_studio_mcp__get_current_piano_roll_notes()
+# notes_data["notes"] = array of all notes in current piano roll
+# notes_data["ppq"] = timing resolution (usually 96 or 480)
+# notes_data["noteCount"] = how many notes exist
+```
 
-### Building a Chord Progression
+#### `get_pattern_notes(pattern_identifier)`
+
+Get notes from a specific pattern (by name or index).
+
+**Parameters:**
+- `pattern_identifier` (string): Pattern name (e.g., "Chorus") or 1-based index (e.g., "2")
+
+**Returns:** JSON string with note data (same format as `get_current_piano_roll_notes`)
+
+**Example:**
+```python
+# Get by pattern name
+verse_notes = mcp__fl_studio_mcp__get_pattern_notes("Verse")
+
+# Get by pattern index (1-based)
+pattern2_notes = mcp__fl_studio_mcp__get_pattern_notes("2")
+```
+
+#### `get_all_pattern_notes()`
+
+Get notes from all patterns in the project.
+
+**Returns:** JSON string mapping pattern names to note data:
+```json
+{
+  "Drums": {"ppq": 96, "noteCount": 8, "notes": [...]},
+  "Chords": {"ppq": 96, "noteCount": 4, "notes": [...]},
+  "Melody": {"ppq": 96, "noteCount": 12, "notes": [...]}
+}
+```
+
+**Example:**
+```python
+all_patterns = mcp__fl_studio_mcp__get_all_pattern_notes()
+# all_patterns["Drums"]["notes"] = array of drum notes
+# all_patterns["Chords"]["notes"] = array of chord notes
+# etc.
+```
+
+### Navigation & Control
+
+#### `show_piano_roll(channel_id)`
+
+Open the piano roll for a specific channel.
+
+**Parameters:**
+- `channel_id` (int): 0-based channel index
+
+**Example:**
+```python
+# Open piano roll for channel 0 (Kick)
+mcp__fl_studio_mcp__show_piano_roll(0)
+
+# Open piano roll for channel 2 (Chords)
+mcp__fl_studio_mcp__show_piano_roll(2)
+```
+
+#### `select_pattern(pattern_identifier)`
+
+Switch to a different pattern.
+
+**Parameters:**
+- `pattern_identifier` (string): Pattern name (e.g., "Verse") or 1-based index (e.g., "1")
+
+**Example:**
+```python
+# Switch to pattern by name
+mcp__fl_studio_mcp__select_pattern("Verse")
+
+# Switch to pattern by index (1-based)
+mcp__fl_studio_mcp__select_pattern("2")
+```
+
+#### `reload()`
+
+Manually refresh the piano roll state from FL Studio.
+
+Use this if:
+- You made manual edits in FL Studio
+- State seems out of sync
+- You want to ensure latest data from FL Studio
+
+**Example:**
+```python
+# Manual state refresh
+mcp__fl_studio_mcp__reload()
+# Piano roll is now reloaded from FL Studio
+```
+
+### Advanced - Low-Level API
+
+#### `call_fl_midi_controller_api(method, args, kwargs)`
+
+Execute any FL Studio API function directly.
+
+**Parameters:**
+- `method` (string): Full method path like "patterns.jumpToPattern" or "mixer.getTrackVolume"
+- `args` (list, optional): Positional arguments `[int, float, str, bool]`
+- `kwargs` (dict, optional): Keyword arguments
+- `expect_response` (bool, optional): Wait for response from FL Studio (default: true)
+
+**Examples:**
+```python
+# Get pattern count
+mcp__fl_studio_mcp__call_fl_midi_controller_api("patterns.patternCount")
+
+# Get pattern name
+mcp__fl_studio_mcp__call_fl_midi_controller_api("patterns.getPatternName", [1])
+
+# Get mixer track volume
+mcp__fl_studio_mcp__call_fl_midi_controller_api("mixer.getTrackVolume", [0])
+
+# Get channel name
+mcp__fl_studio_mcp__call_fl_midi_controller_api("channels.getChannelName", [2])
+
+# Fast bulk operation (no response wait)
+mcp__fl_studio_mcp__call_fl_midi_controller_api(
+    "channels.setGridBit",
+    [0, 0, 1],
+    expect_response=False
+)
+
+# With keyword arguments
+mcp__fl_studio_mcp__call_fl_midi_controller_api(
+    "ui.openEventEditor",
+    [262464, 0],
+    {"newWindow": 1}
+)
+```
+
+This is for advanced users who want to access FL Studio features not exposed by the other tools.
+
+## Common Interaction Patterns
+
+### Pattern 1: Add a Chord Progression
 
 ```python
-# Initialize: Run BeginLLMInteraction in FL Studio
-# MCP server handles triggering automatically
+# Get state first
+state = mcp__fl_studio_mcp__get_current_piano_roll_notes()
 
-# Send chord progression
-send_notes([
+# Send I chord (C major)
+mcp__fl_studio_mcp__send_notes([
     {"midi": 60, "duration": 4, "time": 0},
     {"midi": 64, "duration": 4, "time": 0},
     {"midi": 67, "duration": 4, "time": 0}
-])  # C major
+])
 
-send_notes([
+# Send IV chord (F major)
+mcp__fl_studio_mcp__send_notes([
     {"midi": 65, "duration": 4, "time": 4},
-    {"midi": 68, "duration": 4, "time": 4},
+    {"midi": 69, "duration": 4, "time": 4},
     {"midi": 72, "duration": 4, "time": 4}
-])  # F minor
+])
 
-# Notes appear automatically!
+# Send V chord (G major)
+mcp__fl_studio_mcp__send_notes([
+    {"midi": 67, "duration": 4, "time": 8},
+    {"midi": 71, "duration": 4, "time": 8},
+    {"midi": 74, "duration": 4, "time": 8}
+])
 
-# When done: Run EndLLMInteraction in FL Studio
+# Notes appear automatically in FL Studio!
 ```
 
-### Modifying Existing Notes
+### Pattern 2: Modify Existing Notes
 
 ```python
 # Get current state
-state = get_piano_roll_state()
+state = mcp__fl_studio_mcp__get_current_piano_roll_notes()
 
-# Delete a specific note
-delete_notes([{"midi": 67, "time": 0}])
+# Find and delete a specific note (find G at beat 0)
+mcp__fl_studio_mcp__delete_notes([
+    {"midi": 67, "time": 0}
+])
 
-# Add replacement
-send_notes([{"midi": 69, "duration": 4, "time": 0}])
+# Add replacement note (A instead)
+mcp__fl_studio_mcp__send_notes([
+    {"midi": 69, "duration": 4, "time": 0}
+])
 
 # Changes appear automatically!
 ```
 
-### Starting Fresh (Replace Mode)
+### Pattern 3: Clear and Start Fresh
 
 ```python
 # Clear everything and add new progression
-send_notes([
-    {"midi": 60, "duration": 2, "time": 0},
-    {"midi": 64, "duration": 2, "time": 0},
-    {"midi": 67, "duration": 2, "time": 0}
+mcp__fl_studio_mcp__send_notes([
+    {"midi": 60, "duration": 0.5, "time": 0},   # C
+    {"midi": 62, "duration": 0.5, "time": 0.5}, # D
+    {"midi": 64, "duration": 0.5, "time": 1},   # E
+    {"midi": 65, "duration": 0.5, "time": 1.5}  # F
 ], mode="replace")
 
-# Old notes cleared, new chord appears!
+# Old notes cleared, new notes appear!
 ```
 
-## Tips
+### Pattern 4: Work with Multiple Patterns
 
-1. **Always specify `time`** - Every note should have an explicit time position
-2. **Use quarter notes** - All time/duration values are in quarter note units
-3. **Get state first** - Call `get_piano_roll_state()` before making changes
-4. **Refresh after manual edits** - User should press Cmd+Opt+Y to update state
-5. **Auto-trigger built into MCP server** - No separate scripts needed, everything is automatic
+```python
+# Get all patterns in project
+patterns = mcp__fl_studio_mcp__get_project_patterns()
+# Returns: [{"index": 1, "name": "Drums"}, {"index": 2, "name": "Verse"}, ...]
 
-## Troubleshooting
+# Get notes from specific pattern
+verse_notes = mcp__fl_studio_mcp__get_pattern_notes("Verse")
 
-**Changes not appearing?**
-- Verify BeginLLMInteraction was run in FL Studio to start the session
-- Check that the session is active (flag file should contain "active")
-- Check FL Studio window is active
-- Ensure Claude Code has Accessibility permissions (System Settings → Privacy & Security → Accessibility)
+# Switch to a pattern
+mcp__fl_studio_mcp__select_pattern("Chorus")
 
-**Notes at wrong positions?**
-- Check PPQ value in state export
-- Ensure time values are in quarter notes, not ticks
+# Add notes to current pattern
+mcp__fl_studio_mcp__send_notes([...])
+```
 
-**Trigger not working?**
-- Try pressing Cmd+Opt+Y manually or use Tools → Scripting → BeginLLMInteraction
-- Run BeginLLMInteraction in FL Studio again to restart the session
-- Restart Claude Code to reconnect the MCP server
+### Pattern 5: Discover and Navigate Project
 
-**Script not responding?**
-- Check that BeginLLMInteraction.pyscript and EndLLMInteraction.pyscript are in Piano roll scripts directory
-- Verify MCP server is connected in Claude Code
-- Restart Claude Code after code changes
+```python
+# List all channels
+channels = mcp__fl_studio_mcp__get_project_channels()
+# Returns: [{"index": 0, "name": "Kick"}, {"index": 1, "name": "Snare"}, ...]
 
-**"LLM interaction mode is inactive" error?**
-- Run BeginLLMInteraction in FL Studio to start a new session
-- The session was either never started, ended with EndLLMInteraction, or piano roll was closed
+# Open a specific channel's piano roll
+mcp__fl_studio_mcp__show_piano_roll(1)  # Open Snare
 
-## Future Enhancements
+# Get current target (what's visible)
+target = mcp__fl_studio_mcp__get_current_target()
+# Returns: {"channel_index": 1, "channel_name": "Snare", "pattern_index": 1, "pattern_name": "Drums"}
 
-Potential additions:
-- Delete by time range
-- Modify note properties (velocity, length)
-- Pattern generation tools
-- Harmonic analysis tools
-- MIDI file import/export
-- Cross-platform UI for manual trigger
+# Get notes from that channel
+notes = mcp__fl_studio_mcp__get_current_piano_roll_notes()
+```
+
+## Key Concepts
+
+### Time is Always in Quarter Notes
+
+Never use ticks or PPQ directly in tool calls. Always use quarter notes:
+- `time=0` = Beat 1
+- `time=1` = Beat 2
+- `time=4` = Beat 5 (start of measure 2 in 4/4)
+- `time=8` = Beat 9 (start of measure 3)
+
+Duration is also in quarter notes:
+- `duration=0.25` = 16th note
+- `duration=0.5` = 8th note
+- `duration=1` = Quarter note
+- `duration=2` = Half note
+- `duration=4` = Whole note
+
+The system automatically converts to ticks using the PPQ value.
+
+### Chords Are Multiple Notes
+
+A chord isn't a special object - it's just multiple notes with the same `time` value:
+
+```python
+# C major chord = 3 notes all at time=0
+mcp__fl_studio_mcp__send_notes([
+    {"midi": 60, "duration": 4, "time": 0},  # C
+    {"midi": 64, "duration": 4, "time": 0},  # E
+    {"midi": 67, "duration": 4, "time": 0}   # G
+])
+```
+
+### Event-Based State Synchronization
+
+The system monitors FL Studio for changes:
+- When you manually add/edit notes, FL Studio sends events
+- The state manager detects these automatically
+- Claude sees the changes via state query tools
+
+You don't need to tell Claude to "refresh" - it happens automatically when:
+- Piano roll focus changes
+- Patterns are switched
+- Manual edits are made
+
+### MIDI Note Reference
+
+Common notes you'll use:
+- **C4 (middle C)** = MIDI 60 = "C4" in FL Studio
+- **A4 (tuning pitch)** = MIDI 69 = "A4" in FL Studio
+- **C5** = MIDI 72 = "C5" in FL Studio
+
+**Important:** FL Studio displays notes ONE OCTAVE HIGHER than standard MIDI convention:
+- MIDI 60 (C4) displays as C5 in FL Studio
+- MIDI 69 (A4) displays as A5 in FL Studio
+- MIDI 72 (C5) displays as C6 in FL Studio
+
+## Best Practices
+
+### DO:
+- ✅ Always get state first before making changes
+- ✅ Always specify `time` for every note explicitly
+- ✅ Use quarter notes for all time and duration values
+- ✅ Send chords as multiple notes with the same time
+- ✅ Tell user notes will appear automatically after brief delay
+- ✅ Use `mode="add"` for incremental changes (default)
+- ✅ Use `mode="replace"` when user requests a complete rewrite
+
+### DON'T:
+- ❌ Don't use ticks or PPQ values in tool calls
+- ❌ Don't assume you can see manual edits without querying state
+- ❌ Don't forget to specify `time` for notes
+- ❌ Don't worry about clicking buttons - everything is automatic
+- ❌ Don't tell user to press keyboard shortcuts (unless they manually edited)
+
+## Troubleshooting for AI Assistants
+
+**User says "Nothing happened"**
+- Ask: "Is FL Studio running and is a piano roll open?"
+- Ask: "Is the MCP server connected?" (Check Claude's available tools)
+- Suggest: Restart Claude Code to reconnect the MCP server
+
+**Tools return empty data**
+- Check if FL Studio is running
+- Check if a project is open
+- Try calling `reload()` to refresh state
+
+**Notes appear at wrong positions**
+- Verify you're using quarter notes, not ticks
+- Remember: `time=4` is beat 5 (counting starts at 0)
+- Check the PPQ value from `get_current_piano_roll_notes()`
+
+**User manually edited but Claude doesn't see changes**
+- The event system should detect changes automatically
+- If not, suggest: "Try switching to a different pattern and back"
+- Or: Call `reload()` to manually refresh
+
+## File Locations (For Reference)
+
+The system stores data in these locations:
+
+**FL Studio directories:**
+- `~/Documents/Image-Line/FL Studio/Settings/Hardware/FLController/` - Hardware device scripts
+- `~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts/` - Piano roll scripts
+
+**Key files:**
+- `fl_events.json` - Event stream from FL Studio (JSONL format)
+- `mcp_request.json` - Request queue (processed by BeginLLMInteraction script)
+- `piano_roll_state.json` - Current piano roll state (exported by FL Studio)
+- `project_state.json` - Persisted project state
+
+You don't need to interact with these directly - the MCP tools handle them.
+
+## Advanced Topics
+
+### Using Direct API Access
+
+For power users, the low-level API tool allows direct execution of FL Studio Python functions:
+
+```python
+# Example: Get detailed channel info
+mcp__fl_studio_mcp__call_fl_midi_controller_api("channels.getChannelColor", [0])
+# Returns the color of channel 0
+
+# Example: Bulk operations (fire-and-forget)
+for i in range(8):
+    mcp__fl_studio_mcp__call_fl_midi_controller_api(
+        "mixer.setTrackVolume",
+        [i, 0.8],
+        expect_response=False
+    )
+# Efficiently set multiple track volumes
+```
+
+See the FL Studio Python scripting documentation for available methods.
+
+### Understanding PPQ
+
+PPQ (Pulses Per Quarter Note) is FL Studio's timing resolution:
+- Typical values: 96 (lower resolution) or 480 (higher resolution)
+- Used internally to convert quarter notes to ticks
+- You don't need to use PPQ directly - the tools handle conversion
+- But you can check `get_current_piano_roll_notes()["ppq"]` if you're curious
+
+## Summary
+
+The FL Studio MCP provides a complete bridge between Claude and FL Studio:
+1. **Query** project state (channels, patterns, notes)
+2. **Modify** piano roll content (add, delete, replace notes)
+3. **Navigate** your project (switch channels, select patterns)
+4. **Execute** advanced commands via direct API access
+
+Everything is automatic - no manual triggering needed. Just talk to Claude and watch your musical ideas appear in FL Studio!
