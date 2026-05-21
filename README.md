@@ -271,4 +271,24 @@ Built using the [Model Context Protocol](https://modelcontextprotocol.io/) speci
 
 Special thanks to the FL Studio and Python communities.
 
+## GitHub CLI (gh) support
+
+This repository now includes GitHub CLI integration scripts to make it easy to run the MCP server via a gh alias.
+
+- Scripts: install_mcp_for_gh.sh (macOS/Linux) and install_mcp_for_gh.bat (Windows)
+- What they do: create a gh alias named `mcp-fl-studio` which runs the MCP server using the repository's virtualenv Python
+- Prerequisite: GitHub CLI (gh) installed and authenticated locally
+
+Usage:
+
+- On macOS/Linux:
+  ./install_mcp_for_gh.sh
+  Then run: gh mcp-fl-studio
+
+- On Windows:
+  install_mcp_for_gh.bat
+  Then run: gh mcp-fl-studio
+
+
+
 
