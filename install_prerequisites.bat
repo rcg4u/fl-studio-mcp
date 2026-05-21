@@ -26,18 +26,34 @@ where py >nul 2>nulnIF %ERRORLEVEL%==0 (
 necho.necho ------------------------------------------------------------
 echo PART 1: Installing Python environmentnecho ------------------------------------------------------------
 cd /d "%SCRIPT_DIR%"
-IF EXIST "%SCRIPT_DIR%\.venv\" (
-    echo Virtual environment exists, updating dependencies...
-    "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install -e .
-    echo Installing optional Windows helpers: pywin32, pynput, pyautogui...
-    "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install pywin32 pynput pyautogui || echo Warning: optional package installation failed
+REM Ask whether to use system Python or create and use a local virtualenv
+set /p USE_VENV_CHOICE=Do you want to create and use a local virtualenv (.venv)? [Y/n]: 
+IF /I "%USE_VENV_CHOICE%"=="n" (
+    SET USE_VENV=0
 ) ELSE (
-    echo Creating new virtual environment...
-    %PYTHON% -m venv "%SCRIPT_DIR%\.venv"
-    "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install --upgrade pip
-    "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install -e .
+    SET USE_VENV=1
+)
+
+IF "%USE_VENV%"=="1" (
+    IF EXIST "%SCRIPT_DIR%\.venv\" (
+        echo Virtual environment exists, updating dependencies...
+        "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install -e .
+        echo Installing optional Windows helpers: pywin32, pynput, pyautogui...
+        "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install pywin32 pynput pyautogui || echo Warning: optional package installation failed
+    ) ELSE (
+        echo Creating new virtual environment...
+        %PYTHON% -m venv "%SCRIPT_DIR%\.venv"
+        "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install --upgrade pip
+        "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install -e .
+        echo Installing optional Windows helpers: pywin32, pynput, pyautogui...
+        "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install pywin32 pynput pyautogui || echo Warning: optional package installation failed
+    )
+) ELSE (
+    echo Using system Python for installation (may require admin privileges)...
+    %PYTHON% -m pip install --upgrade pip || echo Warning: pip upgrade failed
+    %PYTHON% -m pip install -e . || echo Warning: package installation failed
     echo Installing optional Windows helpers: pywin32, pynput, pyautogui...
-    "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install pywin32 pynput pyautogui || echo Warning: optional package installation failed
+    %PYTHON% -m pip install pywin32 pynput pyautogui || echo Warning: optional package installation failed
 )
 necho.necho ------------------------------------------------------------
 echo PART 2: Setting Up FL Studio scriptsnecho ------------------------------------------------------------
