@@ -29,11 +29,15 @@ cd /d "%SCRIPT_DIR%"
 IF EXIST "%SCRIPT_DIR%\.venv\" (
     echo Virtual environment exists, updating dependencies...
     "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install -e .
+    echo Installing optional Windows helpers: pywin32, pynput, pyautogui...
+    "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install pywin32 pynput pyautogui || echo Warning: optional package installation failed
 ) ELSE (
     echo Creating new virtual environment...
     %PYTHON% -m venv "%SCRIPT_DIR%\.venv"
     "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install --upgrade pip
     "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install -e .
+    echo Installing optional Windows helpers: pywin32, pynput, pyautogui...
+    "%SCRIPT_DIR%\.venv\Scripts\pip.exe" install pywin32 pynput pyautogui || echo Warning: optional package installation failed
 )
 necho.necho ------------------------------------------------------------
 echo PART 2: Setting Up FL Studio scriptsnecho ------------------------------------------------------------
