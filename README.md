@@ -313,7 +313,7 @@ Windows is fully supported. Key notes:
   - If trigger doesn't work: verify FL Studio is running and has an open piano roll, and that the venv contains pynput or pyautogui or pywin32 as needed.
   - If files can't be created: check permissions on the Documents\Image-Line\FL Studio\Settings\Piano roll scripts folder and run the installer as admin if necessary.
 
-Locating installed CLI tools:
+Locating installed CLI tools (PowerShell examples) and checking Python:
 
 If you can't find the `mcp` or `fastmcp` command-line tools, run these in PowerShell or CMD to locate them:
 
@@ -322,17 +322,31 @@ If you can't find the `mcp` or `fastmcp` command-line tools, run these in PowerS
 - where mcp.exe
 - where fastmcp.exe
 
-If the commands are found under `%APPDATA%\Python\Python314\Scripts` but not on your PATH, add that folder to your user PATH (PowerShell):
+PowerShell: check for Python and print versions (try py, python, python3):
 
-- $env:PATH += ';%APPDATA%\Python\Python314\Scripts'   # current session only
+- Get-Command py, python, python3 -ErrorAction SilentlyContinue | Select-Object Name,Source
+- if (Get-Command py -ErrorAction SilentlyContinue) { py -3 --version } elseif (Get-Command python -ErrorAction SilentlyContinue) { python --version } elseif (Get-Command python3 -ErrorAction SilentlyContinue) { python3 --version } else { Write-Output "Python not found in PATH" }
 
-Or make the change persistent (CMD):
+PowerShell: check for installed CLI tools:
 
-- setx PATH "%APPDATA%\Python\Python314\Scripts;%PATH%"
+- Get-Command mcp -ErrorAction SilentlyContinue | Select-Object Name,Source
+- Get-Command fastmcp -ErrorAction SilentlyContinue | Select-Object Name,Source
 
-You can also list the Scripts folder to confirm binaries:
+If the commands are found under `%APPDATA%\\Python\\Python314\\Scripts` but not on your PATH, add that folder to your user PATH for the current session (PowerShell):
 
-- dir %APPDATA%\Python\Python314\Scripts
+- $env:PATH = "$env:APPDATA\\Python\\Python314\\Scripts;" + $env:PATH
+
+Make the change persistent (CMD / PowerShell):
+
+- setx PATH "%APPDATA%\\Python\\Python314\\Scripts;%PATH%"
+
+Verify the Scripts folder contents:
+
+- dir "%APPDATA%\\Python\\Python314\\Scripts"
+
+Notes:
+- If `where` returns nothing, check `dir` output to confirm presence of `mcp.exe` or `fastmcp.exe` and then add the Scripts folder to PATH.
+- The `py` launcher (py.exe) is preferred when available (it can select the correct Python version with `py -3`).
 
 Examples:
 
