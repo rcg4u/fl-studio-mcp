@@ -1,0 +1,27 @@
+Processing .\.
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: fl-studio-mcp
+  Building wheel for fl-studio-mcp (pyproject.toml): started
+  Building wheel for fl-studio-mcp (pyproject.toml): finished with status 'done'
+  Created wheel for fl-studio-mcp: filename=fl_studio_mcp-0.1.0-py3-none-any.whl size=10559 sha256=c266d9348a1c132fbb65b0c995033deb4c3ec37c533bebfae48bbf0422921653
+  Stored in directory: c:\users\forrest\appdata\local\pip\cache\wheels\b9\83\3e\8d90bae96193e358a6caf76add9e5b270cb97ac0fd2037859e
+Successfully built fl-studio-mcp
+Installing collected packages: fl-studio-mcp
+Successfully installed fl-studio-mcp-0.1.0
+Requirement already satisfied: pywin32 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (311)
+Requirement already satisfied: pynput in C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages (1.8.1)
+Collecting pyautogui
+  Using cached PyAutoGUI-0.9.54.tar.gz (61 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+ERROR: Could not install packages due to an OSError: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pywin32-311.dist-info\\METADATA'
+

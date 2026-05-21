@@ -1,0 +1,570 @@
+Using pip 26.1.1 from C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip (python 3.14)
+Obtaining file:///D:/sources/fl-studio-mcp
+  Installing build dependencies: started
+  Running command installing build dependencies
+  Using pip 26.1.1 from C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip (python 3.14)
+  Collecting setuptools>=45
+    Obtaining dependency information for setuptools>=45 from https://files.pythonhosted.org/packages/9d/76/f789f7a86709c6b087c5a2f52f911838cad707cc613162401badc665acfe/setuptools-82.0.1-py3-none-any.whl.metadata
+    Using cached setuptools-82.0.1-py3-none-any.whl.metadata (6.5 kB)
+  Collecting wheel
+    Obtaining dependency information for wheel from https://files.pythonhosted.org/packages/87/1b/9e33c09813d65e248f7f773119148a612516a4bea93e9c6f545f78455b7c/wheel-0.47.0-py3-none-any.whl.metadata
+    Using cached wheel-0.47.0-py3-none-any.whl.metadata (2.3 kB)
+  Collecting packaging>=24.0 (from wheel)
+    Obtaining dependency information for packaging>=24.0 from https://files.pythonhosted.org/packages/df/b2/87e62e8c3e2f4b32e5fe99e0b86d576da1312593b39f47d8ceef365e95ed/packaging-26.2-py3-none-any.whl.metadata
+    Using cached packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+  Using cached setuptools-82.0.1-py3-none-any.whl (1.0 MB)
+  Using cached wheel-0.47.0-py3-none-any.whl (32 kB)
+  Using cached packaging-26.2-py3-none-any.whl (100 kB)
+  WARNING: Error parsing dependencies of annotated-doc: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\annotated_doc-0.0.4.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of annotated-types: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\annotated_types-0.7.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of anyio: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\anyio-4.12.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of cachetools: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\cachetools-7.0.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of fastapi: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\fastapi-0.129.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of ffmpeg-python: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\ffmpeg_python-0.2.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of h11: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\h11-0.16.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of h2: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\h2-4.3.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of hpack: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\hpack-4.1.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httpcore: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpcore-1.0.9.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httptools: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httptools-0.7.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httpx: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpx-0.28.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httpx-sse: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpx_sse-0.4.3.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of hyperframe: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\hyperframe-6.1.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of importlib-resources: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\importlib_resources-6.5.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of jsonschema: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\jsonschema-4.26.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of jsonschema-specifications: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\jsonschema_specifications-2025.9.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of markdown-it-py: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\markdown_it_py-4.0.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of mcp: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mcp-1.26.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of mdurl: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mdurl-0.1.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of mido: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mido-1.3.3.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pretty-midi: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pretty_midi-0.2.11.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pydantic: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic-2.12.5.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pydantic-core: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic_core-2.41.5.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pydantic-settings: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic_settings-2.12.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pygments: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pygments-2.19.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pyjwt: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pyjwt-2.11.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of python-multipart: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\python_multipart-0.0.22.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pywin32: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pywin32-311.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pyyaml: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pyyaml-5.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of referencing: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\referencing-0.37.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of rich: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\rich-14.3.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of rpds-py: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\rpds_py-0.30.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of shellingham: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\shellingham-1.5.4.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of soundfile: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\soundfile-0.13.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of sse-starlette: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\sse_starlette-3.2.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of starlette: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\starlette-0.52.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of typer: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\typer-0.21.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of typing-inspection: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\typing_inspection-0.4.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of uvicorn: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\uvicorn-0.40.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of watchfiles: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\watchfiles-1.1.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of websockets: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\websockets-16.0.dist-info\\METADATA'
+  Installing collected packages: setuptools, packaging, wheel
+    Creating D:\Temp\pip-build-env-htnpvpzx\overlay\Scripts
+
+  Successfully installed packaging-26.2 setuptools-82.0.1 wheel-0.47.0
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Running command Checking if build backend supports build_editable
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Running command Getting requirements to build editable
+  running egg_info
+  writing fl_studio_mcp.egg-info\PKG-INFO
+  writing dependency_links to fl_studio_mcp.egg-info\dependency_links.txt
+  writing requirements to fl_studio_mcp.egg-info\requires.txt
+  writing top-level names to fl_studio_mcp.egg-info\top_level.txt
+  reading manifest file 'fl_studio_mcp.egg-info\SOURCES.txt'
+  adding license file 'LICENSE'
+  writing manifest file 'fl_studio_mcp.egg-info\SOURCES.txt'
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Running command Preparing editable metadata (pyproject.toml)
+  running dist_info
+  creating D:\Temp\pip-modern-metadata-ywyopdpy\fl_studio_mcp.egg-info
+  writing D:\Temp\pip-modern-metadata-ywyopdpy\fl_studio_mcp.egg-info\PKG-INFO
+  writing dependency_links to D:\Temp\pip-modern-metadata-ywyopdpy\fl_studio_mcp.egg-info\dependency_links.txt
+  writing requirements to D:\Temp\pip-modern-metadata-ywyopdpy\fl_studio_mcp.egg-info\requires.txt
+  writing top-level names to D:\Temp\pip-modern-metadata-ywyopdpy\fl_studio_mcp.egg-info\top_level.txt
+  writing manifest file 'D:\Temp\pip-modern-metadata-ywyopdpy\fl_studio_mcp.egg-info\SOURCES.txt'
+  reading manifest file 'D:\Temp\pip-modern-metadata-ywyopdpy\fl_studio_mcp.egg-info\SOURCES.txt'
+  adding license file 'LICENSE'
+  writing manifest file 'D:\Temp\pip-modern-metadata-ywyopdpy\fl_studio_mcp.egg-info\SOURCES.txt'
+  creating 'D:\Temp\pip-modern-metadata-ywyopdpy\fl_studio_mcp-0.1.0.dist-info'
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Collecting fastmcp>=0.1.0 (from fl-studio-mcp==0.1.0)
+  Obtaining dependency information for fastmcp>=0.1.0 from https://files.pythonhosted.org/packages/9f/11/6b1bdada6ccfe647d615ae63f9106f8136aec17971e9361546af01c7d38e/fastmcp-3.3.1-py3-none-any.whl.metadata
+  Using cached fastmcp-3.3.1-py3-none-any.whl.metadata (8.2 kB)
+Requirement already satisfied: pynput>=1.7.6 in C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages (from fl-studio-mcp==0.1.0) (1.8.1)
+Collecting fastmcp-slim==3.3.1 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for fastmcp-slim==3.3.1 from https://files.pythonhosted.org/packages/7a/ee/97047f4cc2d7b1d46670d08d8ad01a96e7a748cc01c0b4b351ad8eddbc7a/fastmcp_slim-3.3.1-py3-none-any.whl.metadata
+  Using cached fastmcp_slim-3.3.1-py3-none-any.whl.metadata (10 kB)
+Collecting platformdirs>=4.0.0 (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for platformdirs>=4.0.0 from https://files.pythonhosted.org/packages/75/a6/a0a304dc33b49145b21f4808d763822111e67d1c3a32b524a1baf947b6e1/platformdirs-4.9.6-py3-none-any.whl.metadata
+  Using cached platformdirs-4.9.6-py3-none-any.whl.metadata (4.7 kB)
+Requirement already satisfied: pydantic-settings>=2.0.0 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (2.12.0)
+Requirement already satisfied: pydantic>=2.11.7 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from pydantic[email]>=2.11.7->fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (2.12.5)
+Requirement already satisfied: python-dotenv>=1.1.0 in C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (1.2.2)
+Requirement already satisfied: rich>=13.9.4 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (14.3.2)
+Requirement already satisfied: typing-extensions>=4.0.0 in C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (4.15.0)
+Collecting authlib>=1.6.11 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for authlib>=1.6.11 from https://files.pythonhosted.org/packages/fb/95/adcb68e20c34162e9135f370d6e31737719c2b6f94bc953fe7ed1f10fe21/authlib-1.7.2-py2.py3-none-any.whl.metadata
+  Using cached authlib-1.7.2-py2.py3-none-any.whl.metadata (10 kB)
+Collecting exceptiongroup>=1.2.2 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for exceptiongroup>=1.2.2 from https://files.pythonhosted.org/packages/8a/0e/97c33bf5009bdbac74fd2beace167cab3f978feb69cc36f1ef79360d6c4e/exceptiongroup-1.3.1-py3-none-any.whl.metadata
+  Using cached exceptiongroup-1.3.1-py3-none-any.whl.metadata (6.7 kB)
+Requirement already satisfied: httpx<1.0,>=0.28.1 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (0.28.1)
+Requirement already satisfied: mcp<2.0,>=1.24.0 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (1.26.0)
+Collecting opentelemetry-api>=1.20.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for opentelemetry-api>=1.20.0 from https://files.pythonhosted.org/packages/1b/0b/be5daf659b82b525338fde371dfcfab09b606a19bb5620c37076964710ec/opentelemetry_api-1.42.0-py3-none-any.whl.metadata
+  Using cached opentelemetry_api-1.42.0-py3-none-any.whl.metadata (1.4 kB)
+Collecting py-key-value-aio<0.5.0,>=0.4.4 (from py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for py-key-value-aio<0.5.0,>=0.4.4 from https://files.pythonhosted.org/packages/32/69/f1b537ee70b7def42d63124a539ed3026a11a3ffc3086947a1ca6e861868/py_key_value_aio-0.4.4-py3-none-any.whl.metadata
+  Using cached py_key_value_aio-0.4.4-py3-none-any.whl.metadata (15 kB)
+Collecting cyclopts>=4.0.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for cyclopts>=4.0.0 from https://files.pythonhosted.org/packages/22/1d/f6c80f82a42c69ff5a86c2580e789133de387d067210c7c46677618a2ca7/cyclopts-4.14.1-py3-none-any.whl.metadata
+  Using cached cyclopts-4.14.1-py3-none-any.whl.metadata (12 kB)
+Collecting griffelib>=2.0.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for griffelib>=2.0.0 from https://files.pythonhosted.org/packages/11/8c/c9138d881c79aa0ea9ed83cbd58d5ca75624378b38cee225dcf5c42cc91f/griffelib-2.0.2-py3-none-any.whl.metadata
+  Using cached griffelib-2.0.2-py3-none-any.whl.metadata (1.3 kB)
+Collecting jsonref>=1.1.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for jsonref>=1.1.0 from https://files.pythonhosted.org/packages/0c/ec/e1db9922bceb168197a558a2b8c03a7963f1afe93517ddd3cf99f202f996/jsonref-1.1.0-py3-none-any.whl.metadata
+  Using cached jsonref-1.1.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting jsonschema-path>=0.3.4 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for jsonschema-path>=0.3.4 from https://files.pythonhosted.org/packages/04/2c/9e69d73c4297508be9e3b64a970ea3971b3eb8db64ffc5802d40bd25981f/jsonschema_path-0.5.0-py3-none-any.whl.metadata
+  Using cached jsonschema_path-0.5.0-py3-none-any.whl.metadata (8.1 kB)
+Collecting openapi-pydantic>=0.5.1 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for openapi-pydantic>=0.5.1 from https://files.pythonhosted.org/packages/12/cf/03675d8bd8ecbf4445504d8071adab19f5f993676795708e36402ab38263/openapi_pydantic-0.5.1-py3-none-any.whl.metadata
+  Using cached openapi_pydantic-0.5.1-py3-none-any.whl.metadata (10 kB)
+Requirement already satisfied: packaging>=24.0 in C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (26.0)
+Collecting pyperclip>=1.9.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for pyperclip>=1.9.0 from https://files.pythonhosted.org/packages/df/80/fc9d01d5ed37ba4c42ca2b55b4339ae6e200b456be3a1aaddf4a9fa99b8c/pyperclip-1.11.0-py3-none-any.whl.metadata
+  Using cached pyperclip-1.11.0-py3-none-any.whl.metadata (2.4 kB)
+Collecting python-multipart>=0.0.26 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for python-multipart>=0.0.26 from https://files.pythonhosted.org/packages/8f/cb/769cfc37177252872a45a71f3fbdde9d51b471a3f3c14bfe95dde3407386/python_multipart-0.0.29-py3-none-any.whl.metadata
+  Using cached python_multipart-0.0.29-py3-none-any.whl.metadata (2.1 kB)
+Collecting pyyaml<7.0,>=6.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for pyyaml<7.0,>=6.0 from https://files.pythonhosted.org/packages/23/20/bb6982b26a40bb43951265ba29d4c246ef0ff59c9fdcdf0ed04e0687de4d/pyyaml-6.0.3-cp314-cp314-win_amd64.whl.metadata
+  Using cached pyyaml-6.0.3-cp314-cp314-win_amd64.whl.metadata (2.4 kB)
+Collecting uncalled-for>=0.2.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for uncalled-for>=0.2.0 from https://files.pythonhosted.org/packages/3b/25/2c87754f3a9e692315f7b811244090e68f362979fc8886b3fbd2985a1d8c/uncalled_for-0.3.2-py3-none-any.whl.metadata
+  Using cached uncalled_for-0.3.2-py3-none-any.whl.metadata (2.9 kB)
+Requirement already satisfied: uvicorn>=0.35 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (0.40.0)
+Requirement already satisfied: watchfiles>=1.0.0 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (1.1.1)
+Requirement already satisfied: websockets>=15.0.1 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (16.0)
+ERROR: Could not install packages due to an OSError.
+Traceback (most recent call last):
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\commands\install.py", line 479, in run
+    requirement_set = resolver.resolve(
+        reqs, check_supported_wheels=not options.target_dir
+    )
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\resolution\resolvelib\resolver.py", line 99, in resolve
+    result = self._result = resolver.resolve(
+                            ~~~~~~~~~~~~~~~~^
+        collected.requirements, max_rounds=limit_how_complex_resolution_can_be
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 601, in resolve
+    state = resolution.resolve(requirements, max_rounds=max_rounds)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 513, in resolve
+    failure_criterion = self._attempt_to_pin_criterion(name)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 220, in _attempt_to_pin_criterion
+    criteria = self._get_updated_criteria(candidate)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 210, in _get_updated_criteria
+    for requirement in self._p.get_dependencies(candidate=candidate):
+                       ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\resolution\resolvelib\provider.py", line 306, in <genexpr>
+    return (r for r in candidate.iter_dependencies(with_requires) if r is not None)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\resolution\resolvelib\candidates.py", line 426, in iter_dependencies
+    for r in self.dist.iter_dependencies():
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\metadata\importlib\_dists.py", line 226, in iter_dependencies
+    for req_string in self.metadata.get_all("Requires-Dist", []):
+                      ^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\functools.py", line 1126, in __get__
+    val = self.func(instance)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\metadata\base.py", line 391, in metadata
+    metadata = self._metadata_impl()
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\metadata\importlib\_dists.py", line 210, in _metadata_impl
+    metadata = self._dist.metadata
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py", line 463, in metadata
+    self.read_text('METADATA')
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py", line 915, in read_text
+    return self._path.joinpath(filename).read_text(encoding='utf-8')
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\pathlib\__init__.py", line 787, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\pathlib\__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpx-0.28.1.dist-info\\METADATA'
+Using pip 26.1.1 from C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip (python 3.14)
+Processing .\.
+  Installing build dependencies: started
+  Running command installing build dependencies
+  Using pip 26.1.1 from C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip (python 3.14)
+  Collecting setuptools>=45
+    Obtaining dependency information for setuptools>=45 from https://files.pythonhosted.org/packages/9d/76/f789f7a86709c6b087c5a2f52f911838cad707cc613162401badc665acfe/setuptools-82.0.1-py3-none-any.whl.metadata
+    Using cached setuptools-82.0.1-py3-none-any.whl.metadata (6.5 kB)
+  Collecting wheel
+    Obtaining dependency information for wheel from https://files.pythonhosted.org/packages/87/1b/9e33c09813d65e248f7f773119148a612516a4bea93e9c6f545f78455b7c/wheel-0.47.0-py3-none-any.whl.metadata
+    Using cached wheel-0.47.0-py3-none-any.whl.metadata (2.3 kB)
+  Collecting packaging>=24.0 (from wheel)
+    Obtaining dependency information for packaging>=24.0 from https://files.pythonhosted.org/packages/df/b2/87e62e8c3e2f4b32e5fe99e0b86d576da1312593b39f47d8ceef365e95ed/packaging-26.2-py3-none-any.whl.metadata
+    Using cached packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+  Using cached setuptools-82.0.1-py3-none-any.whl (1.0 MB)
+  Using cached wheel-0.47.0-py3-none-any.whl (32 kB)
+  Using cached packaging-26.2-py3-none-any.whl (100 kB)
+  WARNING: Error parsing dependencies of annotated-doc: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\annotated_doc-0.0.4.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of annotated-types: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\annotated_types-0.7.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of anyio: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\anyio-4.12.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of cachetools: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\cachetools-7.0.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of fastapi: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\fastapi-0.129.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of ffmpeg-python: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\ffmpeg_python-0.2.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of h11: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\h11-0.16.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of h2: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\h2-4.3.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of hpack: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\hpack-4.1.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httpcore: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpcore-1.0.9.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httptools: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httptools-0.7.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httpx: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpx-0.28.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httpx-sse: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpx_sse-0.4.3.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of hyperframe: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\hyperframe-6.1.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of importlib-resources: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\importlib_resources-6.5.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of jsonschema: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\jsonschema-4.26.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of jsonschema-specifications: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\jsonschema_specifications-2025.9.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of markdown-it-py: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\markdown_it_py-4.0.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of mcp: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mcp-1.26.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of mdurl: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mdurl-0.1.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of mido: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mido-1.3.3.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pretty-midi: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pretty_midi-0.2.11.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pydantic: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic-2.12.5.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pydantic-core: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic_core-2.41.5.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pydantic-settings: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic_settings-2.12.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pygments: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pygments-2.19.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pyjwt: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pyjwt-2.11.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of python-multipart: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\python_multipart-0.0.22.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pywin32: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pywin32-311.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pyyaml: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pyyaml-5.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of referencing: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\referencing-0.37.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of rich: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\rich-14.3.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of rpds-py: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\rpds_py-0.30.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of shellingham: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\shellingham-1.5.4.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of soundfile: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\soundfile-0.13.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of sse-starlette: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\sse_starlette-3.2.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of starlette: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\starlette-0.52.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of typer: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\typer-0.21.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of typing-inspection: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\typing_inspection-0.4.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of uvicorn: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\uvicorn-0.40.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of watchfiles: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\watchfiles-1.1.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of websockets: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\websockets-16.0.dist-info\\METADATA'
+  Installing collected packages: setuptools, packaging, wheel
+    Creating D:\Temp\pip-build-env-00hrufm7\overlay\Scripts
+
+  Successfully installed packaging-26.2 setuptools-82.0.1 wheel-0.47.0
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Running command Getting requirements to build wheel
+  running egg_info
+  writing fl_studio_mcp.egg-info\PKG-INFO
+  writing dependency_links to fl_studio_mcp.egg-info\dependency_links.txt
+  writing requirements to fl_studio_mcp.egg-info\requires.txt
+  writing top-level names to fl_studio_mcp.egg-info\top_level.txt
+  reading manifest file 'fl_studio_mcp.egg-info\SOURCES.txt'
+  adding license file 'LICENSE'
+  writing manifest file 'fl_studio_mcp.egg-info\SOURCES.txt'
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Running command Preparing metadata (pyproject.toml)
+  running dist_info
+  creating D:\Temp\pip-modern-metadata-7aupi6l5\fl_studio_mcp.egg-info
+  writing D:\Temp\pip-modern-metadata-7aupi6l5\fl_studio_mcp.egg-info\PKG-INFO
+  writing dependency_links to D:\Temp\pip-modern-metadata-7aupi6l5\fl_studio_mcp.egg-info\dependency_links.txt
+  writing requirements to D:\Temp\pip-modern-metadata-7aupi6l5\fl_studio_mcp.egg-info\requires.txt
+  writing top-level names to D:\Temp\pip-modern-metadata-7aupi6l5\fl_studio_mcp.egg-info\top_level.txt
+  writing manifest file 'D:\Temp\pip-modern-metadata-7aupi6l5\fl_studio_mcp.egg-info\SOURCES.txt'
+  reading manifest file 'D:\Temp\pip-modern-metadata-7aupi6l5\fl_studio_mcp.egg-info\SOURCES.txt'
+  adding license file 'LICENSE'
+  writing manifest file 'D:\Temp\pip-modern-metadata-7aupi6l5\fl_studio_mcp.egg-info\SOURCES.txt'
+  creating 'D:\Temp\pip-modern-metadata-7aupi6l5\fl_studio_mcp-0.1.0.dist-info'
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting fastmcp>=0.1.0 (from fl-studio-mcp==0.1.0)
+  Obtaining dependency information for fastmcp>=0.1.0 from https://files.pythonhosted.org/packages/9f/11/6b1bdada6ccfe647d615ae63f9106f8136aec17971e9361546af01c7d38e/fastmcp-3.3.1-py3-none-any.whl.metadata
+  Using cached fastmcp-3.3.1-py3-none-any.whl.metadata (8.2 kB)
+Requirement already satisfied: pynput>=1.7.6 in C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages (from fl-studio-mcp==0.1.0) (1.8.1)
+Collecting fastmcp-slim==3.3.1 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for fastmcp-slim==3.3.1 from https://files.pythonhosted.org/packages/7a/ee/97047f4cc2d7b1d46670d08d8ad01a96e7a748cc01c0b4b351ad8eddbc7a/fastmcp_slim-3.3.1-py3-none-any.whl.metadata
+  Using cached fastmcp_slim-3.3.1-py3-none-any.whl.metadata (10 kB)
+Collecting platformdirs>=4.0.0 (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for platformdirs>=4.0.0 from https://files.pythonhosted.org/packages/75/a6/a0a304dc33b49145b21f4808d763822111e67d1c3a32b524a1baf947b6e1/platformdirs-4.9.6-py3-none-any.whl.metadata
+  Using cached platformdirs-4.9.6-py3-none-any.whl.metadata (4.7 kB)
+Requirement already satisfied: pydantic-settings>=2.0.0 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (2.12.0)
+Requirement already satisfied: pydantic>=2.11.7 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from pydantic[email]>=2.11.7->fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (2.12.5)
+Requirement already satisfied: python-dotenv>=1.1.0 in C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (1.2.2)
+Requirement already satisfied: rich>=13.9.4 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (14.3.2)
+Requirement already satisfied: typing-extensions>=4.0.0 in C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (4.15.0)
+Collecting authlib>=1.6.11 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for authlib>=1.6.11 from https://files.pythonhosted.org/packages/fb/95/adcb68e20c34162e9135f370d6e31737719c2b6f94bc953fe7ed1f10fe21/authlib-1.7.2-py2.py3-none-any.whl.metadata
+  Using cached authlib-1.7.2-py2.py3-none-any.whl.metadata (10 kB)
+Collecting exceptiongroup>=1.2.2 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for exceptiongroup>=1.2.2 from https://files.pythonhosted.org/packages/8a/0e/97c33bf5009bdbac74fd2beace167cab3f978feb69cc36f1ef79360d6c4e/exceptiongroup-1.3.1-py3-none-any.whl.metadata
+  Using cached exceptiongroup-1.3.1-py3-none-any.whl.metadata (6.7 kB)
+Requirement already satisfied: httpx<1.0,>=0.28.1 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (0.28.1)
+Requirement already satisfied: mcp<2.0,>=1.24.0 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (1.26.0)
+Collecting opentelemetry-api>=1.20.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for opentelemetry-api>=1.20.0 from https://files.pythonhosted.org/packages/1b/0b/be5daf659b82b525338fde371dfcfab09b606a19bb5620c37076964710ec/opentelemetry_api-1.42.0-py3-none-any.whl.metadata
+  Using cached opentelemetry_api-1.42.0-py3-none-any.whl.metadata (1.4 kB)
+Collecting py-key-value-aio<0.5.0,>=0.4.4 (from py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for py-key-value-aio<0.5.0,>=0.4.4 from https://files.pythonhosted.org/packages/32/69/f1b537ee70b7def42d63124a539ed3026a11a3ffc3086947a1ca6e861868/py_key_value_aio-0.4.4-py3-none-any.whl.metadata
+  Using cached py_key_value_aio-0.4.4-py3-none-any.whl.metadata (15 kB)
+Collecting cyclopts>=4.0.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for cyclopts>=4.0.0 from https://files.pythonhosted.org/packages/22/1d/f6c80f82a42c69ff5a86c2580e789133de387d067210c7c46677618a2ca7/cyclopts-4.14.1-py3-none-any.whl.metadata
+  Using cached cyclopts-4.14.1-py3-none-any.whl.metadata (12 kB)
+Collecting griffelib>=2.0.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for griffelib>=2.0.0 from https://files.pythonhosted.org/packages/11/8c/c9138d881c79aa0ea9ed83cbd58d5ca75624378b38cee225dcf5c42cc91f/griffelib-2.0.2-py3-none-any.whl.metadata
+  Using cached griffelib-2.0.2-py3-none-any.whl.metadata (1.3 kB)
+Collecting jsonref>=1.1.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for jsonref>=1.1.0 from https://files.pythonhosted.org/packages/0c/ec/e1db9922bceb168197a558a2b8c03a7963f1afe93517ddd3cf99f202f996/jsonref-1.1.0-py3-none-any.whl.metadata
+  Using cached jsonref-1.1.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting jsonschema-path>=0.3.4 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for jsonschema-path>=0.3.4 from https://files.pythonhosted.org/packages/04/2c/9e69d73c4297508be9e3b64a970ea3971b3eb8db64ffc5802d40bd25981f/jsonschema_path-0.5.0-py3-none-any.whl.metadata
+  Using cached jsonschema_path-0.5.0-py3-none-any.whl.metadata (8.1 kB)
+Collecting openapi-pydantic>=0.5.1 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for openapi-pydantic>=0.5.1 from https://files.pythonhosted.org/packages/12/cf/03675d8bd8ecbf4445504d8071adab19f5f993676795708e36402ab38263/openapi_pydantic-0.5.1-py3-none-any.whl.metadata
+  Using cached openapi_pydantic-0.5.1-py3-none-any.whl.metadata (10 kB)
+Requirement already satisfied: packaging>=24.0 in C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (26.0)
+Collecting pyperclip>=1.9.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for pyperclip>=1.9.0 from https://files.pythonhosted.org/packages/df/80/fc9d01d5ed37ba4c42ca2b55b4339ae6e200b456be3a1aaddf4a9fa99b8c/pyperclip-1.11.0-py3-none-any.whl.metadata
+  Using cached pyperclip-1.11.0-py3-none-any.whl.metadata (2.4 kB)
+Collecting python-multipart>=0.0.26 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for python-multipart>=0.0.26 from https://files.pythonhosted.org/packages/8f/cb/769cfc37177252872a45a71f3fbdde9d51b471a3f3c14bfe95dde3407386/python_multipart-0.0.29-py3-none-any.whl.metadata
+  Using cached python_multipart-0.0.29-py3-none-any.whl.metadata (2.1 kB)
+Collecting pyyaml<7.0,>=6.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for pyyaml<7.0,>=6.0 from https://files.pythonhosted.org/packages/23/20/bb6982b26a40bb43951265ba29d4c246ef0ff59c9fdcdf0ed04e0687de4d/pyyaml-6.0.3-cp314-cp314-win_amd64.whl.metadata
+  Using cached pyyaml-6.0.3-cp314-cp314-win_amd64.whl.metadata (2.4 kB)
+Collecting uncalled-for>=0.2.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0)
+  Obtaining dependency information for uncalled-for>=0.2.0 from https://files.pythonhosted.org/packages/3b/25/2c87754f3a9e692315f7b811244090e68f362979fc8886b3fbd2985a1d8c/uncalled_for-0.3.2-py3-none-any.whl.metadata
+  Using cached uncalled_for-0.3.2-py3-none-any.whl.metadata (2.9 kB)
+Requirement already satisfied: uvicorn>=0.35 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (0.40.0)
+Requirement already satisfied: watchfiles>=1.0.0 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (1.1.1)
+Requirement already satisfied: websockets>=15.0.1 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (from fastmcp-slim[client,server]==3.3.1->fastmcp>=0.1.0->fl-studio-mcp==0.1.0) (16.0)
+ERROR: Could not install packages due to an OSError.
+Traceback (most recent call last):
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\commands\install.py", line 479, in run
+    requirement_set = resolver.resolve(
+        reqs, check_supported_wheels=not options.target_dir
+    )
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\resolution\resolvelib\resolver.py", line 99, in resolve
+    result = self._result = resolver.resolve(
+                            ~~~~~~~~~~~~~~~~^
+        collected.requirements, max_rounds=limit_how_complex_resolution_can_be
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 601, in resolve
+    state = resolution.resolve(requirements, max_rounds=max_rounds)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 513, in resolve
+    failure_criterion = self._attempt_to_pin_criterion(name)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 220, in _attempt_to_pin_criterion
+    criteria = self._get_updated_criteria(candidate)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 210, in _get_updated_criteria
+    for requirement in self._p.get_dependencies(candidate=candidate):
+                       ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\resolution\resolvelib\provider.py", line 306, in <genexpr>
+    return (r for r in candidate.iter_dependencies(with_requires) if r is not None)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\resolution\resolvelib\candidates.py", line 426, in iter_dependencies
+    for r in self.dist.iter_dependencies():
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\metadata\importlib\_dists.py", line 226, in iter_dependencies
+    for req_string in self.metadata.get_all("Requires-Dist", []):
+                      ^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\functools.py", line 1126, in __get__
+    val = self.func(instance)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\metadata\base.py", line 391, in metadata
+    metadata = self._metadata_impl()
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\metadata\importlib\_dists.py", line 210, in _metadata_impl
+    metadata = self._dist.metadata
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py", line 463, in metadata
+    self.read_text('METADATA')
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py", line 915, in read_text
+    return self._path.joinpath(filename).read_text(encoding='utf-8')
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\pathlib\__init__.py", line 787, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\pathlib\__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpx-0.28.1.dist-info\\METADATA'
+Using pip 26.1.1 from C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip (python 3.14)
+Requirement already satisfied: pywin32 in C:\Users\Forrest\AppData\Roaming\Python\Python314\site-packages (311)
+Requirement already satisfied: pynput in C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages (1.8.1)
+Collecting pyautogui
+  Using cached PyAutoGUI-0.9.54.tar.gz (61 kB)
+  Installing build dependencies: started
+  Running command installing build dependencies for pyautogui
+  Using pip 26.1.1 from C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip (python 3.14)
+  Collecting setuptools>=40.8.0
+    Obtaining dependency information for setuptools>=40.8.0 from https://files.pythonhosted.org/packages/9d/76/f789f7a86709c6b087c5a2f52f911838cad707cc613162401badc665acfe/setuptools-82.0.1-py3-none-any.whl.metadata
+    Using cached setuptools-82.0.1-py3-none-any.whl.metadata (6.5 kB)
+  Using cached setuptools-82.0.1-py3-none-any.whl (1.0 MB)
+  WARNING: Error parsing dependencies of annotated-doc: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\annotated_doc-0.0.4.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of annotated-types: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\annotated_types-0.7.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of anyio: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\anyio-4.12.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of cachetools: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\cachetools-7.0.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of fastapi: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\fastapi-0.129.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of ffmpeg-python: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\ffmpeg_python-0.2.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of h11: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\h11-0.16.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of h2: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\h2-4.3.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of hpack: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\hpack-4.1.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httpcore: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpcore-1.0.9.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httptools: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httptools-0.7.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httpx: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpx-0.28.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of httpx-sse: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpx_sse-0.4.3.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of hyperframe: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\hyperframe-6.1.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of importlib-resources: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\importlib_resources-6.5.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of jsonschema: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\jsonschema-4.26.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of jsonschema-specifications: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\jsonschema_specifications-2025.9.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of markdown-it-py: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\markdown_it_py-4.0.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of mcp: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mcp-1.26.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of mdurl: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mdurl-0.1.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of mido: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mido-1.3.3.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pretty-midi: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pretty_midi-0.2.11.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pydantic: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic-2.12.5.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pydantic-core: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic_core-2.41.5.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pydantic-settings: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic_settings-2.12.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pygments: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pygments-2.19.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pyjwt: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pyjwt-2.11.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of python-multipart: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\python_multipart-0.0.22.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pywin32: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pywin32-311.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of pyyaml: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pyyaml-5.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of referencing: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\referencing-0.37.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of rich: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\rich-14.3.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of rpds-py: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\rpds_py-0.30.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of shellingham: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\shellingham-1.5.4.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of soundfile: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\soundfile-0.13.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of sse-starlette: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\sse_starlette-3.2.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of starlette: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\starlette-0.52.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of typer: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\typer-0.21.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of typing-inspection: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\typing_inspection-0.4.2.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of uvicorn: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\uvicorn-0.40.0.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of watchfiles: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\watchfiles-1.1.1.dist-info\\METADATA'
+  WARNING: Error parsing dependencies of websockets: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\websockets-16.0.dist-info\\METADATA'
+  Installing collected packages: setuptools
+  Successfully installed setuptools-82.0.1
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Running command Getting requirements to build wheel
+  D:\Temp\pip-build-env-hmmtisnw\overlay\Lib\site-packages\setuptools\_distutils\dist.py:287: UserWarning: Unknown distribution option: 'test_suite'
+    warnings.warn(msg)
+  D:\Temp\pip-build-env-hmmtisnw\overlay\Lib\site-packages\setuptools\dist.py:765: SetuptoolsDeprecationWarning: License classifiers are deprecated.
+  !!
+
+          ********************************************************************************
+          Please consider removing the following classifiers in favor of a SPDX license expression:
+
+          License :: OSI Approved :: BSD License
+
+          See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.
+          ********************************************************************************
+
+  !!
+    self._finalize_license_expression()
+  running egg_info
+  writing PyAutoGUI.egg-info\PKG-INFO
+  writing dependency_links to PyAutoGUI.egg-info\dependency_links.txt
+  writing requirements to PyAutoGUI.egg-info\requires.txt
+  writing top-level names to PyAutoGUI.egg-info\top_level.txt
+  reading manifest file 'PyAutoGUI.egg-info\SOURCES.txt'
+  reading manifest template 'MANIFEST.in'
+  adding license file 'LICENSE.txt'
+  adding license file 'AUTHORS.txt'
+  writing manifest file 'PyAutoGUI.egg-info\SOURCES.txt'
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Running command Preparing metadata (pyproject.toml)
+  D:\Temp\pip-build-env-hmmtisnw\overlay\Lib\site-packages\setuptools\_distutils\dist.py:287: UserWarning: Unknown distribution option: 'test_suite'
+    warnings.warn(msg)
+  D:\Temp\pip-build-env-hmmtisnw\overlay\Lib\site-packages\setuptools\dist.py:765: SetuptoolsDeprecationWarning: License classifiers are deprecated.
+  !!
+
+          ********************************************************************************
+          Please consider removing the following classifiers in favor of a SPDX license expression:
+
+          License :: OSI Approved :: BSD License
+
+          See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.
+          ********************************************************************************
+
+  !!
+    self._finalize_license_expression()
+  running dist_info
+  creating D:\Temp\pip-modern-metadata-b5v93n3s\PyAutoGUI.egg-info
+  writing D:\Temp\pip-modern-metadata-b5v93n3s\PyAutoGUI.egg-info\PKG-INFO
+  writing dependency_links to D:\Temp\pip-modern-metadata-b5v93n3s\PyAutoGUI.egg-info\dependency_links.txt
+  writing requirements to D:\Temp\pip-modern-metadata-b5v93n3s\PyAutoGUI.egg-info\requires.txt
+  writing top-level names to D:\Temp\pip-modern-metadata-b5v93n3s\PyAutoGUI.egg-info\top_level.txt
+  writing manifest file 'D:\Temp\pip-modern-metadata-b5v93n3s\PyAutoGUI.egg-info\SOURCES.txt'
+  reading manifest file 'D:\Temp\pip-modern-metadata-b5v93n3s\PyAutoGUI.egg-info\SOURCES.txt'
+  reading manifest template 'MANIFEST.in'
+  adding license file 'LICENSE.txt'
+  adding license file 'AUTHORS.txt'
+  writing manifest file 'D:\Temp\pip-modern-metadata-b5v93n3s\PyAutoGUI.egg-info\SOURCES.txt'
+  creating 'D:\Temp\pip-modern-metadata-b5v93n3s\pyautogui-0.9.54.dist-info'
+  Preparing metadata (pyproject.toml): finished with status 'done'
+ERROR: Could not install packages due to an OSError.
+Traceback (most recent call last):
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\commands\install.py", line 479, in run
+    requirement_set = resolver.resolve(
+        reqs, check_supported_wheels=not options.target_dir
+    )
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\resolution\resolvelib\resolver.py", line 99, in resolve
+    result = self._result = resolver.resolve(
+                            ~~~~~~~~~~~~~~~~^
+        collected.requirements, max_rounds=limit_how_complex_resolution_can_be
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 601, in resolve
+    state = resolution.resolve(requirements, max_rounds=max_rounds)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 513, in resolve
+    failure_criterion = self._attempt_to_pin_criterion(name)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 220, in _attempt_to_pin_criterion
+    criteria = self._get_updated_criteria(candidate)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_vendor\resolvelib\resolvers\resolution.py", line 210, in _get_updated_criteria
+    for requirement in self._p.get_dependencies(candidate=candidate):
+                       ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\resolution\resolvelib\provider.py", line 306, in <genexpr>
+    return (r for r in candidate.iter_dependencies(with_requires) if r is not None)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\resolution\resolvelib\candidates.py", line 426, in iter_dependencies
+    for r in self.dist.iter_dependencies():
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\metadata\importlib\_dists.py", line 226, in iter_dependencies
+    for req_string in self.metadata.get_all("Requires-Dist", []):
+                      ^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\functools.py", line 1126, in __get__
+    val = self.func(instance)
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\metadata\base.py", line 391, in metadata
+    metadata = self._metadata_impl()
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\site-packages\pip\_internal\metadata\importlib\_dists.py", line 210, in _metadata_impl
+    metadata = self._dist.metadata
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py", line 463, in metadata
+    self.read_text('METADATA')
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py", line 915, in read_text
+    return self._path.joinpath(filename).read_text(encoding='utf-8')
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\pathlib\__init__.py", line 787, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Forrest\AppData\Local\Programs\Python\Python314\Lib\pathlib\__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pywin32-311.dist-info\\METADATA'

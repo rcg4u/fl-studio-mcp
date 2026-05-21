@@ -1,0 +1,303 @@
+Collecting fastmcp
+  Using cached fastmcp-3.3.1-py3-none-any.whl.metadata (8.2 kB)
+Collecting fastmcp-slim==3.3.1 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached fastmcp_slim-3.3.1-py3-none-any.whl.metadata (10 kB)
+Collecting platformdirs>=4.0.0 (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached platformdirs-4.9.6-py3-none-any.whl.metadata (4.7 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting pydantic-settings>=2.0.0 (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pydantic_settings-2.14.1-py3-none-any.whl.metadata (3.4 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting pydantic>=2.11.7 (from pydantic[email]>=2.11.7->fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pydantic-2.13.4-py3-none-any.whl.metadata (109 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting python-dotenv>=1.1.0 (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached python_dotenv-1.2.2-py3-none-any.whl.metadata (27 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting rich>=13.9.4 (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached rich-15.0.0-py3-none-any.whl.metadata (18 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting typing-extensions>=4.0.0 (from fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting authlib>=1.6.11 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached authlib-1.7.2-py2.py3-none-any.whl.metadata (10 kB)
+Collecting exceptiongroup>=1.2.2 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached exceptiongroup-1.3.1-py3-none-any.whl.metadata (6.7 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting httpx<1.0,>=0.28.1 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting mcp<2.0,>=1.24.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached mcp-1.27.1-py3-none-any.whl.metadata (8.2 kB)
+Collecting opentelemetry-api>=1.20.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached opentelemetry_api-1.42.0-py3-none-any.whl.metadata (1.4 kB)
+Collecting py-key-value-aio<0.5.0,>=0.4.4 (from py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached py_key_value_aio-0.4.4-py3-none-any.whl.metadata (15 kB)
+Collecting cyclopts>=4.0.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached cyclopts-4.14.1-py3-none-any.whl.metadata (12 kB)
+Collecting griffelib>=2.0.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached griffelib-2.0.2-py3-none-any.whl.metadata (1.3 kB)
+Collecting jsonref>=1.1.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached jsonref-1.1.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting jsonschema-path>=0.3.4 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached jsonschema_path-0.5.0-py3-none-any.whl.metadata (8.1 kB)
+Collecting openapi-pydantic>=0.5.1 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached openapi_pydantic-0.5.1-py3-none-any.whl.metadata (10 kB)
+Collecting packaging>=24.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting pyperclip>=1.9.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pyperclip-1.11.0-py3-none-any.whl.metadata (2.4 kB)
+Collecting python-multipart>=0.0.26 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached python_multipart-0.0.29-py3-none-any.whl.metadata (2.1 kB)
+Collecting pyyaml<7.0,>=6.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pyyaml-6.0.3-cp314-cp314-win_amd64.whl.metadata (2.4 kB)
+Collecting uncalled-for>=0.2.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached uncalled_for-0.3.2-py3-none-any.whl.metadata (2.9 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting uvicorn>=0.35 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached uvicorn-0.47.0-py3-none-any.whl.metadata (6.7 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting watchfiles>=1.0.0 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached watchfiles-1.2.0-cp314-cp314-win_amd64.whl.metadata (5.0 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting websockets>=15.0.1 (from fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached websockets-16.0-cp314-cp314-win_amd64.whl.metadata (7.0 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting anyio (from httpx<1.0,>=0.28.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached anyio-4.13.0-py3-none-any.whl.metadata (4.5 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting certifi (from httpx<1.0,>=0.28.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached certifi-2026.5.20-py3-none-any.whl.metadata (2.5 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting httpcore==1.* (from httpx<1.0,>=0.28.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting idna (from httpx<1.0,>=0.28.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached idna-3.15-py3-none-any.whl.metadata (7.7 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting h11>=0.16 (from httpcore==1.*->httpx<1.0,>=0.28.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting httpx-sse>=0.4 (from mcp<2.0,>=1.24.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached httpx_sse-0.4.3-py3-none-any.whl.metadata (9.7 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting jsonschema>=4.20.0 (from mcp<2.0,>=1.24.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting pyjwt>=2.10.1 (from pyjwt[crypto]>=2.10.1->mcp<2.0,>=1.24.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pyjwt-2.12.1-py3-none-any.whl.metadata (4.1 kB)
+Collecting pywin32>=310 (from mcp<2.0,>=1.24.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pywin32-311-cp314-cp314-win_amd64.whl.metadata (10 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting sse-starlette>=1.6.1 (from mcp<2.0,>=1.24.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached sse_starlette-3.4.4-py3-none-any.whl.metadata (15 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting starlette>=0.27 (from mcp<2.0,>=1.24.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached starlette-1.0.0-py3-none-any.whl.metadata (6.3 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting typing-inspection>=0.4.1 (from mcp<2.0,>=1.24.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached typing_inspection-0.4.2-py3-none-any.whl.metadata (2.6 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting beartype>=0.20.0 (from py-key-value-aio<0.5.0,>=0.4.4->py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached beartype-0.22.9-py3-none-any.whl.metadata (37 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting aiofile>=3.5.0 (from py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached aiofile-3.11.1-py3-none-any.whl.metadata (14 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting keyring>=25.6.0 (from py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached keyring-25.7.0-py3-none-any.whl.metadata (21 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting cachetools>=5.0.0 (from py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached cachetools-7.1.3-py3-none-any.whl.metadata (5.5 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting annotated-types>=0.6.0 (from pydantic>=2.11.7->pydantic[email]>=2.11.7->fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting pydantic-core==2.46.4 (from pydantic>=2.11.7->pydantic[email]>=2.11.7->fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pydantic_core-2.46.4-cp314-cp314-win_amd64.whl.metadata (6.7 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting caio~=0.9.0 (from aiofile>=3.5.0->py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached caio-0.9.25-py3-none-any.whl.metadata (3.4 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting cryptography (from authlib>=1.6.11->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached cryptography-48.0.0-cp311-abi3-win_amd64.whl.metadata (4.3 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting joserfc>=1.6.0 (from authlib>=1.6.11->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached joserfc-1.6.5-py3-none-any.whl.metadata (3.2 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting attrs>=23.1.0 (from cyclopts>=4.0.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting docstring-parser<4.0,>=0.15 (from cyclopts>=4.0.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached docstring_parser-0.18.0-py3-none-any.whl.metadata (3.5 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting rich-rst<3.0.0,>=1.3.1 (from cyclopts>=4.0.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached rich_rst-2.0.1-py3-none-any.whl.metadata (4.6 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting pygments>=2.0.0 (from rich-rst<3.0.0,>=1.3.1->cyclopts>=4.0.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting cffi>=2.0.0 (from cryptography->authlib>=1.6.11->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached cffi-2.0.0-cp314-cp314-win_amd64.whl.metadata (2.6 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting pycparser (from cffi>=2.0.0->cryptography->authlib>=1.6.11->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pycparser-3.0-py3-none-any.whl.metadata (8.2 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting jsonschema-specifications>=2023.03.6 (from jsonschema>=4.20.0->mcp<2.0,>=1.24.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting referencing>=0.28.4 (from jsonschema>=4.20.0->mcp<2.0,>=1.24.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting rpds-py>=0.25.0 (from jsonschema>=4.20.0->mcp<2.0,>=1.24.0->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached rpds_py-0.30.0-cp314-cp314-win_amd64.whl.metadata (4.2 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting pathable<0.7.0,>=0.6.0 (from jsonschema-path>=0.3.4->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pathable-0.6.0-py3-none-any.whl.metadata (7.2 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting pywin32-ctypes>=0.2.0 (from keyring>=25.6.0->py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached pywin32_ctypes-0.2.3-py3-none-any.whl.metadata (3.9 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting jaraco.classes (from keyring>=25.6.0->py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached jaraco.classes-3.4.0-py3-none-any.whl.metadata (2.6 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting jaraco.functools (from keyring>=25.6.0->py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached jaraco_functools-4.5.0-py3-none-any.whl.metadata (2.9 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting jaraco.context (from keyring>=25.6.0->py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached jaraco_context-6.1.2-py3-none-any.whl.metadata (4.2 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting email-validator>=2.0.0 (from pydantic[email]>=2.11.7->fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached email_validator-2.3.0-py3-none-any.whl.metadata (26 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting dnspython>=2.0.0 (from email-validator>=2.0.0->pydantic[email]>=2.11.7->fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached dnspython-2.8.0-py3-none-any.whl.metadata (5.7 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting markdown-it-py>=2.2.0 (from rich>=13.9.4->fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached markdown_it_py-4.2.0-py3-none-any.whl.metadata (7.4 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting mdurl~=0.1 (from markdown-it-py>=2.2.0->rich>=13.9.4->fastmcp-slim==3.3.1->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting click>=7.0 (from uvicorn>=0.35->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached click-8.4.0-py3-none-any.whl.metadata (2.6 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting colorama (from click>=7.0->uvicorn>=0.35->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting more-itertools (from jaraco.classes->keyring>=25.6.0->py-key-value-aio[filetree,keyring,memory]<0.5.0,>=0.4.4; extra == "client"->fastmcp-slim[client,server]==3.3.1->fastmcp)
+  Using cached more_itertools-11.0.2-py3-none-any.whl.metadata (41 kB)
+Using cached fastmcp-3.3.1-py3-none-any.whl (7.9 kB)
+Using cached fastmcp_slim-3.3.1-py3-none-any.whl (738 kB)
+Using cached httpx-0.28.1-py3-none-any.whl (73 kB)
+Using cached httpcore-1.0.9-py3-none-any.whl (78 kB)
+Using cached mcp-1.27.1-py3-none-any.whl (216 kB)
+Using cached py_key_value_aio-0.4.4-py3-none-any.whl (152 kB)
+Using cached pydantic-2.13.4-py3-none-any.whl (472 kB)
+Using cached pydantic_core-2.46.4-cp314-cp314-win_amd64.whl (2.1 MB)
+Using cached pyyaml-6.0.3-cp314-cp314-win_amd64.whl (156 kB)
+Using cached aiofile-3.11.1-py3-none-any.whl (20 kB)
+Using cached caio-0.9.25-py3-none-any.whl (19 kB)
+Using cached annotated_types-0.7.0-py3-none-any.whl (13 kB)
+Using cached anyio-4.13.0-py3-none-any.whl (114 kB)
+Using cached authlib-1.7.2-py2.py3-none-any.whl (259 kB)
+Using cached beartype-0.22.9-py3-none-any.whl (1.3 MB)
+Using cached cachetools-7.1.3-py3-none-any.whl (16 kB)
+Using cached cyclopts-4.14.1-py3-none-any.whl (214 kB)
+Using cached docstring_parser-0.18.0-py3-none-any.whl (22 kB)
+Using cached rich_rst-2.0.1-py3-none-any.whl (272 kB)
+Using cached attrs-26.1.0-py3-none-any.whl (67 kB)
+Using cached exceptiongroup-1.3.1-py3-none-any.whl (16 kB)
+Using cached griffelib-2.0.2-py3-none-any.whl (142 kB)
+Using cached h11-0.16.0-py3-none-any.whl (37 kB)
+Using cached httpx_sse-0.4.3-py3-none-any.whl (9.0 kB)
+Using cached idna-3.15-py3-none-any.whl (72 kB)
+Using cached joserfc-1.6.5-py3-none-any.whl (70 kB)
+Using cached cryptography-48.0.0-cp311-abi3-win_amd64.whl (3.8 MB)
+Using cached cffi-2.0.0-cp314-cp314-win_amd64.whl (185 kB)
+Using cached jsonref-1.1.0-py3-none-any.whl (9.4 kB)
+Using cached jsonschema-4.26.0-py3-none-any.whl (90 kB)
+Using cached jsonschema_path-0.5.0-py3-none-any.whl (24 kB)
+Using cached pathable-0.6.0-py3-none-any.whl (18 kB)
+Using cached referencing-0.37.0-py3-none-any.whl (26 kB)
+Using cached jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+Using cached keyring-25.7.0-py3-none-any.whl (39 kB)
+Using cached openapi_pydantic-0.5.1-py3-none-any.whl (96 kB)
+Using cached opentelemetry_api-1.42.0-py3-none-any.whl (61 kB)
+Using cached packaging-26.2-py3-none-any.whl (100 kB)
+Using cached platformdirs-4.9.6-py3-none-any.whl (21 kB)
+Using cached pydantic_settings-2.14.1-py3-none-any.whl (60 kB)
+Using cached email_validator-2.3.0-py3-none-any.whl (35 kB)
+Using cached dnspython-2.8.0-py3-none-any.whl (331 kB)
+Using cached pygments-2.20.0-py3-none-any.whl (1.2 MB)
+Using cached pyjwt-2.12.1-py3-none-any.whl (29 kB)
+Using cached pyperclip-1.11.0-py3-none-any.whl (11 kB)
+Using cached python_dotenv-1.2.2-py3-none-any.whl (22 kB)
+Using cached python_multipart-0.0.29-py3-none-any.whl (29 kB)
+Using cached pywin32-311-cp314-cp314-win_amd64.whl (9.7 MB)
+Using cached pywin32_ctypes-0.2.3-py3-none-any.whl (30 kB)
+Using cached rich-15.0.0-py3-none-any.whl (310 kB)
+Using cached markdown_it_py-4.2.0-py3-none-any.whl (91 kB)
+Using cached mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+Using cached rpds_py-0.30.0-cp314-cp314-win_amd64.whl (228 kB)
+Using cached sse_starlette-3.4.4-py3-none-any.whl (16 kB)
+Using cached starlette-1.0.0-py3-none-any.whl (72 kB)
+Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+Using cached typing_inspection-0.4.2-py3-none-any.whl (14 kB)
+Using cached uncalled_for-0.3.2-py3-none-any.whl (11 kB)
+Using cached uvicorn-0.47.0-py3-none-any.whl (71 kB)
+Using cached click-8.4.0-py3-none-any.whl (116 kB)
+Using cached watchfiles-1.2.0-cp314-cp314-win_amd64.whl (288 kB)
+Using cached websockets-16.0-cp314-cp314-win_amd64.whl (178 kB)
+Using cached certifi-2026.5.20-py3-none-any.whl (134 kB)
+Using cached colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Using cached jaraco.classes-3.4.0-py3-none-any.whl (6.8 kB)
+Using cached jaraco_context-6.1.2-py3-none-any.whl (7.9 kB)
+Using cached jaraco_functools-4.5.0-py3-none-any.whl (10 kB)
+Using cached more_itertools-11.0.2-py3-none-any.whl (71 kB)
+Using cached pycparser-3.0-py3-none-any.whl (48 kB)
+WARNING: Error parsing dependencies of annotated-doc: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\annotated_doc-0.0.4.dist-info\\METADATA'
+WARNING: Error parsing dependencies of annotated-types: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\annotated_types-0.7.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of anyio: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\anyio-4.12.1.dist-info\\METADATA'
+WARNING: Error parsing dependencies of cachetools: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\cachetools-7.0.1.dist-info\\METADATA'
+WARNING: Error parsing dependencies of fastapi: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\fastapi-0.129.2.dist-info\\METADATA'
+WARNING: Error parsing dependencies of ffmpeg-python: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\ffmpeg_python-0.2.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of h11: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\h11-0.16.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of h2: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\h2-4.3.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of hpack: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\hpack-4.1.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of httpcore: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpcore-1.0.9.dist-info\\METADATA'
+WARNING: Error parsing dependencies of httptools: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httptools-0.7.1.dist-info\\METADATA'
+WARNING: Error parsing dependencies of httpx: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpx-0.28.1.dist-info\\METADATA'
+WARNING: Error parsing dependencies of httpx-sse: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\httpx_sse-0.4.3.dist-info\\METADATA'
+WARNING: Error parsing dependencies of hyperframe: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\hyperframe-6.1.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of importlib-resources: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\importlib_resources-6.5.2.dist-info\\METADATA'
+WARNING: Error parsing dependencies of jsonschema: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\jsonschema-4.26.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of jsonschema-specifications: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\jsonschema_specifications-2025.9.1.dist-info\\METADATA'
+WARNING: Error parsing dependencies of markdown-it-py: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\markdown_it_py-4.0.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of mcp: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mcp-1.26.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of mdurl: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mdurl-0.1.2.dist-info\\METADATA'
+WARNING: Error parsing dependencies of mido: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\mido-1.3.3.dist-info\\METADATA'
+WARNING: Error parsing dependencies of pretty-midi: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pretty_midi-0.2.11.dist-info\\METADATA'
+WARNING: Error parsing dependencies of pydantic: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic-2.12.5.dist-info\\METADATA'
+WARNING: Error parsing dependencies of pydantic-core: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic_core-2.41.5.dist-info\\METADATA'
+WARNING: Error parsing dependencies of pydantic-settings: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pydantic_settings-2.12.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of pygments: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pygments-2.19.2.dist-info\\METADATA'
+WARNING: Error parsing dependencies of pyjwt: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pyjwt-2.11.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of python-multipart: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\python_multipart-0.0.22.dist-info\\METADATA'
+WARNING: Error parsing dependencies of pyyaml: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\pyyaml-5.1.dist-info\\METADATA'
+WARNING: Error parsing dependencies of referencing: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\referencing-0.37.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of rich: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\rich-14.3.2.dist-info\\METADATA'
+WARNING: Error parsing dependencies of rpds-py: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\rpds_py-0.30.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of shellingham: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\shellingham-1.5.4.dist-info\\METADATA'
+WARNING: Error parsing dependencies of soundfile: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\soundfile-0.13.1.dist-info\\METADATA'
+WARNING: Error parsing dependencies of sse-starlette: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\sse_starlette-3.2.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of starlette: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\starlette-0.52.1.dist-info\\METADATA'
+WARNING: Error parsing dependencies of typer: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\typer-0.21.1.dist-info\\METADATA'
+WARNING: Error parsing dependencies of typing-inspection: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\typing_inspection-0.4.2.dist-info\\METADATA'
+WARNING: Error parsing dependencies of uvicorn: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\uvicorn-0.40.0.dist-info\\METADATA'
+WARNING: Error parsing dependencies of watchfiles: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\watchfiles-1.1.1.dist-info\\METADATA'
+WARNING: Error parsing dependencies of websockets: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\websockets-16.0.dist-info\\METADATA'
+Installing collected packages: pywin32, pyperclip, websockets, uncalled-for, typing-extensions, rpds-py, pyyaml, pywin32-ctypes, python-multipart, python-dotenv, pyjwt, pygments, pycparser, platformdirs, pathable, packaging, more-itertools, mdurl, jsonref, jaraco.context, idna, httpx-sse, h11, griffelib, exceptiongroup, docstring-parser, dnspython, colorama, certifi, caio, cachetools, beartype, attrs, annotated-types, typing-inspection, referencing, pydantic-core, py-key-value-aio, opentelemetry-api, markdown-it-py, jaraco.functools, jaraco.classes, httpcore, email-validator, click, cffi, anyio, aiofile, watchfiles, uvicorn, starlette, rich, pydantic, keyring, jsonschema-specifications, jsonschema-path, httpx, cryptography, sse-starlette, rich-rst, pydantic-settings, openapi-pydantic, jsonschema, joserfc, mcp, fastmcp-slim, cyclopts, authlib, fastmcp
+ERROR: Could not install packages due to an OSError: [Errno 22] Invalid argument: 'C:\\Users\\Forrest\\AppData\\Roaming\\Python\\Python314\\site-packages\\PyWin32.chm'
+
+

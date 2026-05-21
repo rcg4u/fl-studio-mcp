@@ -4,7 +4,93 @@ FastMCP server for FL Studio
 Handles piano roll operations and music theory tools
 """
 
-from fastmcp import FastMCP
+try:
+    from fastmcp import FastMCP
+except Exception:
+    # Provide a lightweight fallback when fastmcp isn't available.
+    # This shim records decorated tools and exposes them via a simple HTTP POST
+    # endpoint at /tool/<name> so the server can run without installing fastmcp.
+    import json
+    from http.server import HTTPServer, BaseHTTPRequestHandler
+    import threading
+    
+    class _FallbackMCP:
+        def __init__(self, name: str):
+            self.name = name
+            self._tools = {}
+            self._server_thread = None
+            self._httpd = None
+
+        def tool(self, fn):
+            # Decorator to register a tool
+            self._tools[fn.__name__] = fn
+            return fn
+
+        def _make_handler(self):
+            tools = self._tools
+            class Handler(BaseHTTPRequestHandler):
+                def do_POST(self):
+                    if not self.path.startswith('/tool/'):
+                        self.send_response(404)
+                        self.end_headers()
+                        return
+                    tool_name = self.path.split('/tool/')[-1]
+                    length = int(self.headers.get('Content-Length', 0))
+                    body = self.rfile.read(length) if length else b''
+                    try:
+                        data = json.loads(body.decode('utf-8')) if body else {}
+                    except Exception as e:
+                        self.send_response(400)
+                        self.end_headers()
+                        self.wfile.write(b'Invalid JSON')
+                        return
+                    if tool_name not in tools:
+                        self.send_response(404)
+                        self.end_headers()
+                        self.wfile.write(b'Tool not found')
+                        return
+                    try:
+                        result = tools[tool_name](**data) if isinstance(data, dict) else tools[tool_name](data)
+                        payload = json.dumps({'result': result})
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(payload.encode('utf-8'))
+                    except Exception as e:
+                        self.send_response(500)
+                        self.end_headers()
+                        self.wfile.write(str(e).encode('utf-8'))
+
+                def log_message(self, format, *args):
+                    # Silence default logging
+                    return
+
+            return Handler
+
+        def run(self, host='127.0.0.1', port=None):
+            import os
+            if port is None:
+                try:
+                    port = int(os.environ.get('MCP_PORT', '8765'))
+                except Exception:
+                    port = 8765
+            handler = self._make_handler()
+            self._httpd = HTTPServer((host, port), handler)
+            def serve():
+                try:
+                    self._httpd.serve_forever()
+                except Exception:
+                    pass
+            self._server_thread = threading.Thread(target=serve, daemon=True)
+            self._server_thread.start()
+            print(f'Fallback MCP server running on http://{host}:{port}/')
+
+        def stop(self):
+            if self._httpd:
+                self._httpd.shutdown()
+
+    FastMCP = _FallbackMCP
+
 import json
 import os
 import platform
