@@ -160,6 +160,7 @@ class FLStudioTrigger:
     def _send_keystroke(self):
         """Send the trigger keystroke"""
         try:
+            # Preferred: use pynput if available
             from pynput.keyboard import Key, Controller
             keyboard = Controller()
 
@@ -169,8 +170,14 @@ class FLStudioTrigger:
                     with keyboard.pressed(Key.alt):
                         keyboard.press('y')
                         keyboard.release('y')
-            else:
+            elif self.system == "Windows":
                 # Windows: Ctrl+Alt+Y
+                with keyboard.pressed(Key.ctrl):
+                    with keyboard.pressed(Key.alt):
+                        keyboard.press('y')
+                        keyboard.release('y')
+            else:
+                # Generic fallback: press ctrl+alt+y
                 with keyboard.pressed(Key.ctrl):
                     with keyboard.pressed(Key.alt):
                         keyboard.press('y')
@@ -180,30 +187,50 @@ class FLStudioTrigger:
             time.sleep(2.0)
 
             return True
-        except ImportError:
-            # Fallback using platform-specific methods
+        except Exception:
+            # Try platform-specific fallbacks
             if self.system == "Darwin":
-                subprocess.run(['osascript', '-e',
-                    'tell application "System Events" to keystroke "y" using {command down, option down}'],
-                    timeout=3)
-
-                # Add delay to allow FL Studio to receive focus and process the keystroke
-                time.sleep(2.0)
-
-                return True
-            elif self.system == "Windows":
                 try:
-                    import pyautogui
-                    pyautogui.hotkey('ctrl', 'alt', 'y')
-
-                    # Add delay to allow FL Studio to receive focus and process the keystroke
+                    subprocess.run(['osascript', '-e',
+                        'tell application "System Events" to keystroke "y" using {command down, option down}'],
+                        timeout=3)
                     time.sleep(2.0)
-
                     return True
-                except ImportError:
+                except Exception:
                     pass
-        except:
-            pass
+
+            if self.system == "Windows":
+                # Try ctypes-based SendInput/keybd_event fallback (no extra deps)
+                try:
+                    import ctypes
+                    user32 = ctypes.windll.user32
+                    VK_CONTROL = 0x11
+                    VK_MENU = 0x12  # Alt
+                    VK_Y = 0x59
+                    KEYEVENTF_KEYUP = 0x0002
+
+                    # Press Ctrl, Alt, Y
+                    user32.keybd_event(VK_CONTROL, 0, 0, 0)
+                    user32.keybd_event(VK_MENU, 0, 0, 0)
+                    user32.keybd_event(VK_Y, 0, 0, 0)
+                    time.sleep(0.05)
+                    # Release Y, Alt, Ctrl
+                    user32.keybd_event(VK_Y, 0, KEYEVENTF_KEYUP, 0)
+                    user32.keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0)
+                    user32.keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0)
+
+                    time.sleep(2.0)
+                    return True
+                except Exception:
+                    # Last resort: try pyautogui if present
+                    try:
+                        import pyautogui
+                        pyautogui.hotkey('ctrl', 'alt', 'y')
+                        time.sleep(2.0)
+                        return True
+                    except Exception:
+                        pass
+
         return False
 
 
@@ -211,12 +238,13 @@ class FLStudioTrigger:
 trigger = FLStudioTrigger()
 
 # Request/Response file paths for communication
-BRIDGE_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts"))
+HOME = os.path.expanduser("~")
+BRIDGE_DIR = Path(os.path.join(HOME, "Documents", "Image-Line", "FL Studio", "Settings", "Piano roll scripts"))
 REQUEST_FILE = BRIDGE_DIR / "mcp_request.json"
 RESPONSE_FILE = BRIDGE_DIR / "mcp_response.json"
 
-# Path to the piano roll scripts directory
-SCRIPT_DIR = Path(os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts"))
+# Path to the piano roll scripts directory (same as BRIDGE_DIR)
+SCRIPT_DIR = BRIDGE_DIR
 STATE_FILE = SCRIPT_DIR / "piano_roll_state.json"
 
 

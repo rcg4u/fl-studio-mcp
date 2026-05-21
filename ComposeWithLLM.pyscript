@@ -5,7 +5,7 @@ import os
 
 def get_script_dir():
     """Get the directory where this script is located"""
-    return os.path.expanduser("~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts")
+    return os.path.join(os.path.expanduser("~"), "Documents", "Image-Line", "FL Studio", "Settings", "Piano roll scripts")
 
 
 REQUEST_FILE = os.path.join(get_script_dir(), "mcp_request.json")
