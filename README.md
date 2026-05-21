@@ -313,6 +313,27 @@ Windows is fully supported. Key notes:
   - If trigger doesn't work: verify FL Studio is running and has an open piano roll, and that the venv contains pynput or pyautogui or pywin32 as needed.
   - If files can't be created: check permissions on the Documents\Image-Line\FL Studio\Settings\Piano roll scripts folder and run the installer as admin if necessary.
 
+Locating installed CLI tools:
+
+If you can't find the `mcp` or `fastmcp` command-line tools, run these in PowerShell or CMD to locate them:
+
+- where mcp
+- where fastmcp
+- where mcp.exe
+- where fastmcp.exe
+
+If the commands are found under `%APPDATA%\Python\Python314\Scripts` but not on your PATH, add that folder to your user PATH (PowerShell):
+
+- $env:PATH += ';%APPDATA%\Python\Python314\Scripts'   # current session only
+
+Or make the change persistent (CMD):
+
+- setx PATH "%APPDATA%\Python\Python314\Scripts;%PATH%"
+
+You can also list the Scripts folder to confirm binaries:
+
+- dir %APPDATA%\Python\Python314\Scripts
+
 Examples:
 
 1) Install prerequisites (Windows):
