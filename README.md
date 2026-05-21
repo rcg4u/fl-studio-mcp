@@ -273,7 +273,7 @@ Special thanks to the FL Studio and Python communities.
 
 ## GitHub CLI (gh) support
 
-This repository now includes GitHub CLI integration scripts to make it easy to run the MCP server via a gh alias.
+This repository includes GitHub CLI integration scripts to make it easy to run the MCP server via a gh alias.
 
 - Scripts: install_mcp_for_gh.sh (macOS/Linux) and install_mcp_for_gh.bat (Windows)
 - What they do: create a gh alias named `mcp-fl-studio` which runs the MCP server using the repository's virtualenv Python
@@ -288,6 +288,42 @@ Usage:
 - On Windows:
   install_mcp_for_gh.bat
   Then run: gh mcp-fl-studio
+
+## Windows support (detailed)
+
+Windows is fully supported. Key notes:
+
+- Install: run install_prerequisites.bat from the repo root. It creates .venv, installs Python deps with pip, copies ComposeWithLLM.pyscript into the FL Studio scripts folder, and creates the JSON bridge files.
+
+- Dependencies: Python 3.11+. Recommended packages for best behavior: pywin32 (for win32gui), pynput or pyautogui (for keystrokes). If pywin32 is required, install it into the venv: `".venv\\Scripts\\pip.exe" install pywin32`.
+
+- Trigger behavior: the MCP server sends Ctrl+Alt+Y to trigger FL Studio. The server prefers pynput; if unavailable it falls back to ctypes keybd_event (no extra deps), then to pyautogui if present.
+
+- Registering MCP: use the provided .bat scripts to register with your assistant tooling:
+  - install_mcp_for_claude.bat (Claude)
+  - install_mcp_for_gh.bat (GitHub CLI alias)
+  - install_mcp_for_gemini.bat (Gemini)
+  - install_mcp_for_codex.bat (Codex)
+
+- Permissions: usually no elevation needed. If writing into the FL Studio scripts folder fails, run the installer from an Administrator prompt or adjust folder permissions. Ensure FL Studio is running and Python scripting is enabled.
+
+- Paths and drives: scripts use %~dp0 (Windows) and BASH_SOURCE (Unix) to locate the repository, so the repo can live on D:\ or any drive — no changes required.
+
+- Troubleshooting:
+  - If trigger doesn't work: verify FL Studio is running and has an open piano roll, and that the venv contains pynput or pyautogui or pywin32 as needed.
+  - If files can't be created: check permissions on the Documents\Image-Line\FL Studio\Settings\Piano roll scripts folder and run the installer as admin if necessary.
+
+Examples:
+
+1) Install prerequisites (Windows):
+   install_prerequisites.bat
+
+2) Register with Claude (Windows):
+   install_mcp_for_claude.bat
+
+3) Create gh alias (Windows):
+   install_mcp_for_gh.bat
+   Then run: gh mcp-fl-studio
 
 
 
